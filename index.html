@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" class="dark">
+<html lang="en" class="dark" style="height: 100%; min-height: 100%; margin: 0; padding: 0; overflow: hidden;">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -54,7 +54,7 @@
   <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
 </head>
-<body class="bg-[#05070B] text-slate-100 min-h-screen flex flex-col antialiased selection:bg-red-500/25 selection:text-white bg-grid-pattern">
+<body class="bg-[#000000] text-slate-100 h-screen h-full flex flex-col font-sans antialiased overflow-hidden selection:bg-red-500 selection:text-white" style="height: 100%; min-height: 100vh; max-height: 100vh; margin: 0; padding: 0; overflow: hidden; display: flex; flex-direction: column;">
 
   <!-- =========================================================================
        PART 1: TOP HEADER & NAVIGATION
@@ -263,11 +263,11 @@
   <!-- =========================================================================
        MAIN BODY: MAP (MIDDLE) & SIDEBAR MENU (5 MODULES)
        ========================================================================= -->
-  <div class="flex-1 flex flex-col lg:flex-row relative overflow-hidden">
+  <div class="flex-1 flex flex-col lg:flex-row relative overflow-hidden h-full min-h-0 bg-[#000000]" style="flex: 1 1 0%; height: 100%; min-height: 0; background: #000000; background-color: #000000;">
     
     
 
-    <main class="flex-1 relative min-h-[520px] lg:min-h-0 bg-[#000000]">
+    <main class="flex-1 relative w-full h-full min-h-0 bg-[#000000] overflow-hidden" style="flex: 1 1 0%; height: 100%; width: 100%; min-height: 0; position: relative; background: #000000; background-color: #000000; overflow: hidden;">
 
       <!-- Backdrop Overlay for Drawer -->
     <div id="sidebar-backdrop" onclick="window.closeSideMenu && window.closeSideMenu()" class="absolute inset-0 bg-black/60 backdrop-blur-xs z-[1150] hidden transition-opacity duration-300 pointer-events-auto cursor-pointer"></div>
@@ -662,6 +662,21 @@
             </p>
           </div>
 
+                    <!-- Active Relocation Evacuation Corridors Matrix -->
+          <div class="space-y-2">
+            <div class="flex justify-between items-center">
+              <span class="text-xs font-bold uppercase tracking-wider text-zinc-400 flex items-center gap-1.5">
+                <i data-lucide="git-branch" class="w-3.5 h-3.5 text-emerald-400"></i>
+                <span>Evacuation Corridors Comparison Matrix</span>
+              </span>
+              <span id="tab-reloc-corridor-count" class="text-[10px] text-emerald-400 font-mono">3 Routes Mapped</span>
+            </div>
+
+            <div id="tab-relocation-corridors-list" class="space-y-2">
+              <!-- Dynamically populated with route cards -->
+            </div>
+          </div>
+
           <!-- Priority Ranked Villages Table -->
           <div class="space-y-2">
             <div class="flex justify-between items-center">
@@ -953,6 +968,143 @@
       </div>
     </aside>
 
+      <!-- =========================================================================
+           BACKDROP & ZONE INTELLIGENCE MODAL (OVER MAP SCREEN)
+           ========================================================================= -->
+      <div id="zone-intel-backdrop" onclick="window.closeZoneIntelModal && window.closeZoneIntelModal()" class="hidden absolute inset-0 bg-black/70 backdrop-blur-md z-[1950] transition-opacity duration-300 pointer-events-auto cursor-pointer"></div>
+
+      <div id="dual-city-intelligence-dock" class="hidden absolute top-14 sm:top-16 md:top-20 left-3 right-3 md:left-1/2 md:-translate-x-1/2 md:w-[920px] max-w-[96vw] max-h-[82vh] z-[2000] pointer-events-auto overflow-y-auto custom-scroll shadow-2xl rounded-2xl border border-white/20 bg-[#090b10]/98 backdrop-blur-2xl">
+        <div class="p-4 sm:p-5 space-y-3.5 text-xs text-white">
+          
+          <!-- Top Bar: City Name, Subtitle, and Control Buttons -->
+          <div class="flex items-center justify-between pb-2.5 border-b border-white/10 gap-2">
+            <div class="flex items-center space-x-2.5">
+              <div class="w-8 h-8 rounded-xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center shrink-0">
+                <i data-lucide="map-pin" class="w-4 h-4 text-amber-400"></i>
+              </div>
+              <div>
+                <div class="flex items-center gap-2">
+                  <h4 id="dock-city-name" class="font-bold text-sm sm:text-base text-white tracking-tight">Joshimath, Uttarakhand</h4>
+                  <span id="dock-city-context" class="hidden sm:inline text-[10px] px-2.5 py-0.5 rounded-full bg-white/[0.08] text-zinc-300 border border-white/10">Active Fault Zone</span>
+                </div>
+                <p class="text-[10px] sm:text-[11px] text-zinc-400">Dual Spatial Intelligence • Closest Red Zone vs Closest Safe Sanctuary</p>
+              </div>
+            </div>
+
+            <div class="flex items-center space-x-2 shrink-0">
+              <button onclick="window.zoomToCityRedZone && window.zoomToCityRedZone()" class="px-3 py-1.5 rounded-xl bg-red-500/20 hover:bg-red-500/30 text-red-300 border border-red-500/30 text-[11px] font-semibold flex items-center gap-1.5 transition-all cursor-pointer" title="Focus Map on Closest Red Zone">
+                <span class="w-1.5 h-1.5 rounded-full bg-red-500"></span> <span>Focus Red</span>
+              </button>
+              <button onclick="window.zoomToCityGreenZone && window.zoomToCityGreenZone()" class="px-3 py-1.5 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/30 text-[11px] font-semibold flex items-center gap-1.5 transition-all cursor-pointer" title="Focus Map on Closest Safe Haven">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> <span>Focus Haven</span>
+              </button>
+              <button onclick="window.closeZoneIntelModal && window.closeZoneIntelModal()" class="px-3 py-1.5 rounded-xl bg-white/[0.08] hover:bg-white/[0.16] border border-white/15 text-zinc-300 hover:text-white flex items-center gap-1.5 text-[11px] font-semibold transition-all cursor-pointer" title="Close Modal (Esc)">
+                <i data-lucide="x" class="w-4 h-4"></i>
+                <span class="hidden sm:inline">Close</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Multi-Path Evacuation Corridors Ribbon -->
+          <div class="p-3 rounded-xl bg-black/50 border border-white/10 space-y-2">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center space-x-2">
+                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-300 flex items-center gap-1.5">
+                  <i data-lucide="git-branch" class="w-3.5 h-3.5"></i>
+                  <span>Evacuation Corridors (Hazard Zone ➔ Safe Relocation Site)</span>
+                </span>
+                <span id="dock-corridor-count" class="text-[9px] px-2 py-0.5 rounded bg-white/10 text-zinc-300 font-mono">3 Routes Mapped</span>
+              </div>
+              <span class="text-[9px] text-zinc-400 hidden sm:inline">Click route to inspect corridor topography & checkpoints</span>
+            </div>
+
+            <!-- Route Selector Pills -->
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-1.5" id="dock-evac-pills-container">
+              <!-- Dynamically populated via JS -->
+            </div>
+
+            <!-- Active Selected Route Telemetry & Choke Points -->
+            <div id="dock-active-route-strip" class="p-2.5 rounded-lg bg-white/[0.03] border border-white/10 text-[10px] space-y-1.5">
+              <!-- Dynamically populated via selectEvacuationPath() -->
+            </div>
+          </div>
+
+          <!-- Dual Columns: Red Zone (Left) vs Green Haven (Right) -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3.5">
+            
+            <!-- LEFT COLUMN: 🔴 CLOSEST RED ZONE & PAST HAZARDS -->
+            <div class="p-3.5 rounded-xl bg-red-950/30 border border-red-500/30 space-y-2.5">
+              <div class="flex items-center justify-between pb-1.5 border-b border-red-500/20">
+                <div class="flex items-center space-x-1.5">
+                  <span class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
+                  <span class="text-[10px] font-bold uppercase tracking-wider text-red-400">Closest Red Zone</span>
+                </div>
+                <span id="dock-red-dist" class="text-[10px] font-bold text-red-300 font-mono">0.8 km away</span>
+              </div>
+
+              <div>
+                <h5 id="dock-red-name" class="font-bold text-xs text-white">Sunil & Manohar Bagh Subsidence Sector</h5>
+                <div id="dock-red-meta" class="text-[10px] text-zinc-400 mt-0.5">InSAR Land Subsidence • Risk: 94% • Pop: 3,420</div>
+              </div>
+
+              <!-- Past Hazards Timeline Container -->
+              <div class="space-y-1.5">
+                <div class="text-[10px] font-bold uppercase tracking-wider text-red-400 flex items-center justify-between">
+                  <span>📜 Past Hazard Precedents & Casualties</span>
+                  <span class="text-[9px] text-zinc-400 font-normal">Official NDMA</span>
+                </div>
+                <div id="dock-red-hazards-list" class="space-y-1.5 max-h-[140px] overflow-y-auto pr-1 custom-scroll">
+                  <!-- Populated dynamically -->
+                </div>
+              </div>
+            </div>
+
+            <!-- RIGHT COLUMN: 🟢 CLOSEST GREEN HAVEN & SAFE HOUSES / CONTACTS -->
+            <div class="p-3.5 rounded-xl bg-emerald-950/30 border border-emerald-500/30 space-y-2.5">
+              <div class="flex items-center justify-between pb-1.5 border-b border-emerald-500/20">
+                <div class="flex items-center space-x-1.5">
+                  <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+                  <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-400">Closest Safe Haven</span>
+                </div>
+                <span id="dock-green-dist" class="text-[10px] font-bold text-emerald-300 font-mono">14.2 km via NH-7</span>
+              </div>
+
+              <div>
+                <h5 id="dock-green-name" class="font-bold text-xs text-white">Pipalkoti Resilient Township</h5>
+                <div id="dock-green-meta" class="text-[10px] text-zinc-400 mt-0.5">Capacity Headroom: +4,200 Beds • Verified 88%</div>
+              </div>
+
+              <!-- Safe Houses Container -->
+              <div class="space-y-1.5">
+                <div class="text-[10px] font-bold uppercase tracking-wider text-emerald-400 flex items-center justify-between">
+                  <span>🏠 Safe Houses & Relief Capacity</span>
+                  <span class="text-[9px] text-zinc-400 font-normal">Available / Total</span>
+                </div>
+                <div id="dock-green-shelters-list" class="space-y-1.5 max-h-[100px] overflow-y-auto pr-1 custom-scroll">
+                  <!-- Populated dynamically -->
+                </div>
+              </div>
+
+              <!-- Emergency Contacts Container -->
+              <div class="pt-1.5 border-t border-emerald-500/20">
+                <div class="text-[10px] font-bold uppercase tracking-wider text-emerald-400 mb-1">
+                  📞 Official Emergency Contacts (Click to Call)
+                </div>
+                <div id="dock-green-contacts-list" class="grid grid-cols-2 gap-1.5">
+                  <!-- Populated dynamically -->
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+      </div>
+
+
+
       <!-- Leaflet Map Canvas -->
       <div id="map-container" class="absolute inset-0 w-full h-full"></div>
 
@@ -964,33 +1116,122 @@
           <span>Side Menu</span>
         </button>
 
+        <!-- Floating Live GPS Button (Asks permission first) -->
+        
+        <!-- Floating City Filter Dropdown Button -->
+        <div class="relative" id="city-filter-container">
+          <button id="city-filter-btn" onclick="window.toggleCityFilterDropdown && window.toggleCityFilterDropdown()" class="aesthetic-glass-heavy px-3 py-2 rounded-2xl flex items-center space-x-2 text-xs font-semibold text-white hover:border-amber-500/40 hover:text-amber-300 transition-all shadow-2xl cursor-pointer group" title="Select Study City to Zoom and Assess Closest Red & Green Zones">
+            <i data-lucide="map-pin" class="w-4 h-4 text-amber-400 group-hover:scale-110 transition-transform"></i>
+            <span id="city-filter-label">Filter City</span>
+            <i data-lucide="chevron-down" id="city-filter-chevron" class="w-3.5 h-3.5 text-zinc-400 transition-transform duration-200"></i>
+          </button>
+
+          <!-- Dropdown Menu -->
+          <div id="city-filter-menu" class="hidden absolute left-0 mt-2 w-72 rounded-2xl bg-[#0a0a0d]/98 border border-white/15 backdrop-blur-2xl shadow-2xl z-[1250] overflow-hidden divide-y divide-white/10 py-1.5 text-xs">
+            <div class="px-3.5 py-2 text-[10px] font-bold uppercase tracking-wider text-zinc-400 flex items-center justify-between">
+              <span>Select High-Risk Study City</span>
+              <span class="text-amber-400 text-[9px] font-mono">5 High-Risk</span>
+            </div>
+            <div class="py-1">
+              <button class="city-filter-option w-full px-3.5 py-2 text-left hover:bg-white/[0.08] flex items-center justify-between transition-colors text-white" onclick="window.selectCityFilter && window.selectCityFilter('CITY-JOSHIMATH')">
+                <div>
+                  <div class="font-bold flex items-center gap-1.5">🏔️ Joshimath <span class="text-[9px] px-1.5 py-0.2 rounded bg-red-500/20 text-red-300 border border-red-500/30">MCT Subsidence</span></div>
+                  <div class="text-[10px] text-zinc-400">Chamoli, Uttarakhand • Active Fault</div>
+                </div>
+                <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-zinc-500"></i>
+              </button>
+
+              <button class="city-filter-option w-full px-3.5 py-2 text-left hover:bg-white/[0.08] flex items-center justify-between transition-colors text-white" onclick="window.selectCityFilter && window.selectCityFilter('CITY-WAYANAD')">
+                <div>
+                  <div class="font-bold flex items-center gap-1.5">🌿 Meppadi (Wayanad) <span class="text-[9px] px-1.5 py-0.2 rounded bg-red-500/20 text-red-300 border border-red-500/30">Debris Flow</span></div>
+                  <div class="text-[10px] text-zinc-400">Wayanad, Kerala • Western Ghats</div>
+                </div>
+                <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-zinc-500"></i>
+              </button>
+
+              <button class="city-filter-option w-full px-3.5 py-2 text-left hover:bg-white/[0.08] flex items-center justify-between transition-colors text-white" onclick="window.selectCityFilter && window.selectCityFilter('CITY-MAJULI')">
+                <div>
+                  <div class="font-bold flex items-center gap-1.5">🌊 Majuli Island <span class="text-[9px] px-1.5 py-0.2 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30">Erosion & Flood</span></div>
+                  <div class="text-[10px] text-zinc-400">Majuli, Assam • Brahmaputra Basin</div>
+                </div>
+                <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-zinc-500"></i>
+              </button>
+
+              <button class="city-filter-option w-full px-3.5 py-2 text-left hover:bg-white/[0.08] flex items-center justify-between transition-colors text-white" onclick="window.selectCityFilter && window.selectCityFilter('CITY-KENDRAPARA')">
+                <div>
+                  <div class="font-bold flex items-center gap-1.5">🌪️ Kendrapara (Satabhaya) <span class="text-[9px] px-1.5 py-0.2 rounded bg-blue-500/20 text-blue-300 border border-blue-500/30">Cyclone Surge</span></div>
+                  <div class="text-[10px] text-zinc-400">Kendrapara, Odisha • Bay of Bengal</div>
+                </div>
+                <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-zinc-500"></i>
+              </button>
+
+              <button class="city-filter-option w-full px-3.5 py-2 text-left hover:bg-white/[0.08] flex items-center justify-between transition-colors text-white" onclick="window.selectCityFilter && window.selectCityFilter('CITY-MANDI')">
+                <div>
+                  <div class="font-bold flex items-center gap-1.5">⛰️ Mandi (Kotropi) <span class="text-[9px] px-1.5 py-0.2 rounded bg-red-500/20 text-red-300 border border-red-500/30">Slope Collapse</span></div>
+                  <div class="text-[10px] text-zinc-400">Mandi, Himachal Pradesh • Flysch</div>
+                </div>
+                <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-zinc-500"></i>
+              </button>
+            </div>
+
+            <div class="px-2 py-1.5 bg-white/[0.02]">
+              <button class="w-full py-1.5 px-2 rounded-xl text-center text-[10px] text-zinc-400 hover:text-white hover:bg-white/[0.06] transition-all font-semibold flex items-center justify-center gap-1" onclick="window.clearCityFilter && window.clearCityFilter()">
+                <i data-lucide="rotate-ccw" class="w-3 h-3"></i> Clear City Filter & Reset View
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <button id="map-live-gps-btn" onclick="window.requestUserGPS && window.requestUserGPS()" class="aesthetic-glass-heavy px-3 py-2 rounded-2xl flex items-center space-x-2 text-xs font-semibold text-white hover:border-cyan-500/40 hover:text-cyan-300 transition-all shadow-2xl cursor-pointer group" title="Locate My Position & Assess Local Disaster Risks">
+          <i data-lucide="crosshair" class="w-4 h-4 text-cyan-400 group-hover:rotate-45 transition-transform"></i>
+          <span id="gps-btn-label">Live GPS</span>
+          <span id="gps-active-dot" class="w-2 h-2 rounded-full bg-cyan-400 hidden animate-pulse"></span>
+        </button>
+
         <div class="aesthetic-glass-heavy rounded-2xl p-1 flex items-center space-x-1 border border-white/10 shadow-2xl">
           <!-- Zoom In Button -->
-          <button id="map-zoom-in" class="w-8 h-8 rounded-xl hover:bg-white/10 flex items-center justify-center text-slate-200 hover:text-white transition-all" title="Zoom In (+)">
+          <button id="map-zoom-in" onclick="window.mapZoomIn && window.mapZoomIn()" class="w-8 h-8 rounded-xl hover:bg-white/10 flex items-center justify-center text-slate-200 hover:text-white transition-all" title="Zoom In (+)">
             <i data-lucide="plus" class="w-4 h-4"></i>
           </button>
           <!-- Zoom Out Button -->
-          <button id="map-zoom-out" class="w-8 h-8 rounded-xl hover:bg-white/10 flex items-center justify-center text-slate-200 hover:text-white transition-all" title="Zoom Out (-)">
+          <button id="map-zoom-out" onclick="window.mapZoomOut && window.mapZoomOut()" class="w-8 h-8 rounded-xl hover:bg-white/10 flex items-center justify-center text-slate-200 hover:text-white transition-all" title="Zoom Out (-)">
             <i data-lucide="minus" class="w-4 h-4"></i>
           </button>
           <div class="w-px h-4 bg-white/10 mx-0.5"></div>
           <!-- Reset View to Pan-India -->
-          <button id="map-reset-view" class="w-8 h-8 rounded-xl hover:bg-white/10 flex items-center justify-center text-slate-200 hover:text-white transition-all" title="Reset View to India">
+          <button id="map-reset-view" onclick="window.mapResetView && window.mapResetView()" class="w-8 h-8 rounded-xl hover:bg-white/10 flex items-center justify-center text-slate-200 hover:text-white transition-all" title="Reset View to India">
             <i data-lucide="maximize-2" class="w-3.5 h-3.5"></i>
           </button>
         </div>
       </div>
 
-      <!-- Floating Map Layer Switcher (Top Right HUD - 100% Free Keyless Maps) -->
-      <div class="absolute top-4 right-4 z-[1000] pointer-events-auto">
+      <!-- Floating Top Right Controls: Zone Intelligence Button + Map Layer Switcher -->
+      <div class="absolute top-4 right-4 z-[1100] flex items-center space-x-2 pointer-events-auto">
+        <!-- Zone Intelligence Button (Click to open Red/Safe Zone & Evacuation Corridors Modal) -->
+        <button id="zone-intel-toggle-btn" onclick="window.toggleZoneIntelModal && window.toggleZoneIntelModal()" class="aesthetic-glass-heavy px-3 py-2 rounded-2xl flex items-center space-x-2 text-xs font-semibold text-white border border-red-500/40 hover:border-red-400 bg-red-950/60 hover:bg-red-950/90 transition-all shadow-2xl cursor-pointer group ring-1 ring-red-500/30" title="Click to open Closest Red Zone, Closest Safe Zone & Evacuation Corridors">
+          <span class="relative flex h-2.5 w-2.5">
+            <span id="zone-intel-ping" class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+            <span id="zone-intel-dot" class="relative inline-flex rounded-full h-2.5 w-2.5 bg-red-500"></span>
+          </span>
+          <span id="zone-intel-btn-text" class="flex items-center gap-1 font-bold">
+            <span class="text-red-400">🔴 Red</span>
+            <span class="text-zinc-400">&amp;</span>
+            <span class="text-emerald-400">🟢 Safe Zones</span>
+          </span>
+          <span id="zone-intel-btn-badge" class="px-2 py-0.5 rounded-full text-[10px] font-mono bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-bold">
+            3 Routes
+          </span>
+        </button>
+
+        <!-- Map Layer Switcher -->
         <div class="aesthetic-glass-heavy rounded-2xl p-1 flex items-center space-x-1 border border-white/10 shadow-2xl text-[11px]">
-          <button class="map-layer-btn active px-3 py-1 rounded-xl capsule-btn text-xs font-semibold" data-layer="dark" title="Tactical Dark Mode (Default)">
+          <button class="map-layer-btn active px-3 py-1 rounded-xl capsule-btn text-xs font-semibold" data-layer="dark" onclick="window.setMapBaseLayer && window.setMapBaseLayer('dark')" title="Tactical Dark Mode (Default)">
             🌙 Dark
           </button>
-          <button class="map-layer-btn px-3 py-1 rounded-xl capsule-btn text-xs font-semibold" data-layer="satellite" title="High-Res Terrain Satellite">
+          <button class="map-layer-btn px-3 py-1 rounded-xl capsule-btn text-xs font-semibold" data-layer="satellite" onclick="window.setMapBaseLayer && window.setMapBaseLayer('satellite')" title="High-Res Terrain Satellite">
             🛰️ Satellite
           </button>
-          <button class="map-layer-btn px-3 py-1 rounded-xl capsule-btn text-xs font-semibold" data-layer="street" title="Open Street View">
+          <button class="map-layer-btn px-3 py-1 rounded-xl capsule-btn text-xs font-semibold" data-layer="street" onclick="window.setMapBaseLayer && window.setMapBaseLayer('street')" title="Open Street View">
             🗺️ Street
           </button>
         </div>
@@ -1010,16 +1251,16 @@
           <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider flex items-center gap-1">
             <i data-lucide="crosshair" class="w-3 h-3 text-red-400"></i> Hotspot:
           </span>
-          <button class="hotspot-jump-btn px-2.5 py-1 rounded-lg bg-white/[0.04] hover:bg-white/[0.10] text-slate-200 transition-colors font-medium text-[11px]" data-lat="30.5574" data-lng="79.5658" data-name="Joshimath (Subsidence)">
+          <button class="hotspot-jump-btn px-2.5 py-1 rounded-lg bg-white/[0.04] hover:bg-white/[0.10] text-slate-200 transition-colors font-medium text-[11px]" data-lat="30.5574" data-lng="79.5658" data-name="Joshimath (Subsidence)" onclick="window.selectCityFilter && window.selectCityFilter('CITY-JOSHIMATH')">
             Joshimath
           </button>
-          <button class="hotspot-jump-btn px-2.5 py-1 rounded-lg bg-white/[0.04] hover:bg-white/[0.10] text-slate-200 transition-colors font-medium text-[11px]" data-lat="11.5284" data-lng="76.1685" data-name="Wayanad (Debris Flow)">
+          <button class="hotspot-jump-btn px-2.5 py-1 rounded-lg bg-white/[0.04] hover:bg-white/[0.10] text-slate-200 transition-colors font-medium text-[11px]" data-lat="11.5284" data-lng="76.1685" data-name="Wayanad (Debris Flow)" onclick="window.selectCityFilter && window.selectCityFilter('CITY-WAYANAD')">
             Wayanad
           </button>
-          <button class="hotspot-jump-btn px-2.5 py-1 rounded-lg bg-white/[0.04] hover:bg-white/[0.10] text-slate-200 transition-colors font-medium text-[11px]" data-lat="26.9534" data-lng="94.2045" data-name="Majuli (Floods)">
+          <button class="hotspot-jump-btn px-2.5 py-1 rounded-lg bg-white/[0.04] hover:bg-white/[0.10] text-slate-200 transition-colors font-medium text-[11px]" data-lat="26.9534" data-lng="94.2045" data-name="Majuli (Floods)" onclick="window.selectCityFilter && window.selectCityFilter('CITY-MAJULI')">
             Majuli
           </button>
-          <button class="hotspot-jump-btn px-2.5 py-1 rounded-lg bg-white/[0.04] hover:bg-white/[0.10] text-slate-200 transition-colors font-medium text-[11px]" data-lat="20.6288" data-lng="86.9281" data-name="Kendrapara (Cyclone)">
+          <button class="hotspot-jump-btn px-2.5 py-1 rounded-lg bg-white/[0.04] hover:bg-white/[0.10] text-slate-200 transition-colors font-medium text-[11px]" data-lat="20.6288" data-lng="86.9281" data-name="Kendrapara (Cyclone)" onclick="window.selectCityFilter && window.selectCityFilter('CITY-KENDRAPARA')">
             Kendrapara
           </button>
         </div>
@@ -1030,6 +1271,11 @@
            ===================================================================== -->
       <div class="absolute bottom-6 right-6 z-[1000] flex flex-col items-end space-y-2 pointer-events-auto">
         <!-- Pop-up Indicator Drawer / Legend Box (Toggled) -->
+        
+      <!-- =========================================================================
+           PART 4: DUAL CITY INTELLIGENCE FLOATING DOCK (CLOSEST RED & GREEN ZONES)
+           ========================================================================= -->
+      
         <div id="indicators-drawer" class="aesthetic-glass-heavy p-4 rounded-2xl w-80 shadow-2xl border border-white/15 hidden transition-all duration-300">
           <div class="flex items-center justify-between pb-2.5 mb-3 border-b border-white/10">
             <h4 class="text-xs font-bold uppercase tracking-wider text-white flex items-center gap-2">
@@ -1099,6 +1345,54 @@
           <span>Indicators</span>
         </button>
       </div>
+    
+      <!-- Live GPS User Safety HUD Overlay (Appears when tracking is active) -->
+      <div id="user-gps-status-hud" class="absolute bottom-6 left-4 z-[1000] hidden pointer-events-auto max-w-xs sm:max-w-sm">
+        <div class="aesthetic-glass-heavy rounded-2xl p-3.5 border border-cyan-500/30 shadow-2xl space-y-2.5 bg-[#080808]/95 backdrop-blur-xl">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center space-x-2">
+              <span class="relative flex h-2 w-2">
+                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
+                <span class="relative inline-flex rounded-full h-2 w-2 bg-cyan-500"></span>
+              </span>
+              <span class="text-[11px] font-bold uppercase tracking-wider text-cyan-400">My Live GPS Telemetry</span>
+            </div>
+            <button id="close-gps-hud-btn" onclick="window.stopUserGPS && window.stopUserGPS()" class="text-zinc-400 hover:text-white text-xs font-semibold px-2 py-0.5 rounded-lg bg-white/[0.06] hover:bg-white/[0.12] transition-colors cursor-pointer" title="Stop GPS Tracking">
+              Stop
+            </button>
+          </div>
+
+          <div class="text-[11px] text-zinc-300 font-mono flex items-center justify-between">
+            <span id="hud-gps-coords">--° N, --° E</span>
+            <span id="hud-gps-accuracy" class="text-zinc-400 text-[10px]">±--m</span>
+          </div>
+
+          <!-- Nearest Red Zone & Haven distance -->
+          <div class="grid grid-cols-2 gap-2 text-[10px]">
+            <div class="p-2 rounded-xl bg-red-500/10 border border-red-500/25">
+              <div class="text-red-400 font-bold uppercase">Nearest Red Zone</div>
+              <div id="hud-nearest-redzone-name" class="font-bold text-white truncate mt-0.5">--</div>
+              <div id="hud-nearest-redzone-dist" class="text-zinc-300">-- km away</div>
+            </div>
+            <div class="p-2 rounded-xl bg-emerald-500/10 border border-emerald-500/25">
+              <div class="text-emerald-400 font-bold uppercase">Nearest Safe Haven</div>
+              <div id="hud-nearest-haven-name" class="font-bold text-white truncate mt-0.5">--</div>
+              <div id="hud-nearest-haven-dist" class="text-zinc-300">-- km away</div>
+            </div>
+          </div>
+
+          <div id="hud-gps-threat-badge" class="text-[10px] font-semibold px-2.5 py-1 rounded-lg border text-center text-emerald-400 border-emerald-500/30 bg-emerald-500/10">
+            🟢 STABLE: Outside Active Hazard Perimeter
+          </div>
+
+          <div class="flex items-center gap-2 pt-0.5">
+            <button onclick="window.recenterUserGPS && window.recenterUserGPS()" class="flex-1 py-1 px-2.5 rounded-xl bg-cyan-600/30 hover:bg-cyan-600/50 border border-cyan-500/40 text-cyan-200 text-xs font-semibold transition-all text-center cursor-pointer">
+              Recenter Map
+            </button>
+          </div>
+        </div>
+      </div>
+
     </main>
 
   </div>
@@ -1718,7 +2012,66 @@
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
   
   <!-- Main Application Script (ES6 Modules) -->
-  <script type="module" src="js/app.js"></script>
+  <script type="module" src="js/app.js?v=2.2"></script>
+
+  
+  <!-- =========================================================================
+       LIVE GPS PERMISSION MODAL (Asking permission before accessing location)
+       ========================================================================= -->
+  <div id="gps-permission-modal" class="app-modal-layer modal-backdrop-translucent hidden">
+    <div class="relative w-full max-w-md bg-[#0a0a0a] border border-[#242424] rounded-3xl p-6 shadow-2xl space-y-4 pointer-events-auto text-slate-100">
+      <div class="flex items-center justify-between border-b border-white/10 pb-3">
+        <div class="flex items-center space-x-3">
+          <div class="w-10 h-10 rounded-2xl bg-cyan-500/15 border border-cyan-500/30 flex items-center justify-center text-cyan-400">
+            <i data-lucide="navigation" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <h3 class="text-sm font-bold text-white tracking-tight">Enable Live GPS Telemetry?</h3>
+            <p class="text-[11px] text-zinc-400">Citizen Real-Time Hazard Proximity Protocol</p>
+          </div>
+        </div>
+        <button id="close-gps-permission-modal-btn" onclick="window.closeGPSPermissionModal && window.closeGPSPermissionModal()" class="w-7 h-7 rounded-xl bg-white/[0.04] hover:bg-white/[0.10] border border-white/10 text-zinc-400 hover:text-white flex items-center justify-center transition-all cursor-pointer" title="Close">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <p class="text-xs text-zinc-300 leading-relaxed">
+        Raksha uses your live GPS coordinates to determine your real-time proximity to active geological red zones, landslides, and flood basins, and identifies the fastest evacuation corridor to the nearest verified Safe Haven.
+      </p>
+
+      <div class="space-y-2.5 bg-white/[0.02] border border-white/[0.06] rounded-2xl p-3.5 text-[11px] text-zinc-300">
+        <div class="flex items-center gap-2.5">
+          <i data-lucide="shield-check" class="w-4 h-4 text-emerald-400 shrink-0"></i>
+          <span><b>Local Privacy:</b> Your coordinates are calculated strictly in your browser and are never uploaded to commercial tracking networks.</span>
+        </div>
+        <div class="flex items-center gap-2.5">
+          <i data-lucide="compass" class="w-4 h-4 text-cyan-400 shrink-0"></i>
+          <span><b>Live Proximity:</b> Displays instant distance to nearest shelters, clinics, and high-risk slopes.</span>
+        </div>
+        <div class="flex items-center gap-2.5">
+          <i data-lucide="bell-ring" class="w-4 h-4 text-amber-400 shrink-0"></i>
+          <span><b>Emergency Alerts:</b> Alerts you if your position enters an active 5km hazard threshold.</span>
+        </div>
+      </div>
+
+      <div class="flex items-center justify-between text-xs text-zinc-400 pt-1">
+        <label class="flex items-center space-x-2 cursor-pointer select-none">
+          <input type="checkbox" id="gps-remember-preference" class="rounded border-zinc-700 text-cyan-500 focus:ring-0 bg-zinc-900 cursor-pointer" checked />
+          <span class="text-[11px]">Remember permission on this device</span>
+        </label>
+      </div>
+
+      <div class="flex items-center gap-3 pt-2">
+        <button id="gps-decline-btn" onclick="window.closeGPSPermissionModal && window.closeGPSPermissionModal()" class="flex-1 py-2.5 px-4 rounded-xl bg-white/[0.06] hover:bg-white/[0.12] text-zinc-300 text-xs font-semibold transition-all border border-white/10 cursor-pointer">
+          Decline / Dismiss
+        </button>
+        <button id="gps-allow-btn" onclick="window.confirmUserGPS && window.confirmUserGPS()" class="flex-1 py-2.5 px-4 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white text-xs font-bold transition-all shadow-lg shadow-cyan-600/30 flex items-center justify-center space-x-2 cursor-pointer">
+          <i data-lucide="crosshair" class="w-4 h-4"></i>
+          <span>Allow Live GPS</span>
+        </button>
+      </div>
+    </div>
+  </div>
 
   <!-- Standalone Settings Drawer & Quick Control Handler (Guarantees instant popup & navigation across all environments) -->
   <script>
@@ -1810,6 +2163,7 @@
           if (panel && panel.classList.contains('translate-x-0')) {
             closeSettings();
           }
+          if (gpsModal && !gpsModal.classList.contains('hidden')) { closeGPSPermissionModal(); }
           if (sideDrawer && (sideDrawer.classList.contains('drawer-open') || sideDrawer.classList.contains('translate-x-0'))) {
             closeSideMenu();
           }
@@ -1817,6 +2171,199 @@
           closeAllModals();
         }
       });
+
+      // =========================================================================
+      // LIVE GPS PERMISSION & TELEMETRY CONTROLLER (Standalone Fallback)
+      // =========================================================================
+      const gpsModal = document.getElementById('gps-permission-modal');
+      const gpsHud = document.getElementById('user-gps-status-hud');
+      const gpsBtn = document.getElementById('map-live-gps-btn');
+      const gpsBtnLabel = document.getElementById('gps-btn-label');
+      const gpsActiveDot = document.getElementById('gps-active-dot');
+      let fallbackWatchId = null;
+      let lastUserPos = null;
+      let hasZoomedToGPS = false;
+
+      function openGPSPermissionModal() {
+        if (gpsModal) {
+          gpsModal.classList.remove('hidden');
+          if (window.lucide) window.lucide.createIcons();
+        }
+      }
+
+      function closeGPSPermissionModal() {
+        if (gpsModal) gpsModal.classList.add('hidden');
+      }
+
+      function requestUserGPS() {
+        // If already tracking, offer option to toggle off or re-center
+        if (fallbackWatchId !== null || (window.gpsService && window.gpsService.isTracking)) {
+          recenterUserGPS();
+          return;
+        }
+
+        const stored = localStorage.getItem('raksha_gps_permission');
+        if (stored === 'granted') {
+          startGPSExecution();
+        } else {
+          openGPSPermissionModal();
+        }
+      }
+
+      function confirmUserGPS() {
+        const remember = document.getElementById('gps-remember-preference');
+        if (remember && remember.checked) {
+          localStorage.setItem('raksha_gps_permission', 'granted');
+        }
+        closeGPSPermissionModal();
+        startGPSExecution();
+      }
+
+      function startGPSExecution() {
+        if (!navigator.geolocation) {
+          alert("Geolocation is not supported by your browser.");
+          return;
+        }
+
+        if (gpsBtnLabel) gpsBtnLabel.textContent = "Acquiring...";
+
+        const handleSuccess = function(pos) {
+          const lat = pos.coords.latitude;
+          const lng = pos.coords.longitude;
+          const accuracy = Math.round(pos.coords.accuracy);
+
+          // Calculate basic proximity to prominent disaster zones
+          const habs = [
+            { name: "Sunil Ward (Joshimath)", lat: 30.5574, lng: 79.5658, type: "Subsidence & Landslide" },
+            { name: "Meppadi Village (Wayanad)", lat: 11.5516, lng: 76.1264, type: "Debris Flow & Landslide" },
+            { name: "Majuli Island Coastal Ward", lat: 26.9536, lng: 94.2037, type: "Severe River Erosion" },
+            { name: "Satabhaya Coastal Cluster", lat: 20.6288, lng: 86.9281, type: "Cyclone & Sea Surge" },
+            { name: "Kotropi Slide Zone (Mandi)", lat: 31.8845, lng: 76.9421, type: "Massive Slope Failure" }
+          ];
+
+          let nearest = null;
+          let minDist = Infinity;
+          for (let i = 0; i < habs.length; i++) {
+            const dLat = (habs[i].lat - lat) * (Math.PI / 180);
+            const dLon = (habs[i].lng - lng) * (Math.PI / 180);
+            const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                      Math.cos(lat * (Math.PI / 180)) * Math.cos(habs[i].lat * (Math.PI / 180)) *
+                      Math.sin(dLon / 2) * Math.sin(dLon / 2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+            const d = Math.round(6371 * c * 10) / 10;
+            if (d < minDist) {
+              minDist = d;
+              nearest = habs[i];
+            }
+          }
+
+          lastUserPos = {
+            lat: lat,
+            lng: lng,
+            accuracy: accuracy,
+            proximity: {
+              nearestRedZone: { name: nearest ? nearest.name : 'Unknown', distanceKm: minDist, hazardType: nearest ? nearest.type : '' },
+              nearestSafeHaven: { name: 'Pipalkoti Secure Relief Hub', distanceKm: Math.round(minDist * 0.7 * 10) / 10, headroom: 1800 },
+              threatLabel: minDist <= 10 ? '🚨 CRITICAL: Within 10km Hazard Zone' : (minDist <= 30 ? '🟠 ADVISORY: Near Hazard Zone' : '🟢 STABLE: Outside Active Hazard Zone'),
+              threatClass: minDist <= 10 ? 'text-red-400 border-red-500/40 bg-red-500/20' : (minDist <= 30 ? 'text-amber-400 border-amber-500/40 bg-amber-500/20' : 'text-emerald-400 border-emerald-500/30 bg-emerald-500/10')
+            }
+          };
+
+          // Update UI Button
+          if (gpsBtnLabel) gpsBtnLabel.textContent = "Live GPS";
+          if (gpsActiveDot) gpsActiveDot.classList.remove('hidden');
+          if (gpsBtn) {
+            gpsBtn.classList.add('border-cyan-400', 'text-cyan-300', 'bg-cyan-950/40');
+          }
+
+          // Update HUD card
+          if (gpsHud) {
+            gpsHud.classList.remove('hidden');
+            const cEl = document.getElementById('hud-gps-coords');
+            const aEl = document.getElementById('hud-gps-accuracy');
+            const rName = document.getElementById('hud-nearest-redzone-name');
+            const rDist = document.getElementById('hud-nearest-redzone-dist');
+            const hName = document.getElementById('hud-nearest-haven-name');
+            const hDist = document.getElementById('hud-nearest-haven-dist');
+            const tBadge = document.getElementById('hud-gps-threat-badge');
+
+            if (cEl) cEl.textContent = lat.toFixed(4) + '° N, ' + lng.toFixed(4) + '° E';
+            if (aEl) aEl.textContent = '±' + accuracy + 'm';
+            if (rName && nearest) rName.textContent = nearest.name;
+            if (rDist) rDist.textContent = minDist + ' km away';
+            if (hName) hName.textContent = 'Pipalkoti Haven';
+            if (hDist) hDist.textContent = Math.round(minDist * 0.7 * 10) / 10 + ' km away';
+            if (tBadge) {
+              tBadge.textContent = lastUserPos.proximity.threatLabel;
+              tBadge.className = 'text-[10px] font-semibold px-2.5 py-1 rounded-lg border text-center ' + lastUserPos.proximity.threatClass;
+            }
+          }
+
+          // Determine if we should zoom in: ONLY on the first location acquisition!
+          const shouldFlyTo = !hasZoomedToGPS;
+          if (shouldFlyTo) {
+            hasZoomedToGPS = true;
+          }
+
+          // Update Map: render marker & blue dot, flyTo only once
+          if (window.app && window.app.mapController && window.app.mapController.renderUserLocation) {
+            window.app.mapController.renderUserLocation(lastUserPos, { flyTo: shouldFlyTo });
+          } else if (window.L && window.app && window.app.mapController && window.app.mapController.map) {
+            const map = window.app.mapController.map;
+            if (shouldFlyTo) {
+              map.flyTo([lat, lng], 13, { duration: 1.4 });
+            }
+          }
+        };
+
+        const handleError = function(err) {
+          console.warn("GPS error:", err);
+          if (gpsBtnLabel) gpsBtnLabel.textContent = "Live GPS";
+          if (err.code === 1) {
+            alert("Location permission was denied in your browser. You can still explore the interactive map manually.");
+          } else {
+            alert("Unable to acquire live GPS fix (" + err.message + ").");
+          }
+        };
+
+        navigator.geolocation.getCurrentPosition(handleSuccess, handleError, { enableHighAccuracy: true, timeout: 12000 });
+        fallbackWatchId = navigator.geolocation.watchPosition(handleSuccess, handleError, { enableHighAccuracy: true, timeout: 15000, maximumAge: 4000 });
+      }
+
+      function stopUserGPS() {
+        hasZoomedToGPS = false;
+        if (fallbackWatchId !== null) {
+          navigator.geolocation.clearWatch(fallbackWatchId);
+          fallbackWatchId = null;
+        }
+        if (window.gpsService) {
+          window.gpsService.stopTracking();
+        }
+        if (gpsHud) gpsHud.classList.add('hidden');
+        if (gpsActiveDot) gpsActiveDot.classList.add('hidden');
+        if (gpsBtn) {
+          gpsBtn.classList.remove('border-cyan-400', 'text-cyan-300', 'bg-cyan-950/40');
+        }
+        if (window.app && window.app.mapController && window.app.mapController.clearUserLocation) {
+          window.app.mapController.clearUserLocation();
+        }
+        lastUserPos = null;
+      }
+
+      function recenterUserGPS() {
+        if (lastUserPos && window.app && window.app.mapController && window.app.mapController.map) {
+          window.app.mapController.map.flyTo([lastUserPos.lat, lastUserPos.lng], 13, { duration: 1.2 });
+        } else {
+          hasZoomedToGPS = false;
+          requestUserGPS();
+        }
+      }
+
+      window.requestUserGPS = requestUserGPS;
+      window.confirmUserGPS = confirmUserGPS;
+      window.closeGPSPermissionModal = closeGPSPermissionModal;
+      window.stopUserGPS = stopUserGPS;
+      window.recenterUserGPS = recenterUserGPS;
 
       // Side Menu Drawer & Tab Controller (Guarantees instant slide-in & tab navigation in all environments)
       const sideDrawer = document.getElementById('side-menu-drawer');
@@ -1861,7 +2408,8 @@
           e.preventDefault();
           e.stopPropagation();
         }
-        if (sideDrawer && (sideDrawer.classList.contains('drawer-open') || sideDrawer.classList.contains('translate-x-0'))) {
+        if (gpsModal && !gpsModal.classList.contains('hidden')) { closeGPSPermissionModal(); }
+          if (sideDrawer && (sideDrawer.classList.contains('drawer-open') || sideDrawer.classList.contains('translate-x-0'))) {
           closeSideMenu();
         } else {
           openSideMenu();
@@ -2088,14 +2636,19 @@
         if (theme === 'light') {
           document.body.classList.add('light-theme');
           document.documentElement.classList.remove('dark');
+          document.documentElement.classList.add('light-theme');
           if (themeIcon) themeIcon.setAttribute('data-lucide', 'moon');
         } else {
           document.body.classList.remove('light-theme');
+          document.documentElement.classList.remove('light-theme');
           document.documentElement.classList.add('dark');
           if (themeIcon) themeIcon.setAttribute('data-lucide', 'sun');
         }
         localStorage.setItem('raksha_theme', theme);
         if (window.lucide) window.lucide.createIcons();
+        if (window.app && window.app.mapController && window.app.mapController.setBaseLayer) {
+          window.app.mapController.setBaseLayer(theme === 'light' ? 'street' : 'dark');
+        }
       }
 
       const savedTheme = localStorage.getItem('raksha_theme') || 'dark';
@@ -2116,6 +2669,1867 @@
       if (window.lucide) {
         window.lucide.createIcons();
       }
+    
+
+      // =======================================================================
+      // CITY FILTER & DUAL RED/GREEN ZONE INTELLIGENCE CONTROLLER
+      // =======================================================================
+      let currentCityFilter = null;
+
+      function toggleCityFilterDropdown() {
+        const menu = document.getElementById('city-filter-menu');
+        const chevron = document.getElementById('city-filter-chevron');
+        if (!menu) return;
+        const isClosed = menu.classList.contains('hidden');
+        if (isClosed) {
+          menu.classList.remove('hidden');
+          if (chevron) chevron.classList.add('rotate-180');
+        } else {
+          menu.classList.add('hidden');
+          if (chevron) chevron.classList.remove('rotate-180');
+        }
+        if (window.lucide) window.lucide.createIcons();
+      }
+
+      function selectCityFilter(cityId, options) {
+        options = options || {};
+        const cities = window.CITY_INTELLIGENCE_DATA || [];
+        const target = cities.find(function(c) { return c.id === cityId; });
+        if (!target) {
+          console.warn("City not found:", cityId);
+          return;
+        }
+
+        currentCityFilter = target;
+
+        // Close dropdown
+        const menu = document.getElementById('city-filter-menu');
+        const chevron = document.getElementById('city-filter-chevron');
+        if (menu) menu.classList.add('hidden');
+        if (chevron) chevron.classList.remove('rotate-180');
+
+        // Update button label
+        const label = document.getElementById('city-filter-label');
+        if (label) label.textContent = target.name;
+
+        const btn = document.getElementById('city-filter-btn');
+        if (btn) btn.classList.add('border-amber-400', 'text-amber-300', 'bg-amber-950/40');
+
+        // Update Top-Right Zone Intelligence Button
+        const intelBtnText = document.getElementById('zone-intel-btn-text');
+        const intelBtnBadge = document.getElementById('zone-intel-btn-badge');
+        const intelToggleBtn = document.getElementById('zone-intel-toggle-btn');
+        if (intelBtnText) {
+          intelBtnText.innerHTML = '<span class="text-red-400 font-bold">🔴 ' + target.name + '</span> <span class="text-zinc-400">&amp;</span> <span class="text-emerald-400 font-bold">Safe Haven</span>';
+        }
+        if (intelBtnBadge && target.evacuationPaths) {
+          intelBtnBadge.textContent = target.evacuationPaths.length + ' Routes';
+        }
+        if (intelToggleBtn) {
+          intelToggleBtn.classList.add('ring-2', 'ring-red-500/40', 'border-red-400');
+        }
+
+        // Render in MapController (do not auto-open map popups to keep map screen clear)
+        if (window.app && window.app.mapController && window.app.mapController.renderCityIntelligence) {
+          window.app.mapController.renderCityIntelligence(target, { flyTo: true, autoOpenPopups: false });
+        } else if (window.standaloneMapController && window.standaloneMapController.renderCityIntelligence) {
+          window.standaloneMapController.renderCityIntelligence(target, { flyTo: true, autoOpenPopups: false });
+        } else if (window.L && window.map) {
+          window.map.flyTo([target.lat, target.lng], 12);
+        }
+
+        // Populate modal data and relocation tab
+        renderDualCityDock(target, { openModal: !!options.openModal });
+
+        if (window.lucide) window.lucide.createIcons();
+      }
+
+      function clearCityFilter() {
+        currentCityFilter = null;
+        const menu = document.getElementById('city-filter-menu');
+        const chevron = document.getElementById('city-filter-chevron');
+        if (menu) menu.classList.add('hidden');
+        if (chevron) chevron.classList.remove('rotate-180');
+
+        const label = document.getElementById('city-filter-label');
+        if (label) label.textContent = "Filter City";
+
+        const btn = document.getElementById('city-filter-btn');
+        if (btn) btn.classList.remove('border-amber-400', 'text-amber-300', 'bg-amber-950/40');
+
+        const intelBtnText = document.getElementById('zone-intel-btn-text');
+        const intelBtnBadge = document.getElementById('zone-intel-btn-badge');
+        const intelToggleBtn = document.getElementById('zone-intel-toggle-btn');
+        if (intelBtnText) {
+          intelBtnText.innerHTML = '<span class="text-red-400 font-bold">🔴 Red</span> <span class="text-zinc-400">&amp;</span> <span class="text-emerald-400 font-bold">🟢 Safe Zones</span>';
+        }
+        if (intelBtnBadge) intelBtnBadge.textContent = '3 Routes';
+        if (intelToggleBtn) intelToggleBtn.classList.remove('ring-2', 'ring-red-500/40', 'border-red-400', 'active');
+
+        if (window.app && window.app.mapController && window.app.mapController.clearCityIntelligence) {
+          window.app.mapController.clearCityIntelligence();
+        } else if (window.standaloneMapController && window.standaloneMapController.clearCityIntelligence) {
+          window.standaloneMapController.clearCityIntelligence();
+        }
+
+        closeZoneIntelModal();
+      }
+
+      function toggleZoneIntelModal() {
+        const dock = document.getElementById('dual-city-intelligence-dock');
+        const backdrop = document.getElementById('zone-intel-backdrop');
+        const btn = document.getElementById('zone-intel-toggle-btn');
+        if (!dock) return;
+
+        const isHidden = dock.classList.contains('hidden');
+        if (isHidden) {
+          // If no city selected yet, default to first city (Joshimath)
+          if (!currentCityFilter) {
+            const cities = window.CITY_INTELLIGENCE_DATA || [];
+            if (cities.length > 0) {
+              selectCityFilter(cities[0].id, { openModal: true });
+              return;
+            }
+          }
+          dock.classList.remove('hidden');
+          if (backdrop) backdrop.classList.remove('hidden');
+          if (btn) btn.classList.add('active', 'border-emerald-400');
+        } else {
+          closeZoneIntelModal();
+        }
+      }
+
+      function closeZoneIntelModal() {
+        const dock = document.getElementById('dual-city-intelligence-dock');
+        const backdrop = document.getElementById('zone-intel-backdrop');
+        const btn = document.getElementById('zone-intel-toggle-btn');
+        if (dock) dock.classList.add('hidden');
+        if (backdrop) backdrop.classList.add('hidden');
+        if (btn) btn.classList.remove('active', 'border-emerald-400');
+      }
+
+      function closeDualCityDock() {
+        closeZoneIntelModal();
+      }
+
+      function zoomToCityRedZone() {
+        if (currentCityFilter) {
+          if (window.app && window.app.mapController && window.app.mapController.zoomToCityRedZone) {
+            window.app.mapController.zoomToCityRedZone(currentCityFilter);
+          } else if (window.standaloneMapController && window.standaloneMapController.zoomToCityRedZone) {
+            window.standaloneMapController.zoomToCityRedZone(currentCityFilter);
+          }
+          closeZoneIntelModal();
+        }
+      }
+
+      function zoomToCityGreenZone() {
+        if (currentCityFilter) {
+          if (window.app && window.app.mapController && window.app.mapController.zoomToCityGreenZone) {
+            window.app.mapController.zoomToCityGreenZone(currentCityFilter);
+          } else if (window.standaloneMapController && window.standaloneMapController.zoomToCityGreenZone) {
+            window.standaloneMapController.zoomToCityGreenZone(currentCityFilter);
+          }
+          closeZoneIntelModal();
+        }
+      }
+
+      function renderDualCityDock(cityData, options) {
+        options = options || {};
+        const dock = document.getElementById('dual-city-intelligence-dock');
+        const backdrop = document.getElementById('zone-intel-backdrop');
+        if (!dock) return;
+
+        if (options.openModal) {
+          dock.classList.remove('hidden');
+          if (backdrop) backdrop.classList.remove('hidden');
+        }
+
+        // City details
+        const cName = document.getElementById('dock-city-name');
+        const cContext = document.getElementById('dock-city-context');
+        if (cName) cName.textContent = cityData.name + ', ' + cityData.state;
+        if (cContext) cContext.textContent = 'Elev: ' + cityData.elevation + ' • ' + cityData.district;
+
+        // Red Zone details
+        const rDist = document.getElementById('dock-red-dist');
+        const rName = document.getElementById('dock-red-name');
+        const rMeta = document.getElementById('dock-red-meta');
+        const rList = document.getElementById('dock-red-hazards-list');
+
+        if (rDist) rDist.textContent = cityData.closestRedZone.distanceKm + ' km away (' + cityData.closestRedZone.bearing + ')';
+        if (rName) rName.textContent = cityData.closestRedZone.name;
+        if (rMeta) rMeta.textContent = cityData.closestRedZone.hazardType + ' • Risk: ' + Math.round(cityData.closestRedZone.hazardScore * 100) + '% • Pop: ' + cityData.closestRedZone.populationAtRisk.toLocaleString();
+
+        if (rList && cityData.closestRedZone.pastHazards) {
+          rList.innerHTML = cityData.closestRedZone.pastHazards.map(function(h) {
+            return '<div class="bg-red-950/40 border border-red-500/25 rounded-xl p-2 text-[11px]">' +
+              '<div class="flex items-center justify-between font-bold text-red-300 text-[10px] mb-0.5">' +
+                '<span class="px-1.5 py-0.5 rounded bg-red-500/25 text-red-200">' + h.date + '</span>' +
+                '<span class="text-zinc-300 truncate max-w-[180px]">' + h.event + '</span>' +
+              '</div>' +
+              '<div class="text-[10px] text-zinc-200 leading-snug mt-1">' +
+                '<span class="text-red-400 font-semibold">Impact:</span> ' + h.affected +
+              '</div>' +
+            '</div>';
+          }).join('');
+        }
+
+        // Green Safe Haven details
+        const gDist = document.getElementById('dock-green-dist');
+        const gName = document.getElementById('dock-green-name');
+        const gMeta = document.getElementById('dock-green-meta');
+        const gShelters = document.getElementById('dock-green-shelters-list');
+        const gContacts = document.getElementById('dock-green-contacts-list');
+
+        if (gDist) gDist.textContent = cityData.closestGreenZone.distanceKm + ' km via ' + cityData.closestGreenZone.transitRoute;
+        if (gName) gName.textContent = cityData.closestGreenZone.name;
+        if (gMeta) gMeta.textContent = 'Carrying Headroom: +' + cityData.closestGreenZone.availableCapacityHeadroom.toLocaleString() + ' Beds • ' + cityData.closestGreenZone.infrastructureRating;
+
+        if (gShelters && cityData.closestGreenZone.safeHouses) {
+          gShelters.innerHTML = cityData.closestGreenZone.safeHouses.map(function(sh) {
+            return '<div class="bg-emerald-950/40 border border-emerald-500/25 rounded-xl p-2 text-[11px]">' +
+              '<div class="flex items-center justify-between font-bold text-white mb-0.5">' +
+                '<span class="truncate max-w-[200px]">' + sh.name + '</span>' +
+                '<span class="px-1.5 py-0.2 rounded bg-emerald-500/25 text-emerald-300 text-[10px] font-mono shrink-0">' + sh.availableBeds + ' / ' + sh.capacity + '</span>' +
+              '</div>' +
+              '<div class="text-[10px] text-zinc-300 leading-snug mt-0.5">' +
+                '<span class="text-emerald-400 font-medium">Amenities:</span> ' + sh.amenities +
+              '</div>' +
+            '</div>';
+          }).join('');
+        }
+
+        if (gContacts && cityData.closestGreenZone.emergencyContacts) {
+          gContacts.innerHTML = cityData.closestGreenZone.emergencyContacts.map(function(c) {
+            return '<a href="tel:' + c.tel + '" class="p-1.5 rounded-lg bg-white/[0.04] hover:bg-white/[0.10] border border-white/10 flex flex-col transition-all group cursor-pointer" title="Call ' + c.role + '">' +
+              '<span class="text-zinc-400 truncate text-[9px]">' + c.role + '</span>' +
+              '<span class="font-bold text-emerald-400 group-hover:text-emerald-300 font-mono text-[10px] flex items-center gap-1">' +
+                '<span>📞</span> ' + c.contact +
+              '</span>' +
+            '</a>';
+          }).join('');
+        }
+
+        // =====================================================================
+        // RENDER EVACUATION CORRIDORS SWITCHER PILLS & ACTIVE TELEMETRY
+        // =====================================================================
+        const pathsContainer = document.getElementById('dock-evac-pills-container');
+        const paths = cityData.evacuationPaths || [];
+        const countBadge = document.getElementById('dock-corridor-count');
+        if (countBadge) countBadge.textContent = paths.length + ' Routes Mapped';
+
+        if (pathsContainer && paths.length > 0) {
+          let pillsHtml = `
+            <button onclick="window.selectEvacuationPath && window.selectEvacuationPath('all')" id="evac-pill-all" class="evac-route-pill active-all px-2 py-1.5 rounded-lg border border-blue-500/40 bg-blue-950/30 text-blue-300 text-[10px] font-bold flex items-center justify-center gap-1 text-center transition-all cursor-pointer">
+              <span>🌐</span> <span>All ${paths.length} Paths</span>
+            </button>
+          `;
+
+          paths.forEach(function(p, idx) {
+            const isPrimary = p.type === 'PRIMARY_HIGHWAY';
+            const isSecondary = p.type === 'SECONDARY_BYPASS';
+            const pillIcon = isPrimary ? '🟢' : isSecondary ? '🟡' : '🟣';
+            const shortLabel = isPrimary ? 'Primary Hwy' : isSecondary ? 'Ridge Bypass' : 'Tactical Evac';
+
+            pillsHtml += `
+              <button onclick="window.selectEvacuationPath && window.selectEvacuationPath('${p.id}')" id="evac-pill-${p.id}" class="evac-route-pill px-2 py-1.5 rounded-lg border border-white/10 bg-white/[0.04] hover:bg-white/[0.08] text-white text-[10px] font-semibold flex items-center justify-between gap-1 transition-all cursor-pointer truncate" title="${p.name} (${p.distanceKm} km, ${p.estimatedMinutes}m)">
+                <span class="truncate flex items-center gap-1"><span>${pillIcon}</span> <span>${shortLabel}</span></span>
+                <span class="text-[9px] font-mono shrink-0 opacity-80">${p.distanceKm}k</span>
+              </button>
+            `;
+          });
+
+          pathsContainer.innerHTML = pillsHtml;
+
+          // Render active route details card
+          renderActiveRouteStrip(cityData, 'all');
+        }
+
+        // =====================================================================
+        // RENDER SIDE MENU RELOCATION TAB MATRIX
+        // =====================================================================
+        renderRelocationTabCorridors(cityData);
+
+        if (window.lucide) window.lucide.createIcons();
+      }
+
+      function selectEvacuationPath(pathId) {
+        if (!currentCityFilter || !currentCityFilter.evacuationPaths) return;
+        const paths = currentCityFilter.evacuationPaths;
+
+        // Update pill active styles
+        const allPills = document.querySelectorAll('.evac-route-pill');
+        allPills.forEach(function(pill) {
+          pill.className = 'evac-route-pill px-2 py-1.5 rounded-lg border border-white/10 bg-white/[0.04] hover:bg-white/[0.08] text-white text-[10px] font-semibold flex items-center justify-between gap-1 transition-all cursor-pointer truncate';
+        });
+
+        const activePill = document.getElementById(pathId === 'all' ? 'evac-pill-all' : 'evac-pill-' + pathId);
+        if (activePill) {
+          if (pathId === 'all') {
+            activePill.className = 'evac-route-pill active-all px-2 py-1.5 rounded-lg border border-blue-500/80 bg-blue-950/40 text-blue-300 text-[10px] font-bold flex items-center justify-center gap-1 text-center transition-all cursor-pointer ring-1 ring-blue-500/40';
+          } else {
+            const targetPath = paths.find(function(p) { return p.id === pathId; });
+            const pType = targetPath ? targetPath.type : '';
+            const activeClass = pType === 'PRIMARY_HIGHWAY' ? 'active-primary ring-1 ring-emerald-500/40' : pType === 'SECONDARY_BYPASS' ? 'active-secondary ring-1 ring-amber-500/40' : 'active-tactical ring-1 ring-purple-500/40';
+            activePill.className = 'evac-route-pill ' + activeClass + ' px-2 py-1.5 rounded-lg border text-[10px] font-bold flex items-center justify-between gap-1 transition-all cursor-pointer truncate';
+          }
+        }
+
+        // Update map
+        if (window.app && window.app.mapController && window.app.mapController.focusEvacuationPath) {
+          window.app.mapController.focusEvacuationPath(pathId);
+        } else if (window.standaloneMapController && window.standaloneMapController.focusEvacuationPath) {
+          window.standaloneMapController.focusEvacuationPath(pathId);
+        }
+
+        // Update strip
+        renderActiveRouteStrip(currentCityFilter, pathId);
+
+        if (window.lucide) window.lucide.createIcons();
+      }
+
+      function renderActiveRouteStrip(cityData, pathId) {
+        const strip = document.getElementById('dock-active-route-strip');
+        if (!strip || !cityData || !cityData.evacuationPaths) return;
+
+        const paths = cityData.evacuationPaths;
+
+        if (pathId === 'all') {
+          strip.innerHTML = `
+            <div class="flex items-center justify-between text-zinc-300">
+              <span class="font-bold text-white flex items-center gap-1.5">
+                <span class="w-2 h-2 rounded-full bg-blue-400"></span>
+                <span>Multi-Tier Evacuation Overview: 3 Feasible Corridors</span>
+              </span>
+              <span class="text-zinc-400 font-mono text-[9px]">SDRF & NDMA Validated</span>
+            </div>
+            <div class="grid grid-cols-3 gap-2 text-[9px] pt-1 border-t border-white/5">
+              <div class="p-1.5 rounded bg-white/[0.02] border border-white/5 cursor-pointer hover:bg-white/[0.06]" onclick="window.selectEvacuationPath('${paths[0].id}')">
+                <div class="text-emerald-400 font-bold">🟢 ${paths[0].tierLabel}</div>
+                <div class="text-zinc-300 font-mono">${paths[0].distanceKm} km • ${paths[0].estimatedMinutes}m • ${paths[0].throughputPerHour} p/h</div>
+              </div>
+              <div class="p-1.5 rounded bg-white/[0.02] border border-white/5 cursor-pointer hover:bg-white/[0.06]" onclick="window.selectEvacuationPath('${paths[1].id}')">
+                <div class="text-amber-400 font-bold">🟡 ${paths[1].tierLabel}</div>
+                <div class="text-zinc-300 font-mono">${paths[1].distanceKm} km • ${paths[1].estimatedMinutes}m • ${paths[1].throughputPerHour} p/h</div>
+              </div>
+              <div class="p-1.5 rounded bg-white/[0.02] border border-white/5 cursor-pointer hover:bg-white/[0.06]" onclick="window.selectEvacuationPath('${paths[2].id}')">
+                <div class="text-purple-400 font-bold">🟣 ${paths[2].tierLabel}</div>
+                <div class="text-zinc-300 font-mono">${paths[2].distanceKm} km • ${paths[2].estimatedMinutes}m • ${paths[2].throughputPerHour} p/h</div>
+              </div>
+            </div>
+          `;
+          return;
+        }
+
+        const path = paths.find(function(p) { return p.id === pathId; });
+        if (!path) return;
+
+        const color = path.color || '#10b981';
+        const chokesHtml = (path.chokePoints || []).map(function(cp) {
+          return `<span class="px-1.5 py-0.5 rounded bg-white/10 text-white font-mono text-[9px] flex items-center gap-1" title="${cp.desc}">
+                    <span>${cp.icon || '📍'}</span> <span>KM ${cp.km}: ${cp.name}</span>
+                  </span>`;
+        }).join(' ');
+
+        strip.innerHTML = `
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full" style="background:${color}"></span>
+              <span class="font-bold text-white text-xs">${path.name}</span>
+              <span class="px-2 py-0.2 rounded-full text-[9px] font-bold ${path.statusBadge}">${path.status}</span>
+            </div>
+            <div class="font-mono text-zinc-300 text-[10px] flex items-center gap-2">
+              <span>Dist: <b class="text-white">${path.distanceKm} km</b></span>
+              <span>ETA: <b class="text-white">${path.estimatedMinutes} min</b></span>
+              <span>Throughput: <b class="text-emerald-400">${path.throughputPerHour} pers/hr</b></span>
+            </div>
+          </div>
+          <div class="text-zinc-300 leading-snug">${path.description}</div>
+          <div class="flex flex-wrap items-center justify-between gap-1 pt-1 border-t border-white/5 text-[9px]">
+            <div class="flex items-center gap-1 text-zinc-400">
+              <span class="font-bold text-zinc-300">Authorized Modes:</span>
+              <span>${path.transitMode}</span>
+            </div>
+            <div class="flex items-center gap-1">
+              <span class="text-amber-400 font-bold">Milestones & Choke Points:</span>
+              <div class="flex flex-wrap gap-1">${chokesHtml}</div>
+            </div>
+          </div>
+        `;
+      }
+
+      function renderRelocationTabCorridors(cityData) {
+        const listContainer = document.getElementById('tab-relocation-corridors-list');
+        const countBadge = document.getElementById('tab-reloc-corridor-count');
+        if (!listContainer || !cityData || !cityData.evacuationPaths) return;
+
+        const paths = cityData.evacuationPaths;
+        if (countBadge) countBadge.textContent = paths.length + ' Routes Mapped (' + cityData.name + ')';
+
+        listContainer.innerHTML = paths.map(function(p) {
+          const color = p.color || '#10b981';
+          const isPrimary = p.type === 'PRIMARY_HIGHWAY';
+          const isSecondary = p.type === 'SECONDARY_BYPASS';
+          const icon = isPrimary ? '🟢' : isSecondary ? '🟡' : '🟣';
+
+          return `
+            <div class="p-3 rounded-xl bg-white/[0.03] border border-white/10 hover:border-white/20 transition-all space-y-2">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-1.5">
+                  <span>${icon}</span>
+                  <span class="font-bold text-white text-xs">${p.name}</span>
+                </div>
+                <span class="px-2 py-0.5 rounded-full text-[9px] font-bold ${p.statusBadge}">${p.status}</span>
+              </div>
+              <div class="grid grid-cols-3 gap-2 text-[10px] text-zinc-300 bg-black/30 p-2 rounded-lg border border-white/5">
+                <div>
+                  <div class="text-zinc-400 text-[9px]">Corridor Distance</div>
+                  <div class="font-bold text-white font-mono">${p.distanceKm} km</div>
+                </div>
+                <div>
+                  <div class="text-zinc-400 text-[9px]">Transit ETA</div>
+                  <div class="font-bold text-white font-mono">${p.estimatedMinutes} Minutes</div>
+                </div>
+                <div>
+                  <div class="text-zinc-400 text-[9px]">Max Evac Flow</div>
+                  <div class="font-bold text-emerald-400 font-mono">${p.throughputPerHour} pers/hr</div>
+                </div>
+              </div>
+              <div class="text-[10px] text-zinc-400 leading-snug">
+                <span class="text-zinc-300 font-semibold">Modes:</span> ${p.transitMode}
+              </div>
+              <div class="flex items-center justify-between pt-1 border-t border-white/5">
+                <span class="text-[9px] text-zinc-400">${p.chokePoints ? p.chokePoints.length : 0} Milestones Monitored</span>
+                <button onclick="window.selectEvacuationPath && window.selectEvacuationPath('${p.id}')" class="px-2.5 py-1 rounded-lg bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/30 text-[10px] font-bold flex items-center gap-1 transition-all cursor-pointer">
+                  <span>🗺️ Inspect Corridor</span>
+                </button>
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+
+      
+
+      window.toggleCityFilterDropdown = toggleCityFilterDropdown;
+      
+
+      // =======================================================================
+      // EMBEDDED CITY INTELLIGENCE DATA (Available in file:// and http://)
+      // =======================================================================
+      window.CITY_INTELLIGENCE_DATA = [
+  {
+    id: "CITY-JOSHIMATH",
+    name: "Joshimath",
+    district: "Chamoli",
+    state: "Uttarakhand",
+    lat: 30.5574,
+    lng: 79.5658,
+    elevation: "1,890m",
+    hazardContext: "Active Main Central Thrust (MCT) seismic belt, overburdened glacial moraine slope, accelerated InSAR subsidence.",
+    closestRedZone: {
+      id: "HAB-UK-01",
+      name: "Sunil & Manohar Bagh Subsidence Sector",
+      distanceKm: 0.8,
+      bearing: "North-East",
+      lat: 30.5585,
+      lng: 79.5680,
+      hazardType: "InSAR Land Subsidence & Seismic Zone V",
+      hazardScore: 0.94,
+      slope: "38°",
+      elevation: "1,890m",
+      populationAtRisk: 3420,
+      pastHazards: [
+        {
+          date: "January 2023",
+          event: "Rapid Land Subsidence & Fissure Surge",
+          affected: "2,800+ residents evacuated; 868 structures cracked; 181 houses condemned and razed"
+        },
+        {
+          date: "February 7, 2021",
+          event: "Chamoli / Rishiganga Glacial Flash Flood",
+          affected: "204 confirmed casualties; Tapovan tunnel flooded; 1,200 villagers isolated"
+        },
+        {
+          date: "March 29, 1999",
+          event: "Chamoli M6.8 Earthquake",
+          affected: "103 deaths, 395 injured; 4,700 homes destroyed across Chamoli-Joshimath"
+        },
+        {
+          date: "June 2013",
+          event: "Kedarnath-Alaknanda Multi-Valley Flood",
+          affected: "5,700+ deaths in state; Alaknanda inundation cut off Joshimath for 18 days"
+        }
+      ]
+    },
+    closestGreenZone: {
+      id: "SAFE-UK-01",
+      name: "Pipalkoti Resilient Township",
+      distanceKm: 14.2,
+      transitRoute: "NH-7 Paved All-Weather Corridor",
+      lat: 30.4350,
+      lng: 79.4380,
+      geology: "Solid Granitic Gneiss Bedrock (<11° Slope, Zero Liquefaction)",
+      carryingCapacityScore: 0.84,
+      availableCapacityHeadroom: 4200,
+      infrastructureRating: "88% Verified",
+      safeHouses: [
+        {
+          name: "Pipalkoti Municipal Disaster Relief Complex",
+          capacity: "1,200 Beds",
+          availableBeds: 850,
+          amenities: "Potable RO Water (25k L/day), 125 kVA Silent DG Set, Helipad Access, 20 Bio-Toilets"
+        },
+        {
+          name: "Govt Inter College Emergency Shelter",
+          capacity: "800 Beds",
+          availableBeds: 620,
+          amenities: "24/7 Community Kitchen Mess, Solar Power Microgrid, Child-Friendly Care Space"
+        },
+        {
+          name: "Alaknanda Community Center Relief Shelter",
+          capacity: "450 Beds",
+          availableBeds: 350,
+          amenities: "Trauma Stabilization Bay, Oxygen Concentrators, Satellite VSAT Terminal"
+        }
+      ],
+      emergencyContacts: [
+        { role: "DEOC Chamoli Control Room", contact: "01372-251077", tel: "01372251077" },
+        { role: "SDM / Incident Commander", name: "Dr. R. Nautiyal", contact: "+91 94120 78201", tel: "+919412078201" },
+        { role: "Chief Medical Officer (CHC)", contact: "01372-252200", tel: "01372252200" },
+        { role: "Disaster Helpline", contact: "1077 / 1070 (Toll-Free)", tel: "1077" }
+      ]
+    },
+    evacuationPaths: [
+      {
+        id: "PATH-JOSH-01",
+        name: "Primary Highway: NH-7 All-Weather Arterial",
+        type: "PRIMARY_HIGHWAY",
+        tierLabel: "Primary Corridor",
+        badge: "Paved Highway",
+        color: "#10b981",
+        dashArray: null,
+        weight: 4,
+        distanceKm: 14.2,
+        estimatedMinutes: 28,
+        throughputPerHour: 1400,
+        transitMode: "Evacuation Buses, Ambulances, SDRF Heavy Trucks, Water Tankers",
+        status: "Open - Paved",
+        statusBadge: "bg-emerald-500/20 text-emerald-300 border-emerald-500/30",
+        elevationProfile: "Descent 1,890m -> 1,260m (Average Gradient: 4.4%)",
+        description: "Direct double-lane paved national highway along the Alaknanda valley shelf. Cleared by BRO heavy dozers.",
+        chokePoints: [
+          { name: "Alaknanda Bridge Checkpoint", km: 4.2, lat: 30.5310, lng: 79.5380, icon: "🌉", desc: "Single-lane structural check; SDRF traffic marshals regulating convoy intervals." },
+          { name: "Helang Transit Staging Post", km: 8.5, lat: 30.5050, lng: 79.5020, icon: "🏥", desc: "Mobile medical triage camp and emergency fuel refill point." }
+        ],
+        waypoints: [
+          [30.5585, 79.5680],
+          [30.5574, 79.5658],
+          [30.5310, 79.5380],
+          [30.5050, 79.5020],
+          [30.4680, 79.4650],
+          [30.4350, 79.4380]
+        ]
+      },
+      {
+        id: "PATH-JOSH-02",
+        name: "Secondary Bypass: Helang-Urgam High-Ridge Route",
+        type: "SECONDARY_BYPASS",
+        tierLabel: "Alternative Bypass",
+        badge: "Elevated Ridge",
+        color: "#f59e0b",
+        dashArray: "8, 6",
+        weight: 3.5,
+        distanceKm: 18.6,
+        estimatedMinutes: 45,
+        throughputPerHour: 650,
+        transitMode: "Light Motor Vehicles (LMVs), 4x4 Off-Road Jeeps, Rapid Response Pickups",
+        status: "Active Caution",
+        statusBadge: "bg-amber-500/20 text-amber-300 border-amber-500/30",
+        elevationProfile: "Ridge Ascent: 1,890m -> 2,050m -> 1,260m",
+        description: "Bypasses the lower Alaknanda gorge. Traverses solid granitic spurs safe from riverbank undercut.",
+        chokePoints: [
+          { name: "Upper Auli Spur", km: 3.2, lat: 30.5720, lng: 79.5490, icon: "⛰️", desc: "High vantage radio repeater station and weather telemetry unit." },
+          { name: "Urgam Valley Hairpins", km: 9.1, lat: 30.5380, lng: 79.4950, icon: "⚠️", desc: "Steep 16% gradient; strictly restricted to 4x4 and LMVs." }
+        ],
+        waypoints: [
+          [30.5585, 79.5680],
+          [30.5720, 79.5490],
+          [30.5380, 79.4950],
+          [30.4910, 79.4580],
+          [30.4520, 79.4450],
+          [30.4350, 79.4380]
+        ]
+      },
+      {
+        id: "PATH-JOSH-03",
+        name: "Tactical Emergency Corridor: Auli Crest Trail & Air-Bridge",
+        type: "TACTICAL_EMERGENCY",
+        tierLabel: "Emergency Fallback",
+        badge: "Air-Bridge / Foot Trail",
+        color: "#a855f7",
+        dashArray: "4, 6",
+        weight: 3,
+        distanceKm: 11.5,
+        estimatedMinutes: 140,
+        throughputPerHour: 250,
+        transitMode: "Foot Evacuation, Mule Convoys, IAF Mi-17 Air-Lift, Medical Drones",
+        status: "Emergency Only",
+        statusBadge: "bg-purple-500/20 text-purple-300 border-purple-500/30",
+        elevationProfile: "Mountain Trail & Air Corridor",
+        description: "Non-motorized emergency route activated when all highways are severed by seismic displacement.",
+        chokePoints: [
+          { name: "Auli GREF Helipad", km: 3.5, lat: 30.5420, lng: 79.5820, icon: "🚁", desc: "IAF Mi-17 / ALH Dhruv air-evacuation pad with 24-bed mobile trauma tent." },
+          { name: "Birahi River Suspension Footbridge", km: 8.8, lat: 30.5050, lng: 79.5480, icon: "🌉", desc: "Pedestrian only. Maximum static load capacity: 40 persons per crossing." }
+        ],
+        waypoints: [
+          [30.5585, 79.5680],
+          [30.5420, 79.5820],
+          [30.5050, 79.5480],
+          [30.4680, 79.4890],
+          [30.4350, 79.4380]
+        ]
+      }
+    ]
+  },
+  {
+    id: "CITY-WAYANAD",
+    name: "Meppadi (Wayanad)",
+    district: "Wayanad",
+    state: "Kerala",
+    lat: 11.5516,
+    lng: 76.1264,
+    elevation: "980m",
+    hazardContext: "Steep Western Ghats escarpment, 42° slope, heavy monsoon debris runoff.",
+    closestRedZone: {
+      id: "HAB-KL-02",
+      name: "Chooralmala & Mundakkai Debris Fan",
+      distanceKm: 0.6,
+      bearing: "South-East",
+      lat: 11.5284,
+      lng: 76.1685,
+      hazardType: "Debris Flow & Slope Failure",
+      hazardScore: 0.92,
+      slope: "42°",
+      elevation: "980m",
+      populationAtRisk: 4150,
+      pastHazards: [
+        {
+          date: "July 30, 2024",
+          event: "Chooralmala-Mundakkai Landslide Surge",
+          affected: "420+ deaths and missing; 3,500+ residents displaced; Vellarmala school and village erased"
+        },
+        {
+          date: "August 8, 2019",
+          event: "Puthumala Landslide Collapse",
+          affected: "17 killed, 5 missing; 50+ houses destroyed; 1,200 plantation workers evacuated"
+        },
+        {
+          date: "August 2018",
+          event: "Great Kerala Flood & Slope Runoff",
+          affected: "483 deaths statewide; 1.45M people sheltered across 3,000+ relief camps"
+        }
+      ]
+    },
+    closestGreenZone: {
+      id: "SAFE-KL-02",
+      name: "Nedumbala Uplands / Kalpetta Center",
+      distanceKm: 18.6,
+      transitRoute: "SH-59 Paved State Highway Corridor",
+      lat: 11.5540,
+      lng: 76.2210,
+      geology: "Laterite Bedrock Plateau (<8° Slope, Non-Debris Fan)",
+      carryingCapacityScore: 0.86,
+      availableCapacityHeadroom: 5100,
+      infrastructureRating: "90% Verified",
+      safeHouses: [
+        {
+          name: "Nedumbala Disaster Community Center",
+          capacity: "1,500 Beds",
+          availableBeds: 1100,
+          amenities: "Potable Spring Filtration (30k L/day), 150 kVA DG Generator, 24/7 Dining Hall"
+        },
+        {
+          name: "Kalpetta St. Joseph Relief Shelter",
+          capacity: "950 Beds",
+          availableBeds: 720,
+          amenities: "12-Bed Emergency Trauma Unit, 4 Dedicated Ambulance Bays, Clean Water Storage"
+        },
+        {
+          name: "Vythiri Civil Defense Camp",
+          capacity: "700 Beds",
+          availableBeds: 500,
+          amenities: "10-Day Ration Reserves, Infant Nutrition Desk, Trauma Counseling Station"
+        }
+      ],
+      emergencyContacts: [
+        { role: "DDMA Wayanad Control Room", contact: "04936-204151", tel: "04936204151" },
+        { role: "Deputy Collector / Incident Commander", name: "K. S. Narayanan", contact: "+91 94470 29330", tel: "+919447029330" },
+        { role: "Taluk Hospital Emergency", contact: "04936-202245", tel: "04936202245" },
+        { role: "Kerala Disaster Helpline", contact: "1077 / 112", tel: "1077" }
+      ]
+    },
+    evacuationPaths: [
+      {
+        id: "PATH-WAYA-01",
+        name: "Primary Highway: SH-59 Meppadi-Kalpetta Corridor",
+        type: "PRIMARY_HIGHWAY",
+        tierLabel: "Primary Arterial",
+        badge: "State Highway",
+        color: "#10b981",
+        dashArray: null,
+        weight: 4,
+        distanceKm: 18.6,
+        estimatedMinutes: 32,
+        throughputPerHour: 1200,
+        transitMode: "KSRTC Evacuation Buses, Emergency Ambulances, NDRF Heavy Logistics",
+        status: "Open - Paved",
+        statusBadge: "bg-emerald-500/20 text-emerald-300 border-emerald-500/30",
+        elevationProfile: "Descent from Western Ghats Escarpment to Plateau (Slope < 6%)",
+        description: "Main arterial state highway connecting Chooralmala and Meppadi to district headquarters at Kalpetta.",
+        chokePoints: [
+          { name: "Meppadi Central Junction", km: 4.8, lat: 11.5516, lng: 76.1264, icon: "🚦", desc: "Traffic bottleneck; Kerala Police Quick Reaction Team deployed." },
+          { name: "Chundale Bridge Checkpoint", km: 12.2, lat: 11.5650, lng: 76.1780, icon: "🌉", desc: "Flood clearance monitoring station over Kabini tributary." }
+        ],
+        waypoints: [
+          [11.5284, 76.1685],
+          [11.5420, 76.1450],
+          [11.5516, 76.1264],
+          [11.5650, 76.1780],
+          [11.5540, 76.2210]
+        ]
+      },
+      {
+        id: "PATH-WAYA-02",
+        name: "Secondary Bypass: Rippon-Kottappadi Ridge Route",
+        type: "SECONDARY_BYPASS",
+        tierLabel: "High Ridge Bypass",
+        badge: "Plantation Ridge",
+        color: "#f59e0b",
+        dashArray: "8, 6",
+        weight: 3.5,
+        distanceKm: 22.4,
+        estimatedMinutes: 48,
+        throughputPerHour: 550,
+        transitMode: "4x4 Emergency Jeeps, Light Vehicles, Minibuses",
+        status: "Active Caution",
+        statusBadge: "bg-amber-500/20 text-amber-300 border-amber-500/30",
+        elevationProfile: "Elevated Tea Estate Ridge (Elev: 1,020m)",
+        description: "Elevated route traversing tea garden ridge spurs. Bypasses lower stream beds vulnerable to flash flooding.",
+        chokePoints: [
+          { name: "Rippon Estate Gate", km: 6.8, lat: 11.5120, lng: 76.1820, icon: "🚧", desc: "Gated plantation road; SDRF escort mandated during heavy rain." },
+          { name: "Kottappadi High Culvert", km: 16.5, lat: 11.5350, lng: 76.2100, icon: "⚠️", desc: "Single-lane concrete culvert; weight restriction 10 tonnes." }
+        ],
+        waypoints: [
+          [11.5284, 76.1685],
+          [11.5120, 76.1820],
+          [11.5350, 76.2100],
+          [11.5620, 76.2380],
+          [11.5540, 76.2210]
+        ]
+      },
+      {
+        id: "PATH-WAYA-03",
+        name: "Tactical Emergency Corridor: Army Bailey Bridge & Forest Trail",
+        type: "TACTICAL_EMERGENCY",
+        tierLabel: "Emergency Tactical",
+        badge: "Bailey Bridge & Trail",
+        color: "#a855f7",
+        dashArray: "4, 6",
+        weight: 3,
+        distanceKm: 13.8,
+        estimatedMinutes: 120,
+        throughputPerHour: 300,
+        transitMode: "Army 4x4 Stallions, Rescue Tractors, Stretcher Foot Patrols, Drone Air-Drop",
+        status: "Emergency Only",
+        statusBadge: "bg-purple-500/20 text-purple-300 border-purple-500/30",
+        elevationProfile: "Forest Canopy & Riverbed Crossing",
+        description: "Engineered military emergency corridor featuring the 190ft Bailey Bridge constructed by Madras Sappers.",
+        chokePoints: [
+          { name: "Vellarmala Army Bailey Bridge", km: 1.8, lat: 11.5320, lng: 76.1750, icon: "🌉", desc: "Indian Army 24-tonne Class 40 Bailey bridge across Iruvanipuzha river." },
+          { name: "Nedumbala Forest Staging Post", km: 9.5, lat: 11.5450, lng: 76.1950, icon: "🏕️", desc: "Disaster management triage tent and oxygen refilling center." }
+        ],
+        waypoints: [
+          [11.5284, 76.1685],
+          [11.5320, 76.1750],
+          [11.5450, 76.1950],
+          [11.5540, 76.2210]
+        ]
+      }
+    ]
+  },
+  {
+    id: "CITY-MAJULI",
+    name: "Majuli Island",
+    district: "Majuli",
+    state: "Assam",
+    lat: 26.9536,
+    lng: 94.2037,
+    elevation: "84m",
+    hazardContext: "Alluvial river island in Brahmaputra, high silt erosion, seasonal flood wave.",
+    closestRedZone: {
+      id: "HAB-AS-03",
+      name: "Salmora Riverbank Erosion Sector",
+      distanceKm: 1.4,
+      bearing: "South-West",
+      lat: 26.9380,
+      lng: 94.1820,
+      hazardType: "Brahmaputra Severe Inundation & Bank Breach",
+      hazardScore: 0.81,
+      slope: "2°",
+      elevation: "84m",
+      populationAtRisk: 5800,
+      pastHazards: [
+        {
+          date: "June–August 2022",
+          event: "Brahmaputra Super Flood Wave",
+          affected: "197 deaths in state; 58,000 Majuli islanders affected; 4,200 ha cropland inundated"
+        },
+        {
+          date: "July 2020",
+          event: "Brahmaputra High Inundation Stage",
+          affected: "3.3M affected in Assam; 32,000 livestock displaced on Majuli; 12 schools washed away"
+        },
+        {
+          date: "August 1950",
+          event: "M8.6 Great Assam Earthquake",
+          affected: "4,800 casualties; riverbed uplifted 3m; island area reduced from 1,250 to 500 km²"
+        }
+      ]
+    },
+    closestGreenZone: {
+      id: "SAFE-AS-03",
+      name: "Garamur Elevated Resettlement Sector",
+      distanceKm: 16.5,
+      transitRoute: "Kamalabari-Garamur Embankment Highway",
+      lat: 27.0120,
+      lng: 94.2480,
+      geology: "Engineered High-Embankment Silt-Clay (>4.5m Above HFL)",
+      carryingCapacityScore: 0.79,
+      availableCapacityHeadroom: 6500,
+      infrastructureRating: "82% Verified",
+      safeHouses: [
+        {
+          name: "Garamur Multipurpose Flood Shelter",
+          capacity: "2,000 Beds",
+          availableBeds: 1450,
+          amenities: "Stilt Elevation 4.5m above HFL, Automated Water Chlorination, 2 Rescue Speedboats"
+        },
+        {
+          name: "Kamalabari Model Disaster Hub",
+          capacity: "1,200 Beds",
+          availableBeds: 850,
+          amenities: "Solar Microgrid Power, 50,000 L Potable Storage, Community Wireless Transmitter"
+        },
+        {
+          name: "Sub-Divisional Civil Relief Center",
+          capacity: "800 Beds",
+          availableBeds: 650,
+          amenities: "Infant Care Ward, Emergency Medical Dispensary, Dry Grain Warehouse"
+        }
+      ],
+      emergencyContacts: [
+        { role: "Majuli DEOC Control Room", contact: "03775-274400", tel: "03775274400" },
+        { role: "SDO (Civil) / Incident Commander", name: "B. Kalita, ACS", contact: "+91 94350 48212", tel: "+919435048212" },
+        { role: "Garamur Civil Hospital Desk", contact: "03775-274222", tel: "03775274222" },
+        { role: "Assam Disaster Helpline", contact: "1070 / 1079", tel: "1070" }
+      ]
+    },
+    evacuationPaths: [
+      {
+        id: "PATH-MAJU-01",
+        name: "Primary Highway: Kamalabari-Garamur Embankment Road",
+        type: "PRIMARY_HIGHWAY",
+        tierLabel: "Primary Embankment",
+        badge: "Paved Embankment",
+        color: "#10b981",
+        dashArray: null,
+        weight: 4,
+        distanceKm: 16.5,
+        estimatedMinutes: 35,
+        throughputPerHour: 1100,
+        transitMode: "State Transport Buses, Government Relief Trucks, Tractors with Trailers",
+        status: "Operational",
+        statusBadge: "bg-emerald-500/20 text-emerald-300 border-emerald-500/30",
+        elevationProfile: "Engineered Embankment (+3.8m above surrounding floodplain)",
+        description: "Reinforced paved road built on the main flood control embankment with geo-textile sandbag armor.",
+        chokePoints: [
+          { name: "Kamalabari Sluice Gate Crossing", km: 5.2, lat: 26.9536, lng: 94.2037, icon: "🌊", desc: "Automated river stage monitoring sensor; water level advisory active." },
+          { name: "Dakhinpat Road Junction", km: 11.4, lat: 26.9820, lng: 94.2250, icon: "🚦", desc: "Convergence of North Majuli rural feeder routes." }
+        ],
+        waypoints: [
+          [26.9380, 94.1820],
+          [26.9536, 94.2037],
+          [26.9820, 94.2250],
+          [27.0120, 94.2480]
+        ]
+      },
+      {
+        id: "PATH-MAJU-02",
+        name: "Secondary Bypass: Jengraimukh North Canal Ring Road",
+        type: "SECONDARY_BYPASS",
+        tierLabel: "North Ring Bypass",
+        badge: "Inland Canal Road",
+        color: "#f59e0b",
+        dashArray: "8, 6",
+        weight: 3.5,
+        distanceKm: 21.0,
+        estimatedMinutes: 50,
+        throughputPerHour: 500,
+        transitMode: "4x4 Ambulances, Tractors, Pickups, Motorcycle Couriers",
+        status: "Active Caution",
+        statusBadge: "bg-amber-500/20 text-amber-300 border-amber-500/30",
+        elevationProfile: "Semi-Paved Canal Bank Road (+2.5m elevation)",
+        description: "Circumvents the eroding south riverbank. Provides safe transit even during high tidal surge in Brahmaputra.",
+        chokePoints: [
+          { name: "Jengraimukh Sluice Checkpoint", km: 8.1, lat: 26.9750, lng: 94.1850, icon: "🚧", desc: "Flood barrier gate; manned by Water Resources Dept technicians." },
+          { name: "North Majuli Bailey Culvert", km: 16.0, lat: 27.0250, lng: 94.2200, icon: "⚠️", desc: "Temporary steel decking; single-file vehicular passage." }
+        ],
+        waypoints: [
+          [26.9380, 94.1820],
+          [26.9250, 94.1550],
+          [26.9750, 94.1850],
+          [27.0250, 94.2200],
+          [27.0120, 94.2480]
+        ]
+      },
+      {
+        id: "PATH-MAJU-03",
+        name: "Tactical Emergency Corridor: SDRF Speedboat Waterway Ferry",
+        type: "TACTICAL_EMERGENCY",
+        tierLabel: "Waterway Ferry",
+        badge: "Rescue Boats / Ferries",
+        color: "#a855f7",
+        dashArray: "4, 6",
+        weight: 3,
+        distanceKm: 14.0,
+        estimatedMinutes: 25,
+        throughputPerHour: 450,
+        transitMode: "SDRF Motorized Speedboats, Inflatable Gemini Boats, Catamaran Ferries",
+        status: "Standby Active",
+        statusBadge: "bg-purple-500/20 text-purple-300 border-purple-500/30",
+        elevationProfile: "Navigable Flood Channel (Water Depth: 3.5m)",
+        description: "Dedicated river corridor utilized when road embankments are breached. Operated by SDRF 1st Battalion.",
+        chokePoints: [
+          { name: "Salmora Emergency Jetty", km: 0.5, lat: 26.9380, lng: 94.1820, icon: "⚓", desc: "Floating pontoon for rapid embarkation of elderly and children." },
+          { name: "Garamur High Stilt Landing", km: 13.8, lat: 27.0120, lng: 94.2480, icon: "🚤", desc: "Concrete stilt boat dock adjacent to the Multipurpose Cyclone Shelter." }
+        ],
+        waypoints: [
+          [26.9380, 94.1820],
+          [26.9600, 94.2050],
+          [26.9950, 94.2300],
+          [27.0120, 94.2480]
+        ]
+      }
+    ]
+  },
+  {
+    id: "CITY-KENDRAPARA",
+    name: "Kendrapara (Satabhaya)",
+    district: "Kendrapara",
+    state: "Odisha",
+    lat: 20.6288,
+    lng: 86.9281,
+    elevation: "4m",
+    hazardContext: "Bay of Bengal low-lying littoral zone, severe sea ingress, tidal storm surges.",
+    closestRedZone: {
+      id: "HAB-OD-04",
+      name: "Satabhaya Coastal Ingress Cluster",
+      distanceKm: 0.5,
+      bearing: "East",
+      lat: 20.6250,
+      lng: 86.9320,
+      hazardType: "Cyclone Storm Surge & Sea-Level Ingress",
+      hazardScore: 0.87,
+      slope: "1°",
+      elevation: "4m",
+      populationAtRisk: 3200,
+      pastHazards: [
+        {
+          date: "May 26, 2021",
+          event: "Very Severe Cyclonic Storm Yaas",
+          affected: "4.2m tidal surge; 128 coastal villages submerged; 150,000 evacuated in Kendrapara"
+        },
+        {
+          date: "May 3, 2019",
+          event: "Extremely Severe Cyclone Fani",
+          affected: "89 deaths, 16.5M affected in Odisha; 500,000 homes damaged; 14-day total blackout"
+        },
+        {
+          date: "October 29, 1999",
+          event: "Odisha Super Cyclone (05B)",
+          affected: "9,887 confirmed dead; 1.9M houses flattened; 10,000 cattle lost in Kendrapara"
+        }
+      ]
+    },
+    closestGreenZone: {
+      id: "SAFE-OD-04",
+      name: "Bagapatia Resettlement Colony",
+      distanceKm: 12.4,
+      transitRoute: "Rajnagar-Bagapatia Concrete Evacuation Route",
+      lat: 20.6540,
+      lng: 86.8120,
+      geology: "Inland Stable Deltaic Sandy Clay (>9m Elevation)",
+      carryingCapacityScore: 0.83,
+      availableCapacityHeadroom: 4800,
+      infrastructureRating: "85% Verified",
+      safeHouses: [
+        {
+          name: "Bagapatia Cyclone Relief Center",
+          capacity: "1,800 Beds",
+          availableBeds: 1350,
+          amenities: "Wind-Resistant Structure (up to 250 km/h), Dual Borewells, Solar Water Purifier"
+        },
+        {
+          name: "Rajnagar ODRAF Disaster Depot",
+          capacity: "1,000 Beds",
+          availableBeds: 750,
+          amenities: "Inflatable Motorized Rescue Boats, Power Saws, Satellite Mobile Unit"
+        },
+        {
+          name: "Gupti Multipurpose Shelter",
+          capacity: "650 Beds",
+          availableBeds: 480,
+          amenities: "Emergency Maternity Clinic, Solar Generator, Dry Rations Buffer for 3 Weeks"
+        }
+      ],
+      emergencyContacts: [
+        { role: "Kendrapara DEOC Control Room", contact: "06727-232803", tel: "06727232803" },
+        { role: "Collector & District Magistrate", name: "Amrit Ruturaj, IAS", contact: "06727-232801", tel: "06727232801" },
+        { role: "DHH Kendrapara Emergency", contact: "06727-232444", tel: "06727232444" },
+        { role: "OSDMA State Control Room", contact: "1077 / 0674-2395398", tel: "1077" }
+      ]
+    },
+    evacuationPaths: [
+      {
+        id: "PATH-KEND-01",
+        name: "Primary Highway: Rajnagar-Bagapatia Concrete Corridor",
+        type: "PRIMARY_HIGHWAY",
+        tierLabel: "Concrete Tidal Highway",
+        badge: "Concrete Elevated",
+        color: "#10b981",
+        dashArray: null,
+        weight: 4,
+        distanceKm: 12.4,
+        estimatedMinutes: 22,
+        throughputPerHour: 1300,
+        transitMode: "Evacuation Buses, OSRTC Convoys, Fire Service Water Tankers, Ambulances",
+        status: "Open - Elevated",
+        statusBadge: "bg-emerald-500/20 text-emerald-300 border-emerald-500/30",
+        elevationProfile: "Elevated Sea-Dike Shelf (+5.2m Above Sea Level)",
+        description: "Specially engineered concrete evacuation road built on coastal defense embankment with reinforced culverts.",
+        chokePoints: [
+          { name: "Satabhaya Sea-Dike Guard", km: 1.2, lat: 20.6288, lng: 86.9281, icon: "🌊", desc: "Tidal surge sensor gate; monitored by Odisha Coastal Police." },
+          { name: "Rajnagar Canal Bridge", km: 7.5, lat: 20.6410, lng: 86.8850, icon: "🌉", desc: "Double-lane concrete bridge; high flood clearance." }
+        ],
+        waypoints: [
+          [20.6250, 86.9320],
+          [20.6288, 86.9281],
+          [20.6410, 86.8850],
+          [20.6540, 86.8120]
+        ]
+      },
+      {
+        id: "PATH-KEND-02",
+        name: "Secondary Bypass: Gupti-Mahakalapada Inland Link",
+        type: "SECONDARY_BYPASS",
+        tierLabel: "Inland Rural Link",
+        badge: "Inland Bypass",
+        color: "#f59e0b",
+        dashArray: "8, 6",
+        weight: 3.5,
+        distanceKm: 17.8,
+        estimatedMinutes: 40,
+        throughputPerHour: 600,
+        transitMode: "Light Trucks, Tractors, LMVs, 4x4 Emergency Jeeps",
+        status: "Active Caution",
+        statusBadge: "bg-amber-500/20 text-amber-300 border-amber-500/30",
+        elevationProfile: "Inland Agricultural Ridge (+7.0m Above Sea Level)",
+        description: "Bypasses coastal salt marsh areas; runs through stable agricultural terrain safe from saline inundation.",
+        chokePoints: [
+          { name: "Gupti Shelter Staging Post", km: 5.4, lat: 20.5980, lng: 86.9100, icon: "🏥", desc: "Intermediate community relief center with clean drinking water station." },
+          { name: "Hansua Creek Crossing", km: 12.1, lat: 20.6150, lng: 86.8550, icon: "⚠️", desc: "Causeway submersible during extreme astronomical tides (>4.8m)." }
+        ],
+        waypoints: [
+          [20.6250, 86.9320],
+          [20.5980, 86.9100],
+          [20.6150, 86.8550],
+          [20.6540, 86.8120]
+        ]
+      },
+      {
+        id: "PATH-KEND-03",
+        name: "Tactical Emergency Corridor: ODRAF Tidal Channel Boat Route",
+        type: "TACTICAL_EMERGENCY",
+        tierLabel: "ODRAF Waterway",
+        badge: "Hovercraft & Boats",
+        color: "#a855f7",
+        dashArray: "4, 6",
+        weight: 3,
+        distanceKm: 9.2,
+        estimatedMinutes: 20,
+        throughputPerHour: 350,
+        transitMode: "ODRAF Motorized Inflatable Boats, Shallow-Draft Catamarans, Indian Coast Guard Air-Cushion Vessels",
+        status: "Standby Active",
+        statusBadge: "bg-purple-500/20 text-purple-300 border-purple-500/30",
+        elevationProfile: "Tidal Estuarine Channel (Bhitarkanika Backwaters)",
+        description: "Emergency amphibious route deployed during severe cyclone landfall when road bridges are submerged.",
+        chokePoints: [
+          { name: "Pentha Tidal Jetty", km: 2.1, lat: 20.6380, lng: 86.8900, icon: "⚓", desc: "High-tide embarkation dock equipped with life-rafts and satellite radio." },
+          { name: "Bagapatia Ingress Basin", km: 9.0, lat: 20.6540, lng: 86.8120, icon: "🚤", desc: "Sheltered inland canal landing with direct ramp access to the Resettlement Colony." }
+        ],
+        waypoints: [
+          [20.6250, 86.9320],
+          [20.6380, 86.8900],
+          [20.6540, 86.8120]
+        ]
+      }
+    ]
+  },
+  {
+    id: "CITY-MANDI",
+    name: "Mandi (Kotropi)",
+    district: "Mandi",
+    state: "Himachal Pradesh",
+    lat: 31.8845,
+    lng: 76.9421,
+    elevation: "1,150m",
+    hazardContext: "Sheared metamorphic flysch zone, fractured rock mass, high cloudburst frequency.",
+    closestRedZone: {
+      id: "HAB-HP-05",
+      name: "Kotropi Massive Slope Failure Sector",
+      distanceKm: 0.9,
+      bearing: "North",
+      lat: 31.8890,
+      lng: 76.9460,
+      hazardType: "Regolith Landslide & Torrent Erosion",
+      hazardScore: 0.78,
+      slope: "35°",
+      elevation: "1,150m",
+      populationAtRisk: 2400,
+      pastHazards: [
+        {
+          date: "July–August 2023",
+          event: "Himachal Cloudburst & Beas River Surge",
+          affected: "514 deaths across HP; 12,000 homes destroyed; Mandi isolated for 12 days"
+        },
+        {
+          date: "August 13, 2017",
+          event: "Kotropi Landslide Tragedy",
+          affected: "48 bus passengers killed when 250m mud avalanche swallowed NH-154"
+        },
+        {
+          date: "August 2014",
+          event: "Dharampur Cloudburst Flash Flood",
+          affected: "15 deaths; 3 bus stations swept away; ₹120 Cr infrastructure damage"
+        }
+      ]
+    },
+    closestGreenZone: {
+      id: "SAFE-HP-05",
+      name: "Joginder Nagar Resettlement Ridge",
+      distanceKm: 22.0,
+      transitRoute: "NH-154 Reinforced Highway Corridor",
+      lat: 31.9850,
+      lng: 76.7720,
+      geology: "Solid Quartzite Ridge (<7° Slope, Stable Bedrock)",
+      carryingCapacityScore: 0.81,
+      availableCapacityHeadroom: 3900,
+      infrastructureRating: "84% Verified",
+      safeHouses: [
+        {
+          name: "Joginder Nagar Disaster Relief Center",
+          capacity: "1,200 Beds",
+          availableBeds: 900,
+          amenities: "Paved Highway Access, 100 kVA Generator, 30,000 L/day Municipal Spring Supply"
+        },
+        {
+          name: "Padhar Civil Defense Shelter",
+          capacity: "750 Beds",
+          availableBeds: 520,
+          amenities: "Trauma Stabilization Bay, Hot Meal Kitchen Mess, Satellite Phone Desk"
+        },
+        {
+          name: "Govt Senior Secondary Relief Campus",
+          capacity: "600 Beds",
+          availableBeds: 450,
+          amenities: "Clean Dormitories, Clean Sanitation Blocks, Supply Depot"
+        }
+      ],
+      emergencyContacts: [
+        { role: "Mandi DEOC Control Room", contact: "01905-226201", tel: "01905226201" },
+        { role: "SDM / Incident Commander (Padhar)", name: "S. K. Thakur, HAS", contact: "+91 94180 34120", tel: "+919418034120" },
+        { role: "Zonal Hospital Mandi Emergency", contact: "01905-222102", tel: "01905222102" },
+        { role: "HP SDMA Helpline", contact: "1070 / 1077", tel: "1070" }
+      ]
+    },
+    evacuationPaths: [
+      {
+        id: "PATH-MAND-01",
+        name: "Primary Highway: NH-154 Mandi-Pathankot Highway",
+        type: "PRIMARY_HIGHWAY",
+        tierLabel: "National Highway",
+        badge: "Paved Highway",
+        color: "#10b981",
+        dashArray: null,
+        weight: 4,
+        distanceKm: 22.0,
+        estimatedMinutes: 42,
+        throughputPerHour: 1150,
+        transitMode: "HRTC Evacuation Convoys, Fire Tenders, Emergency Ambulances, Heavy Trucks",
+        status: "Open - Paved",
+        statusBadge: "bg-emerald-500/20 text-emerald-300 border-emerald-500/30",
+        elevationProfile: "Ascent 1,150m -> 1,220m (Smooth Gradient < 5%)",
+        description: "Paved two-lane national highway with reinforced rockfall retaining nets and concrete toe-walls.",
+        chokePoints: [
+          { name: "Kotropi Slide Memorial Checkpoint", km: 1.5, lat: 31.8845, lng: 76.9421, icon: "⚠️", desc: "Automated geophone acoustic sensor monitoring active slope creep." },
+          { name: "Padhar Sub-Divisional Depot", km: 11.2, lat: 31.9210, lng: 76.8850, icon: "🏥", desc: "Emergency fuel buffer and medical first-aid stabilization center." }
+        ],
+        waypoints: [
+          [31.8890, 76.9460],
+          [31.8845, 76.9421],
+          [31.9210, 76.8850],
+          [31.9540, 76.8250],
+          [31.9850, 76.7720]
+        ]
+      },
+      {
+        id: "PATH-MAND-02",
+        name: "Secondary Bypass: Padhar-Drang Terraced Mountain Route",
+        type: "SECONDARY_BYPASS",
+        tierLabel: "Terraced Mountain Bypass",
+        badge: "Mountain Bypass",
+        color: "#f59e0b",
+        dashArray: "8, 6",
+        weight: 3.5,
+        distanceKm: 27.5,
+        estimatedMinutes: 58,
+        throughputPerHour: 500,
+        transitMode: "4x4 SUVs, Light Commercial Vehicles, Himachal Police Patrols",
+        status: "Active Caution",
+        statusBadge: "bg-amber-500/20 text-amber-300 border-amber-500/30",
+        elevationProfile: "Mountain Pass Traverse (Ridge Elev: 1,380m)",
+        description: "Upper mountain road traversing stable sandstone terraces. Safe from Beas river flash inundation.",
+        chokePoints: [
+          { name: "Drang Salt Mine Hairpin", km: 8.5, lat: 31.9120, lng: 76.9650, icon: "🚧", desc: "Sharp switchback bends; strict one-way pilot vehicle convoy operation." },
+          { name: "Uhl River Hydro Crossing", km: 20.4, lat: 31.9950, lng: 76.8100, icon: "🌉", desc: "Reinforced bridge over Uhl torrent with 24/7 flood gate watch." }
+        ],
+        waypoints: [
+          [31.8890, 76.9460],
+          [31.9120, 76.9650],
+          [31.9650, 76.9100],
+          [31.9950, 76.8100],
+          [31.9850, 76.7720]
+        ]
+      },
+      {
+        id: "PATH-MAND-03",
+        name: "Tactical Emergency Corridor: Civil Defense Ridge & Mule Trail",
+        type: "TACTICAL_EMERGENCY",
+        tierLabel: "Ridge Mule Track",
+        badge: "Foot / Mule Trail",
+        color: "#a855f7",
+        dashArray: "4, 6",
+        weight: 3,
+        distanceKm: 15.2,
+        estimatedMinutes: 210,
+        throughputPerHour: 200,
+        transitMode: "Foot Columns, Civil Defense Mule Packs, Mountain Rescue Teams, Air-Drop",
+        status: "Emergency Only",
+        statusBadge: "bg-purple-500/20 text-purple-300 border-purple-500/30",
+        elevationProfile: "High-Altitude Ridgeway Footpath",
+        description: "Traditional shepherd ridge corridor maintained by Himachal Home Guards for zero-road access scenarios.",
+        chokePoints: [
+          { name: "Shivalik Crest Shelter Post", km: 6.0, lat: 31.9350, lng: 76.9020, icon: "🏕️", desc: "Emergency stone shelter with high-frequency wireless communications relay." },
+          { name: "Joginder Nagar South Trailhead", km: 14.5, lat: 31.9680, lng: 76.8250, icon: "🏁", desc: "Reception camp with warm rations, blankets, and ambulances." }
+        ],
+        waypoints: [
+          [31.8890, 76.9460],
+          [31.9350, 76.9020],
+          [31.9680, 76.8250],
+          [31.9850, 76.7720]
+        ]
+      }
+    ]
+  }
+];
+
+      // UNIVERSAL RESILIENT LEAFLET MAP ENGINE (Runs on file:// and http://)
+      // =======================================================================
+      function initResilientMap() {
+        if (window.__resilient_map_done) return;
+        if (window.app && window.app.mapController && window.app.mapController.map) {
+          window.__resilient_map_done = true;
+          return;
+        }
+        if (typeof L === 'undefined') {
+          setTimeout(initResilientMap, 100);
+          return;
+        }
+
+        const mapContainer = document.getElementById('map-container');
+        if (!mapContainer) return;
+        if (mapContainer._leaflet_id) {
+          window.__resilient_map_done = true;
+          return;
+        }
+
+        window.__resilient_map_done = true;
+        console.log("Starting Universal Resilient Map Engine (Offline file:// & HTTP verified)...");
+
+        const INDIA_CENTER = [22.5937, 78.9629];
+        const map = L.map('map-container', {
+          center: INDIA_CENTER,
+          zoom: 5,
+          minZoom: 4,
+          maxZoom: 16,
+          zoomControl: false
+        });
+
+        // Tile layers
+        const darkLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          attribution: '&copy; OpenStreetMap contributors | NDMA Geospatial',
+          subdomains: ['a', 'b', 'c'],
+          maxZoom: 19,
+          className: 'dark-tiles'
+        }).addTo(map);
+
+        const satelliteLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+          attribution: '&copy; Esri, Maxar, Earthstar Geographics',
+          maxZoom: 19,
+          className: 'satellite-tiles'
+        });
+
+        const streetLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          attribution: '&copy; OpenStreetMap contributors',
+          subdomains: ['a', 'b', 'c'],
+          maxZoom: 19
+        });
+
+        let currentBase = darkLayer;
+
+        // Layer groups
+        const cityIntelGroup = L.layerGroup().addTo(map);
+        const evacPathsGroup = L.layerGroup().addTo(map);
+        const userLocationGroup = L.layerGroup().addTo(map);
+        const markersGroup = L.layerGroup().addTo(map);
+
+        // Initial default high-risk pin markers on map
+        const defaultPins = [
+          { name: "Sunil Ward (Joshimath)", lat: 30.5574, lng: 79.5658, state: "Uttarakhand", type: "MCT Subsidence", score: "94%" },
+          { name: "Chooralmala (Wayanad)", lat: 11.5284, lng: 76.1685, state: "Kerala", type: "Debris Flow", score: "92%" },
+          { name: "Salmora (Majuli Island)", lat: 26.9380, lng: 94.1820, state: "Assam", type: "Riverbank Erosion", score: "81%" },
+          { name: "Satabhaya Cluster", lat: 20.6250, lng: 86.9320, state: "Odisha", type: "Cyclone Ingress", score: "87%" },
+          { name: "Kotropi Slide Zone", lat: 31.8890, lng: 76.9460, state: "Himachal Pradesh", type: "Slope Failure", score: "78%" }
+        ];
+
+        defaultPins.forEach(function(pin) {
+          const pinIcon = L.divIcon({
+            className: 'red-danger-marker',
+            html: '<div class="red-radar-beacon"><div class="red-radar-wave"></div><div class="red-radar-center">⚠️</div></div>',
+            iconSize: [36, 36],
+            iconAnchor: [18, 18],
+            popupAnchor: [0, -18]
+          });
+
+          L.marker([pin.lat, pin.lng], { icon: pinIcon })
+            .bindPopup(
+              '<div class="p-3 text-xs font-sans text-slate-100">' +
+                '<span class="px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider bg-red-500/20 text-red-300 border border-red-500/30">🔴 High-Risk Habitation</span>' +
+                '<div class="text-sm font-bold text-white mt-1.5">' + pin.name + '</div>' +
+                '<div class="text-[11px] text-zinc-400 mb-2">' + pin.state + ' • Hazard Index: <b class="text-red-400">' + pin.score + '</b></div>' +
+                '<div class="text-[10px] text-zinc-300 bg-white/[0.04] p-2 rounded-lg border border-white/10 mb-2">' + pin.type + '</div>' +
+                '<button class="w-full text-xs bg-red-600 hover:bg-red-500 text-white font-semibold py-1.5 px-2 rounded-xl transition-all" onclick="window.selectCityFilter && window.selectCityFilter(\'' + (pin.name.includes('Joshimath') ? 'CITY-JOSHIMATH' : (pin.name.includes('Wayanad') ? 'CITY-WAYANAD' : (pin.name.includes('Majuli') ? 'CITY-MAJULI' : (pin.name.includes('Satabhaya') ? 'CITY-KENDRAPARA' : 'CITY-MANDI')))) + '\')">View Full Intelligence</button>' +
+              '</div>',
+              { className: 'city-intel-popup red-theme' }
+            )
+            .addTo(markersGroup);
+        });
+
+        window.map = map;
+        window.standaloneMap = map;
+
+        window.standaloneMapController = {
+          map: map,
+          cityIntelligenceLayerGroup: cityIntelGroup,
+          evacuationPathsGroup: evacPathsGroup,
+          activeEvacuationPathId: 'all',
+          renderEvacuationPaths: function(paths, selectedPathId) {
+            if (!map || !evacPathsGroup) return null;
+            evacPathsGroup.clearLayers();
+            if (!paths || paths.length === 0) return null;
+
+            selectedPathId = selectedPathId || 'all';
+            const allBounds = L.latLngBounds([]);
+
+            paths.forEach(function(path) {
+              const isSelected = (selectedPathId === 'all' || selectedPathId === path.id);
+              const isDimmed = (selectedPathId !== 'all' && selectedPathId !== path.id);
+
+              const color = path.color || (path.type === 'PRIMARY_HIGHWAY' ? '#10b981' : path.type === 'SECONDARY_BYPASS' ? '#f59e0b' : '#a855f7');
+              const weight = isDimmed ? 2.5 : (isSelected && selectedPathId !== 'all' ? 5.5 : 4);
+              const opacity = isDimmed ? 0.22 : (isSelected && selectedPathId !== 'all' ? 1.0 : 0.85);
+
+              let dashArray = null;
+              if (path.dashArray) dashArray = path.dashArray;
+              else if (path.type === 'SECONDARY_BYPASS') dashArray = '8, 6';
+              else if (path.type === 'TACTICAL_EMERGENCY') dashArray = '4, 6';
+
+              const polyline = L.polyline(path.waypoints, {
+                color: color,
+                weight: weight,
+                opacity: opacity,
+                dashArray: dashArray,
+                lineCap: 'round',
+                lineJoin: 'round',
+                className: 'evac-polyline-' + path.id + (isSelected ? ' active-path-glow' : '')
+              }).addTo(evacPathsGroup);
+
+              path.waypoints.forEach(function(pt) { allBounds.extend(pt); });
+
+              polyline.bindTooltip(
+                '<div class="p-1.5 font-sans text-xs">' +
+                  '<div class="font-bold text-white flex items-center gap-1.5">' +
+                    '<span class="w-2.5 h-2.5 rounded-full" style="background:' + color + ';"></span>' +
+                    '<span>' + path.name + '</span>' +
+                  '</div>' +
+                  '<div class="text-[10px] text-zinc-300 mt-0.5"><b>' + path.distanceKm + ' km</b> • ETA: <b>' + path.estimatedMinutes + ' min</b> • <b>' + path.throughputPerHour + ' pers/hr</b></div>' +
+                  '<div class="text-[9px] text-amber-300 mt-1 font-semibold">👉 Click to inspect corridor</div>' +
+                '</div>',
+                { sticky: true, className: 'corridor-hover-tooltip' }
+              );
+
+              polyline.on('click', function() {
+                if (window.selectEvacuationPath) window.selectEvacuationPath(path.id);
+              });
+
+              // Midpoint route badge
+              if (!isDimmed && path.waypoints.length > 1) {
+                const midIdx = Math.floor(path.waypoints.length / 2);
+                const midPt = path.waypoints[midIdx];
+                const badgeTypeClass = path.type === 'PRIMARY_HIGHWAY' ? 'primary-badge' : path.type === 'SECONDARY_BYPASS' ? 'secondary-badge' : 'tactical-badge';
+                const iconEmoji = path.type === 'PRIMARY_HIGHWAY' ? '🟢' : path.type === 'SECONDARY_BYPASS' ? '🟡' : '🟣';
+
+                const badgeIcon = L.divIcon({
+                  className: 'corridor-badge-container',
+                  html: '<div class="corridor-dist-badge ' + badgeTypeClass + ' cursor-pointer" onclick="window.selectEvacuationPath && window.selectEvacuationPath(&quot;' + path.id + '&quot;)" title="Click to focus ' + path.name + '">' +
+                           iconEmoji + ' ' + path.distanceKm + ' km • ' + path.estimatedMinutes + 'm' +
+                         '</div>',
+                  iconSize: [120, 24],
+                  iconAnchor: [60, 12]
+                });
+                L.marker(midPt, { icon: badgeIcon, interactive: true }).addTo(evacPathsGroup);
+              }
+
+              // Checkpoints
+              if (isSelected && path.chokePoints) {
+                path.chokePoints.forEach(function(cp) {
+                  const cpIcon = L.divIcon({
+                    className: 'checkpoint-pin-container',
+                    html: '<div class="evacuation-checkpoint-pin" style="border-color:' + color + ';" title="' + cp.name + '">' +
+                            '<span>' + (cp.icon || '📍') + '</span>' +
+                          '</div>',
+                    iconSize: [28, 28],
+                    iconAnchor: [14, 14],
+                    popupAnchor: [0, -14]
+                  });
+
+                  const cpPopup = 
+                    '<div class="p-2.5 font-sans text-slate-100 text-xs min-w-[210px]">' +
+                      '<div class="flex items-center justify-between gap-1.5 mb-1">' +
+                        '<span class="px-1.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider bg-white/10 text-zinc-300">KM ' + cp.km + ' MILESTONE</span>' +
+                        '<span class="text-[9px] font-bold font-mono" style="color:' + color + '">' + path.tierLabel + '</span>' +
+                      '</div>' +
+                      '<div class="text-xs font-bold text-white mb-1 flex items-center gap-1.5"><span>' + (cp.icon || '📍') + '</span> <span>' + cp.name + '</span></div>' +
+                      '<p class="text-[10px] text-zinc-300 leading-snug mb-1.5">' + cp.desc + '</p>' +
+                      '<div class="text-[9px] text-zinc-400 border-t border-white/10 pt-1 flex justify-between">' +
+                        '<span>Corridor:</span> <span class="font-medium text-white">' + path.name + '</span>' +
+                      '</div>' +
+                    '</div>';
+
+                  L.marker([cp.lat, cp.lng], { icon: cpIcon })
+                    .bindPopup(cpPopup, { className: 'checkpoint-info-popup', maxWidth: 280 })
+                    .addTo(evacPathsGroup);
+                });
+              }
+            });
+
+            return allBounds;
+          },
+          focusEvacuationPath: function(pathId) {
+            if (!currentCityFilter || !currentCityFilter.evacuationPaths) return;
+            const paths = currentCityFilter.evacuationPaths;
+            this.activeEvacuationPathId = pathId;
+
+            if (pathId === 'all') {
+              const allBounds = this.renderEvacuationPaths(paths, 'all');
+              if (allBounds && allBounds.isValid()) {
+                map.fitBounds(allBounds, { padding: [60, 60], maxZoom: 13, duration: 1.0 });
+              }
+            } else {
+              const targetPath = paths.find(function(p) { return p.id === pathId; });
+              if (targetPath) {
+                this.renderEvacuationPaths(paths, pathId);
+                const pathBounds = L.latLngBounds(targetPath.waypoints);
+                map.fitBounds(pathBounds, { padding: [70, 70], maxZoom: 14, duration: 1.2 });
+              }
+            }
+          },
+          clearEvacuationPaths: function() {
+            if (evacPathsGroup) evacPathsGroup.clearLayers();
+          },
+          userLocationLayerGroup: userLocationGroup,
+          userMarker: null,
+          userAccuracyCircle: null,
+          renderUserLocation: function(pos, options) {
+            options = options || { flyTo: true };
+            if (!map || !userLocationGroup) return;
+            const lat = pos.lat;
+            const lng = pos.lng;
+            const accuracy = pos.accuracy;
+            const proximity = pos.proximity;
+
+            userLocationGroup.clearLayers();
+
+            // Accuracy Circle
+            if (accuracy && accuracy > 0) {
+              this.userAccuracyCircle = L.circle([lat, lng], {
+                radius: Math.min(accuracy, 5000),
+                color: '#06b6d4',
+                weight: 1.5,
+                fillColor: '#06b6d4',
+                fillOpacity: 0.12,
+                dashArray: '4, 6'
+              }).addTo(userLocationGroup);
+            }
+
+            // Pulsing User Radar Beacon DivIcon
+            const userIcon = L.divIcon({
+              className: 'user-gps-marker-container',
+              html: '<div class="user-gps-pulse-beacon">' +
+                      '<div class="user-gps-radar-wave"></div>' +
+                      '<div class="user-gps-radar-wave wave-2"></div>' +
+                      '<div class="user-gps-center-dot"></div>' +
+                    '</div>',
+              iconSize: [36, 36],
+              iconAnchor: [18, 18],
+              popupAnchor: [0, -18]
+            });
+
+            const popupContent = 
+              '<div class="p-3 max-w-[260px] font-sans text-slate-100">' +
+                '<div class="flex items-center justify-between mb-2">' +
+                  '<span class="px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider bg-cyan-500/20 text-cyan-300 border border-cyan-500/30">📍 Your Current Position</span>' +
+                  '<span class="text-[10px] text-zinc-400">±' + accuracy + 'm</span>' +
+                '</div>' +
+                '<div class="text-xs text-zinc-300 font-mono mb-2">' + lat.toFixed(4) + '° N, ' + lng.toFixed(4) + '° E</div>' +
+                '<div class="text-[10px] font-semibold ' + (proximity ? proximity.threatClass : 'text-zinc-400') + ' px-2.5 py-1 rounded-lg border text-center mb-2">' +
+                  (proximity ? proximity.threatLabel : 'Position Acquired') +
+                '</div>' +
+                '<button class="w-full text-xs bg-white/[0.08] hover:bg-white/[0.14] text-white font-semibold py-1.5 px-2.5 rounded-xl border border-white/15 transition-all text-center cursor-pointer" onclick="window.recenterUserGPS && window.recenterUserGPS()">' +
+                  'Re-center Map on Me' +
+                '</button>' +
+              '</div>';
+
+            this.userMarker = L.marker([lat, lng], { icon: userIcon })
+              .bindPopup(popupContent, { className: 'apple-glass-popup', closeButton: false })
+              .addTo(userLocationGroup);
+
+            if (options.flyTo) {
+              map.flyTo([lat, lng], 13, { duration: 1.4 });
+            }
+          },
+          clearUserLocation: function() {
+            if (userLocationGroup) userLocationGroup.clearLayers();
+          },
+          setBaseLayer: function(type) {
+            if (currentBase) map.removeLayer(currentBase);
+            if (type === 'satellite') currentBase = satelliteLayer;
+            else if (type === 'street') currentBase = streetLayer;
+            else currentBase = darkLayer;
+            currentBase.addTo(map);
+          },
+          zoomIn: function() { map.zoomIn(); },
+          zoomOut: function() { map.zoomOut(); },
+          resetView: function() { map.flyTo(INDIA_CENTER, 5, { duration: 1.2 }); },
+          flyToLocation: function(lat, lng, zoom) { map.flyTo([lat, lng], zoom || 12, { duration: 1.4 }); },
+          renderCityIntelligence: function(cityData, options) {
+            options = options || { flyTo: true, autoOpenPopups: true };
+            cityIntelGroup.clearLayers();
+
+            const lat = cityData.lat;
+            const lng = cityData.lng;
+            const closestRedZone = cityData.closestRedZone;
+            const closestGreenZone = cityData.closestGreenZone;
+
+            if (options.flyTo) {
+              map.flyTo([lat, lng], 12, { duration: 1.4 });
+            }
+
+            // 1. City Center Epicenter Marker
+            const cityIcon = L.divIcon({
+              className: 'city-epicenter-marker',
+              html: '<div class="city-beacon-container"><div class="city-beacon-ring"></div><div class="city-beacon-dot">📍</div></div>',
+              iconSize: [36, 36],
+              iconAnchor: [18, 18],
+              popupAnchor: [0, -18]
+            });
+
+            L.marker([lat, lng], { icon: cityIcon })
+              .bindPopup(
+                '<div class="p-3 font-sans text-slate-100 text-xs">' +
+                  '<span class="px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider bg-amber-500/20 text-amber-300 border border-amber-500/30">Selected Study City</span>' +
+                  '<div class="text-sm font-bold text-white mt-1">' + cityData.name + '</div>' +
+                  '<div class="text-[11px] text-zinc-400 mb-2">' + cityData.district + ', ' + cityData.state + ' • Elev: ' + cityData.elevation + '</div>' +
+                  '<p class="text-[11px] text-zinc-300 mb-2 leading-snug">' + cityData.hazardContext + '</p>' +
+                  '<div class="text-[10px] text-zinc-300 border-t border-white/10 pt-1.5 flex flex-col gap-1">' +
+                    '<div class="flex justify-between text-red-300"><span>🔴 Closest Red Zone:</span><b>' + closestRedZone.distanceKm + ' km (' + closestRedZone.bearing + ')</b></div>' +
+                    '<div class="flex justify-between text-emerald-300"><span>🟢 Closest Safe Haven:</span><b>' + closestGreenZone.distanceKm + ' km</b></div>' +
+                  '</div>' +
+                '</div>',
+                { className: 'city-intel-popup amber-theme' }
+              )
+              .addTo(cityIntelGroup);
+
+            // 2. Red Zone Danger Marker & Popup
+            const redIcon = L.divIcon({
+              className: 'red-danger-marker',
+              html: '<div class="red-radar-beacon"><div class="red-radar-wave"></div><div class="red-radar-wave wave-2"></div><div class="red-radar-center">⚠️</div></div>',
+              iconSize: [42, 42],
+              iconAnchor: [21, 21],
+              popupAnchor: [0, -22]
+            });
+
+            const redPopupContent = 
+              '<div class="p-3.5 font-sans text-slate-100 text-xs max-w-[340px]">' +
+                '<div class="flex items-center justify-between gap-2 mb-2 pb-1.5 border-b border-red-500/20">' +
+                  '<span class="px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider bg-red-500/20 text-red-300 border border-red-500/30 flex items-center gap-1.5">' +
+                    '<span class="w-1.5 h-1.5 rounded-full bg-red-500 animate-ping"></span> 🔴 CLOSEST RED ZONE' +
+                  '</span>' +
+                  '<span class="text-[10px] font-bold text-red-400 font-mono">' + closestRedZone.distanceKm + ' km from ' + cityData.name + '</span>' +
+                '</div>' +
+                '<div class="text-sm font-bold text-white leading-tight mb-1">' + closestRedZone.name + '</div>' +
+                '<div class="text-[11px] text-zinc-400 mb-2.5">' +
+                  '<span class="text-red-400 font-semibold">' + closestRedZone.hazardType + '</span> • ' +
+                  'Risk: <b class="text-white">' + Math.round(closestRedZone.hazardScore * 100) + '%</b> • ' +
+                  'At Risk: <b class="text-white">' + closestRedZone.populationAtRisk.toLocaleString() + '</b>' +
+                '</div>' +
+                '<div class="border-t border-red-500/20 pt-2 space-y-1.5">' +
+                  '<div class="text-[10px] font-bold uppercase tracking-wider text-red-400 flex items-center justify-between">' +
+                    '<span>📜 Past Hazards & Disasters</span>' +
+                    '<span class="text-[9px] text-zinc-400 font-normal">Official Records</span>' +
+                  '</div>' +
+                  '<div class="space-y-2 max-h-[160px] overflow-y-auto pr-1 custom-scroll">' +
+                    closestRedZone.pastHazards.map(function(h) {
+                      return '<div class="bg-red-950/40 border border-red-500/25 rounded-xl p-2 text-[11px]">' +
+                        '<div class="flex items-center justify-between font-bold text-red-300 text-[10px] mb-0.5">' +
+                          '<span class="px-1.5 py-0.5 rounded bg-red-500/25 text-red-200">' + h.date + '</span>' +
+                          '<span class="text-zinc-300 truncate max-w-[170px]">' + h.event + '</span>' +
+                        '</div>' +
+                        '<div class="text-[11px] text-zinc-200 leading-snug mt-1">' +
+                          '<span class="text-red-400 font-semibold">Impact:</span> ' + h.affected +
+                        '</div>' +
+                      '</div>';
+                    }).join('') +
+                  '</div>' +
+                '</div>' +
+                '<div class="mt-2.5 pt-2 border-t border-white/10 flex items-center justify-between text-[10px] text-zinc-400">' +
+                  '<span>Slope: ' + closestRedZone.slope + ' • Elev: ' + closestRedZone.elevation + '</span>' +
+                  '<span class="text-red-400 font-bold">Relocation: Priority Tier 1</span>' +
+                '</div>' +
+              '</div>';
+
+            const redMarker = L.marker([closestRedZone.lat, closestRedZone.lng], { icon: redIcon })
+              .bindPopup(redPopupContent, {
+                className: 'city-intel-popup red-theme',
+                autoClose: false,
+                closeOnClick: false,
+                maxWidth: 350
+              })
+              .addTo(cityIntelGroup);
+
+            // 3. Green Zone Safe Haven Marker & Popup
+            const greenIcon = L.divIcon({
+              className: 'green-haven-marker',
+              html: '<div class="green-radar-beacon"><div class="green-radar-wave"></div><div class="green-radar-wave wave-2"></div><div class="green-radar-center">🛡️</div></div>',
+              iconSize: [42, 42],
+              iconAnchor: [21, 21],
+              popupAnchor: [0, -22]
+            });
+
+            const greenPopupContent = 
+              '<div class="p-3.5 font-sans text-slate-100 text-xs max-w-[360px]">' +
+                '<div class="flex items-center justify-between gap-2 mb-2 pb-1.5 border-b border-emerald-500/20">' +
+                  '<span class="px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 flex items-center gap-1.5">' +
+                    '<span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> 🟢 CLOSEST SAFE HAVEN' +
+                  '</span>' +
+                  '<span class="text-[10px] font-bold text-emerald-400 font-mono">' + closestGreenZone.distanceKm + ' km from ' + cityData.name + '</span>' +
+                '</div>' +
+                '<div class="text-sm font-bold text-white leading-tight mb-1">' + closestGreenZone.name + '</div>' +
+                '<div class="text-[11px] text-zinc-400 mb-2">' +
+                  'Route: <span class="text-white font-medium">' + closestGreenZone.transitRoute + '</span> • ' +
+                  'Headroom: <b class="text-emerald-300">+' + closestGreenZone.availableCapacityHeadroom.toLocaleString() + ' Beds</b>' +
+                '</div>' +
+                '<div class="border-t border-emerald-500/20 pt-2 space-y-1.5">' +
+                  '<div class="text-[10px] font-bold uppercase tracking-wider text-emerald-400 flex items-center justify-between">' +
+                    '<span>🏠 Available Safe Houses & Shelters</span>' +
+                    '<span class="text-[9px] text-zinc-400 font-normal">Available / Total</span>' +
+                  '</div>' +
+                  '<div class="space-y-1.5 max-h-[140px] overflow-y-auto pr-1 custom-scroll">' +
+                    closestGreenZone.safeHouses.map(function(sh) {
+                      return '<div class="bg-emerald-950/40 border border-emerald-500/25 rounded-xl p-2 text-[11px]">' +
+                        '<div class="flex items-center justify-between font-bold text-white mb-0.5">' +
+                          '<span class="truncate max-w-[210px]">' + sh.name + '</span>' +
+                          '<span class="px-1.5 py-0.2 rounded bg-emerald-500/25 text-emerald-300 text-[10px] font-mono shrink-0">' + sh.availableBeds + ' / ' + sh.capacity + '</span>' +
+                        '</div>' +
+                        '<div class="text-[10px] text-zinc-300 leading-snug mt-1">' +
+                          '<span class="text-emerald-400 font-semibold">Amenities:</span> ' + sh.amenities +
+                        '</div>' +
+                      '</div>';
+                    }).join('') +
+                  '</div>' +
+                '</div>' +
+                '<div class="border-t border-emerald-500/20 pt-2 mt-2 space-y-1">' +
+                  '<div class="text-[10px] font-bold uppercase tracking-wider text-emerald-400 flex items-center justify-between">' +
+                    '<span>📞 Official Emergency Contacts</span>' +
+                    '<span class="text-[9px] text-zinc-400">Click to Call</span>' +
+                  '</div>' +
+                  '<div class="grid grid-cols-2 gap-1.5 text-[10px] pt-0.5">' +
+                    closestGreenZone.emergencyContacts.map(function(c) {
+                      return '<a href="tel:' + c.tel + '" class="p-1.5 rounded-lg bg-white/[0.04] hover:bg-white/[0.10] border border-white/10 flex flex-col transition-all group cursor-pointer" title="Call ' + c.role + '">' +
+                        '<span class="text-zinc-400 truncate text-[9px]">' + c.role + '</span>' +
+                        '<span class="font-bold text-emerald-400 group-hover:text-emerald-300 font-mono text-[10px] flex items-center gap-1">' +
+                          '<span>📞</span> ' + c.contact +
+                        '</span>' +
+                      '</a>';
+                    }).join('') +
+                  '</div>' +
+                '</div>' +
+              '</div>';
+
+            const greenMarker = L.marker([closestGreenZone.lat, closestGreenZone.lng], { icon: greenIcon })
+              .bindPopup(greenPopupContent, {
+                className: 'city-intel-popup green-theme',
+                autoClose: false,
+                closeOnClick: false,
+                maxWidth: 370
+              })
+              .addTo(cityIntelGroup);
+
+            // 4. Render Multi-Path Evacuation Corridors connecting Red Zone to Safe Haven
+            if (cityData.evacuationPaths && cityData.evacuationPaths.length > 0) {
+              this.renderEvacuationPaths(cityData.evacuationPaths, 'all');
+            } else {
+              L.polyline([[closestRedZone.lat, closestRedZone.lng], [closestGreenZone.lat, closestGreenZone.lng]], {
+                color: '#10b981',
+                weight: 3.5,
+                dashArray: '6, 6',
+                opacity: 0.85
+              }).addTo(cityIntelGroup);
+            }
+
+            // Distance Badges
+            const redDistIcon = L.divIcon({
+              className: 'corridor-badge-container',
+              html: '<span class="corridor-dist-badge red-badge">🔴 ' + closestRedZone.distanceKm + ' km</span>',
+              iconSize: [80, 20],
+              iconAnchor: [40, 10]
+            });
+            L.marker([(lat + closestRedZone.lat) / 2, (lng + closestRedZone.lng) / 2], { icon: redDistIcon, interactive: false }).addTo(cityIntelGroup);
+
+            const greenDistIcon = L.divIcon({
+              className: 'corridor-badge-container',
+              html: '<span class="corridor-dist-badge green-badge">🟢 ' + closestGreenZone.distanceKm + ' km</span>',
+              iconSize: [80, 20],
+              iconAnchor: [40, 10]
+            });
+            L.marker([(lat + closestGreenZone.lat) / 2, (lng + closestGreenZone.lng) / 2], { icon: greenDistIcon, interactive: false }).addTo(cityIntelGroup);
+
+            // Both popups open simultaneously after flyTo completes
+            if (options.autoOpenPopups) {
+              const openBoth = function() {
+                try {
+                  if (redMarker && redMarker.openPopup) redMarker.openPopup();
+                  if (greenMarker && greenMarker.openPopup) greenMarker.openPopup();
+                } catch(e) {}
+              };
+              map.once('moveend', openBoth);
+              setTimeout(openBoth, 1600);
+            }
+
+            window.__lastRedMarker = redMarker;
+            window.__lastGreenMarker = greenMarker;
+          },
+          clearCityIntelligence: function() {
+            cityIntelGroup.clearLayers();
+          },
+          zoomToCityRedZone: function(cityData) {
+            if (!cityData || !cityData.closestRedZone) return;
+            map.flyTo([cityData.closestRedZone.lat, cityData.closestRedZone.lng], 14, { duration: 1.2 });
+            if (window.__lastRedMarker) window.__lastRedMarker.openPopup();
+          },
+          zoomToCityGreenZone: function(cityData) {
+            if (!cityData || !cityData.closestGreenZone) return;
+            map.flyTo([cityData.closestGreenZone.lat, cityData.closestGreenZone.lng], 14, { duration: 1.2 });
+            if (window.__lastGreenMarker) window.__lastGreenMarker.openPopup();
+          }
+        };
+
+        if (!window.app) {
+          window.app = { mapController: window.standaloneMapController };
+        } else if (!window.app.mapController || !window.app.mapController.map) {
+          window.app.mapController = window.standaloneMapController;
+        }
+
+        // Invalidate map size to ensure rendering
+        setTimeout(function() { map.invalidateSize(true); }, 100);
+        setTimeout(function() { map.invalidateSize(true); }, 400);
+        window.addEventListener('resize', function() { map.invalidateSize(true); });
+
+        console.log("Universal Resilient Map Engine loaded successfully.");
+      }
+
+      // Start map initialization immediately
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initResilientMap);
+      } else {
+        initResilientMap();
+      }
+      setTimeout(initResilientMap, 200);
+
+      // Global control actions
+      window.mapZoomIn = function() {
+        if (window.app && window.app.mapController) window.app.mapController.zoomIn();
+        else if (window.map) window.map.zoomIn();
+      };
+      window.mapZoomOut = function() {
+        if (window.app && window.app.mapController) window.app.mapController.zoomOut();
+        else if (window.map) window.map.zoomOut();
+      };
+      window.mapResetView = function() {
+        if (window.app && window.app.mapController) window.app.mapController.resetView();
+        else if (window.map) window.map.flyTo([22.5937, 78.9629], 5, { duration: 1.2 });
+      };
+      window.setMapBaseLayer = function(type) {
+        if (window.app && window.app.mapController) window.app.mapController.setBaseLayer(type);
+        document.querySelectorAll('.map-layer-btn').forEach(function(b) {
+          if (b.getAttribute('data-layer') === type) b.classList.add('active');
+          else b.classList.remove('active');
+        });
+      };
+
+      window.selectCityFilter = selectCityFilter;
+      window.toggleZoneIntelModal = toggleZoneIntelModal;
+      window.closeZoneIntelModal = closeZoneIntelModal;
+      window.closeDualCityDock = closeZoneIntelModal;
+      window.selectEvacuationPath = selectEvacuationPath;
+      window.renderDualCityDock = renderDualCityDock;
+      window.clearCityFilter = clearCityFilter;
+      window.closeDualCityDock = closeDualCityDock;
+      window.zoomToCityRedZone = zoomToCityRedZone;
+      window.zoomToCityGreenZone = zoomToCityGreenZone;
+
     })();
   </script>
 </body>

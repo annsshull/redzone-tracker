@@ -9,6 +9,7 @@ import { HABITATIONS_DATA, SAFE_HAVEN_DESTINATIONS, HISTORICAL_DISASTERS } from 
 import { calculateRelocationPriority, calculateCCI, calculateVulnerability, findBestSafeHaven, estimateRelocationBudget } from './algorithms.js';
 import { MapController } from './map.js';
 import { liveFeedService } from './liveFeed.js';
+import { gpsService } from './gpsService.js';
 import { simulationEngine } from './simulation.js';
 import { generateDistrictCollectorBrief } from './exportReport.js';
 import { TRANSLATIONS } from './translations.js';
@@ -56,7 +57,7 @@ class RedZoneApp {
       this.renderRankedHabitationsList();
       this.renderHistoryModalContent();
     } catch (e) {
-      console.warn("Sidebar data render caught:", e);
+      console.warn("Sidebar data render caught:", e.message, e.stack);
     }
 
     // Bind Event Listeners
@@ -76,6 +77,7 @@ class RedZoneApp {
     this.bindLanguageSwitcher();
     this.bindBookmarkControls();
     this.bindFeedbackControls();
+    this.bindGPSEvents();
 
     // Apply translations on load
     this.applyLanguage(this.currentLanguage);
@@ -276,8 +278,8 @@ class RedZoneApp {
 
     if (vScore) vScore.textContent = `${Math.round(vuln.vulnerabilityScore * 100)}%`;
     if (vClass) {
-      vClass.textContent = vuln.vulnerabilityClass.split('(')[0].trim();
-      vClass.className = `text-[10px] px-2.5 py-0.5 rounded-full font-bold ${vuln.badgeColor}`;
+      vClass.textContent = (vuln.vulnerabilityClass || 'Moderate Vulnerability').split('(')[0].trim();
+      vClass.className = `text-[10px] px-2.5 py-0.5 rounded-full font-bold ${vuln.badgeColor || 'bg-amber-500/20 text-amber-300'}`;
     }
     if (vMeter) {
       const distPct = Math.min(100, Math.max(10, Math.round((hab.distanceToHospitalKm / 20) * 100)));
@@ -323,8 +325,8 @@ class RedZoneApp {
     const budgetInfra = document.getElementById('budget-infra-cr');
 
     if (relocTierBadge) {
-      relocTierBadge.textContent = priority.urgencyTier.split(':')[0];
-      relocTierBadge.className = `text-[10px] px-3 py-1 rounded-full font-bold ${priority.urgencyClass}`;
+      relocTierBadge.textContent = (priority.urgencyTier || 'TIER 1').split(':')[0];
+      relocTierBadge.className = `text-[10px] px-3 py-1 rounded-full font-bold ${priority.urgencyClass || 'bg-red-500/20 text-red-300'}`;
     }
 
     if (safeHaven) {
@@ -335,7 +337,7 @@ class RedZoneApp {
       if (matchedHavenInfra) matchedHavenInfra.textContent = `${Math.round(safeHaven.haven.infrastructureRating * 100)}% (Verified)`;
     }
 
-    if (relocTotalBudget) relocTotalBudget.textContent = budget.formattedTotal.split(' ')[0];
+    if (relocTotalBudget) relocTotalBudget.textContent = (budget.formattedTotal || '₹0 Cr').split(' ')[0];
     if (budgetPmay) budgetPmay.textContent = `₹${budget.housingGrantCr} Cr`;
     if (budgetSdrf) budgetSdrf.textContent = `₹${budget.shiftingGrantCr} Cr`;
     if (budgetInfra) budgetInfra.textContent = `₹${budget.infraGrantCr} Cr`;
@@ -1271,6 +1273,27 @@ class RedZoneApp {
     window.addEventListener('pan-to-live', (e) => {
       const { lat, lng } = e.detail;
       this.mapController.flyToLocation(lat, lng, 11);
+    });
+  }
+
+  // Bind Live GPS Telemetry Events
+  bindGPSEvents() {
+    window.gpsService = gpsService;
+
+    window.addEventListener('raksha-gps-update', (e) => {
+      const pos = e.detail;
+      if (this.mapController && this.mapController.renderUserLocation) {
+        const shouldFly = !this.hasInitialGPSFly;
+        if (shouldFly) this.hasInitialGPSFly = true;
+        this.mapController.renderUserLocation(pos, { flyTo: shouldFly });
+      }
+    });
+
+    window.addEventListener('raksha-gps-stopped', () => {
+      this.hasInitialGPSFly = false;
+      if (this.mapController && this.mapController.clearUserLocation) {
+        this.mapController.clearUserLocation();
+      }
     });
   }
 }

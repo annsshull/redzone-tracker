@@ -767,3 +767,806 @@ body.colorblind-highcontrast {
   border-radius: 6px;
   border: 1px solid rgba(100, 210, 255, 0.4);
 }
+
+/* ==========================================================================
+   USER LIVE GPS RADAR BEACON & ACCURACY CIRCLE
+   ========================================================================== */
+.user-gps-marker-container {
+  background: transparent !important;
+  border: none !important;
+}
+
+.user-gps-pulse-beacon {
+  position: relative;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.user-gps-center-dot {
+  width: 14px;
+  height: 14px;
+  background-color: #06b6d4;
+  border: 2.5px solid #ffffff;
+  border-radius: 50%;
+  box-shadow: 0 0 12px rgba(6, 182, 212, 0.9), 0 0 24px rgba(6, 182, 212, 0.5);
+  z-index: 3;
+}
+
+.user-gps-radar-wave {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background-color: rgba(6, 182, 212, 0.22);
+  border: 1.5px solid rgba(6, 182, 212, 0.7);
+  animation: user-radar-pulse 2.4s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+  z-index: 1;
+}
+
+.user-gps-radar-wave.wave-2 {
+  animation-delay: 1.2s;
+}
+
+@keyframes user-radar-pulse {
+  0% {
+    transform: scale(0.35);
+    opacity: 0.9;
+  }
+  70% {
+    opacity: 0.35;
+  }
+  100% {
+    transform: scale(2.2);
+    opacity: 0;
+  }
+}
+
+#user-gps-status-hud {
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+
+
+/* ==========================================================================
+   CITY INTELLIGENCE & CLOSEST RED/GREEN ZONES POPUPS & DOCK
+   ========================================================================== */
+.city-intel-popup .leaflet-popup-content-wrapper {
+  background: rgba(10, 12, 18, 0.96) !important;
+  backdrop-filter: blur(24px) !important;
+  -webkit-backdrop-filter: blur(24px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  border-radius: 18px !important;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.85) !important;
+  color: #f1f5f9 !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+}
+
+.city-intel-popup .leaflet-popup-content {
+  margin: 0 !important;
+  width: 340px !important;
+  max-width: 90vw !important;
+}
+
+.city-intel-popup.red-theme .leaflet-popup-content-wrapper {
+  border-color: rgba(239, 68, 68, 0.4) !important;
+  box-shadow: 0 20px 40px -10px rgba(239, 68, 68, 0.35) !important;
+}
+
+.city-intel-popup.green-theme .leaflet-popup-content-wrapper {
+  border-color: rgba(16, 185, 129, 0.4) !important;
+  box-shadow: 0 20px 40px -10px rgba(16, 185, 129, 0.35) !important;
+}
+
+.city-intel-popup.amber-theme .leaflet-popup-content-wrapper {
+  border-color: rgba(245, 158, 11, 0.4) !important;
+  box-shadow: 0 20px 40px -10px rgba(245, 158, 11, 0.35) !important;
+}
+
+.city-intel-popup .leaflet-popup-tip {
+  background: rgba(10, 12, 18, 0.96) !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+}
+
+.city-intel-popup .leaflet-popup-close-button {
+  color: #94a3b8 !important;
+  top: 8px !important;
+  right: 8px !important;
+  font-size: 16px !important;
+  padding: 4px !important;
+}
+
+.city-intel-popup .leaflet-popup-close-button:hover {
+  color: #ffffff !important;
+}
+
+/* Custom Scroll inside popups */
+.custom-scroll::-webkit-scrollbar {
+  width: 4px;
+}
+.custom-scroll::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 9999px;
+}
+
+/* Markers */
+.city-epicenter-marker,
+.red-danger-marker,
+.green-haven-marker {
+  background: transparent !important;
+  border: none !important;
+}
+
+.city-beacon-container,
+.red-radar-beacon,
+.green-radar-beacon {
+  position: relative;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.city-beacon-dot {
+  font-size: 20px;
+  z-index: 3;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.8));
+}
+
+.city-beacon-ring {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: rgba(245, 158, 11, 0.25);
+  border: 1.5px solid rgba(245, 158, 11, 0.8);
+  animation: user-radar-pulse 2s cubic-bezier(0.2, 0.6, 0.3, 1) infinite;
+  z-index: 1;
+}
+
+.red-radar-center {
+  width: 26px;
+  height: 26px;
+  background-color: #ef4444;
+  border: 2px solid #ffffff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  box-shadow: 0 0 14px rgba(239, 68, 68, 0.9);
+  z-index: 3;
+}
+
+.red-radar-wave {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background-color: rgba(239, 68, 68, 0.25);
+  border: 1.5px solid rgba(239, 68, 68, 0.8);
+  animation: user-radar-pulse 2s cubic-bezier(0.2, 0.6, 0.3, 1) infinite;
+  z-index: 1;
+}
+.red-radar-wave.wave-2 {
+  animation-delay: 1s;
+}
+
+.green-radar-center {
+  width: 26px;
+  height: 26px;
+  background-color: #10b981;
+  border: 2px solid #ffffff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  box-shadow: 0 0 14px rgba(16, 185, 129, 0.9);
+  z-index: 3;
+}
+
+.green-radar-wave {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background-color: rgba(16, 185, 129, 0.25);
+  border: 1.5px solid rgba(16, 185, 129, 0.8);
+  animation: user-radar-pulse 2s cubic-bezier(0.2, 0.6, 0.3, 1) infinite;
+  z-index: 1;
+}
+.green-radar-wave.wave-2 {
+  animation-delay: 1s;
+}
+
+/* Corridor Distance Badges */
+.corridor-badge-container {
+  background: transparent !important;
+  border: none !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.corridor-dist-badge {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 9999px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.6);
+  white-space: nowrap;
+}
+
+.corridor-dist-badge.red-badge {
+  background: rgba(15, 10, 10, 0.9);
+  color: #fca5a5;
+  border: 1px solid rgba(239, 68, 68, 0.6);
+}
+
+.corridor-dist-badge.green-badge {
+  background: rgba(10, 15, 12, 0.9);
+  color: #6ee7b7;
+  border: 1px solid rgba(16, 185, 129, 0.6);
+}
+
+/* Dual City Intelligence Dock */
+#dual-city-intelligence-dock {
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+
+
+/* Guaranteed Visible Map Dimensions across all viewport states */
+#map-container {
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 520px !important;
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  background: #000000 !important;
+  z-index: 1 !important;
+}
+
+main {
+  flex: 1 1 0% !important;
+  position: relative !important;
+  min-height: 520px !important;
+  height: 100% !important;
+  background: #06080D !important;
+}
+
+/* ==========================================================================
+   MULTI-PATH EVACUATION CORRIDORS & CHECKPOINTS
+   ========================================================================== */
+.checkpoint-pin-container {
+  background: transparent !important;
+  border: none !important;
+}
+
+.evacuation-checkpoint-pin {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 1.5px solid #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.75);
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  cursor: pointer;
+}
+
+.evacuation-checkpoint-pin:hover {
+  transform: scale(1.25);
+  box-shadow: 0 0 16px rgba(255, 255, 255, 0.6);
+}
+
+.checkpoint-info-popup .leaflet-popup-content-wrapper {
+  background: rgba(9, 12, 18, 0.97) !important;
+  border: 1px solid rgba(255, 255, 255, 0.18) !important;
+  backdrop-filter: blur(16px);
+  border-radius: 14px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.85);
+}
+
+.corridor-dist-badge.primary-badge {
+  background: rgba(6, 26, 18, 0.95);
+  color: #6ee7b7;
+  border: 1.5px solid rgba(16, 185, 129, 0.8);
+  box-shadow: 0 0 12px rgba(16, 185, 129, 0.4);
+}
+
+.corridor-dist-badge.secondary-badge {
+  background: rgba(30, 20, 6, 0.95);
+  color: #fde68a;
+  border: 1.5px solid rgba(245, 158, 11, 0.8);
+  box-shadow: 0 0 12px rgba(245, 158, 11, 0.4);
+}
+
+.corridor-dist-badge.tactical-badge {
+  background: rgba(25, 10, 35, 0.95);
+  color: #e9d5ff;
+  border: 1.5px solid rgba(168, 85, 247, 0.8);
+  box-shadow: 0 0 12px rgba(168, 85, 247, 0.4);
+}
+
+.corridor-dist-badge:hover {
+  transform: scale(1.08);
+  filter: brightness(1.2);
+}
+
+.active-path-glow {
+  filter: drop-shadow(0 0 7px currentColor);
+}
+
+.corridor-hover-tooltip {
+  background: rgba(8, 11, 16, 0.95) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  backdrop-filter: blur(12px) !important;
+  border-radius: 10px !important;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.6) !important;
+  color: #fff !important;
+}
+
+.evac-route-pill {
+  transition: all 0.2s ease;
+}
+
+.evac-route-pill.active-all {
+  border-color: rgba(59, 130, 246, 0.8) !important;
+  background-color: rgba(59, 130, 246, 0.2) !important;
+  color: #93c5fd !important;
+  box-shadow: 0 0 12px rgba(59, 130, 246, 0.3) !important;
+}
+
+.evac-route-pill.active-primary {
+  border-color: rgba(16, 185, 129, 0.8) !important;
+  background-color: rgba(16, 185, 129, 0.2) !important;
+  color: #6ee7b7 !important;
+  box-shadow: 0 0 12px rgba(16, 185, 129, 0.3) !important;
+}
+
+.evac-route-pill.active-secondary {
+  border-color: rgba(245, 158, 11, 0.8) !important;
+  background-color: rgba(245, 158, 11, 0.2) !important;
+  color: #fde68a !important;
+  box-shadow: 0 0 12px rgba(245, 158, 11, 0.3) !important;
+}
+
+.evac-route-pill.active-tactical {
+  border-color: rgba(168, 85, 247, 0.8) !important;
+  background-color: rgba(168, 85, 247, 0.2) !important;
+  color: #e9d5ff !important;
+  box-shadow: 0 0 12px rgba(168, 85, 247, 0.3) !important;
+}
+
+/* ==========================================================================
+   ZONE INTELLIGENCE MODAL & TOP RIGHT BUTTON
+   ========================================================================== */
+#zone-intel-toggle-btn {
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+#zone-intel-toggle-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 25px rgba(239, 68, 68, 0.35);
+}
+
+#zone-intel-toggle-btn.active {
+  border-color: rgba(16, 185, 129, 0.8) !important;
+  background-color: rgba(6, 40, 25, 0.9) !important;
+  box-shadow: 0 0 25px rgba(16, 185, 129, 0.5) !important;
+}
+
+#zone-intel-backdrop {
+  animation: fadeInBackdrop 0.25s ease-out forwards;
+}
+
+@keyframes fadeInBackdrop {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+#dual-city-intelligence-dock {
+  animation: slideInModal 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  box-shadow: 0 35px 70px -15px rgba(0, 0, 0, 0.95), 0 0 0 1px rgba(255, 255, 255, 0.15) !important;
+}
+
+@keyframes slideInModal {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -12px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0) scale(1);
+  }
+}
+
+@media (max-width: 767px) {
+  #dual-city-intelligence-dock {
+    transform: none !important;
+  }
+}
+
+
+/* ==========================================================================
+   ENHANCED VIEWPORT & COMPREHENSIVE LIGHT THEME ENGINE
+   ========================================================================== */
+html {
+  height: 100% !important;
+  min-height: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+}
+
+html:not(.light-theme) {
+  background: #000000 !important;
+  background-color: #000000 !important;
+  color: #F1F5F9 !important;
+}
+
+body {
+  height: 100% !important;
+  min-height: 100vh !important;
+  max-height: 100vh !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+body:not(.light-theme) {
+  background: #000000 !important;
+  background-color: #000000 !important;
+  color: #F1F5F9 !important;
+}
+
+body:not(.light-theme) > div.flex-1 {
+  flex: 1 1 0% !important;
+  height: 100% !important;
+  min-height: 0 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  background: #000000 !important;
+  background-color: #000000 !important;
+}
+
+body:not(.light-theme) main,
+body:not(.light-theme) #map-container,
+body:not(.light-theme) .leaflet-container {
+  background: #000000 !important;
+  background-color: #000000 !important;
+}
+
+/* Base Light Theme Backgrounds */
+body.light-theme,
+html.light-theme {
+  background: #F8F9FA !important;
+  background-color: #F8F9FA !important;
+  color: #111827 !important;
+}
+
+body.light-theme > div.flex-1 {
+  flex: 1 1 0% !important;
+  height: 100% !important;
+  min-height: 0 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  background: #F8F9FA !important;
+  background-color: #F8F9FA !important;
+}
+
+body.light-theme main,
+body.light-theme #map-container,
+body.light-theme .leaflet-container {
+  background: #eef2f6 !important;
+  background-color: #eef2f6 !important;
+}
+
+/* Live Alert Bar & Ticker in Light Theme */
+body.light-theme #live-alert-bar {
+  background: #ffffff !important;
+  background-color: #ffffff !important;
+  border-bottom: 1px solid #e2e8f0 !important;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05) !important;
+}
+
+body.light-theme #live-alert-bar .text-red-400 {
+  color: #dc2626 !important;
+}
+
+body.light-theme #live-alert-bar .border-red-500\/20 {
+  border-color: #fecaca !important;
+}
+
+body.light-theme .ticker-container {
+  background: transparent !important;
+  background-color: transparent !important;
+  mask-image: linear-gradient(to right, transparent, black 3%, black 97%, transparent) !important;
+  -webkit-mask-image: linear-gradient(to right, transparent, black 3%, black 97%, transparent) !important;
+}
+
+body.light-theme #live-ticker-track {
+  background: transparent !important;
+  background-color: transparent !important;
+  color: #334155 !important;
+}
+
+body.light-theme #live-ticker-track span {
+  color: #334155 !important;
+}
+
+body.light-theme #live-ticker-track .text-red-300 {
+  color: #b91c1c !important;
+}
+
+body.light-theme #live-ticker-track .text-orange-300 {
+  color: #c2410c !important;
+}
+
+body.light-theme #live-ticker-track .bg-red-500\/20 {
+  background-color: #fee2e2 !important;
+}
+
+body.light-theme #live-ticker-track .bg-orange-500\/20 {
+  background-color: #ffedd5 !important;
+}
+
+body.light-theme #refresh-feed-btn {
+  background: #f1f5f9 !important;
+  color: #334155 !important;
+  border: 1px solid #cbd5e1 !important;
+}
+
+body.light-theme #refresh-feed-btn:hover {
+  background: #e2e8f0 !important;
+  color: #0f172a !important;
+}
+
+/* Top-Right Red & Safe Zones Intelligence Button in Light Theme */
+body.light-theme #zone-intel-toggle-btn,
+body.light-theme #top-right-intel-btn {
+  background: rgba(255, 255, 255, 0.95) !important;
+  background-color: rgba(255, 255, 255, 0.95) !important;
+  border: 1px solid rgba(16, 185, 129, 0.5) !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08) !important;
+  color: #0f172a !important;
+}
+
+body.light-theme #zone-intel-toggle-btn,
+body.light-theme #top-right-intel-btn:hover {
+  background: #ffffff !important;
+  border-color: rgba(16, 185, 129, 0.8) !important;
+  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.2) !important;
+}
+
+body.light-theme #zone-intel-toggle-btn,
+body.light-theme #top-right-intel-btn span {
+  color: #0f172a !important;
+}
+
+body.light-theme #zone-intel-toggle-btn,
+body.light-theme #top-right-intel-btn .text-emerald-400,
+body.light-theme #zone-intel-toggle-btn,
+body.light-theme #top-right-intel-btn .text-emerald-300 {
+  color: #059669 !important;
+}
+
+body.light-theme #zone-intel-toggle-btn,
+body.light-theme #top-right-intel-btn .bg-emerald-500\/20 {
+  background-color: #d1fae5 !important;
+  border-color: #a7f3d0 !important;
+  color: #047857 !important;
+}
+
+/* Centered Zone Intelligence Modal Overlay in Light Theme */
+body.light-theme #dual-city-intelligence-dock,
+body.light-theme #top-right-intel-modal {
+  background: #ffffff !important;
+  background-color: #ffffff !important;
+  border: 1px solid #e2e8f0 !important;
+  box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.25) !important;
+  color: #0f172a !important;
+}
+
+body.light-theme #dual-city-intelligence-dock,
+body.light-theme #top-right-intel-modal .bg-\[\#070a11\]\/95,
+body.light-theme #dual-city-intelligence-dock,
+body.light-theme #top-right-intel-modal .bg-\[\#0a0f1d\],
+body.light-theme #dual-city-intelligence-dock,
+body.light-theme #top-right-intel-modal .bg-\[\#06080e\],
+body.light-theme #dual-city-intelligence-dock,
+body.light-theme #top-right-intel-modal .bg-\[\#080d19\] {
+  background: #f8fafc !important;
+  background-color: #f8fafc !important;
+  border-color: #e2e8f0 !important;
+}
+
+body.light-theme #dual-city-intelligence-dock,
+body.light-theme #top-right-intel-modal .text-white {
+  color: #0f172a !important;
+}
+
+body.light-theme #dual-city-intelligence-dock,
+body.light-theme #top-right-intel-modal .text-zinc-200,
+body.light-theme #dual-city-intelligence-dock,
+body.light-theme #top-right-intel-modal .text-zinc-300 {
+  color: #334155 !important;
+}
+
+body.light-theme #dual-city-intelligence-dock,
+body.light-theme #top-right-intel-modal .text-zinc-400 {
+  color: #64748b !important;
+}
+
+body.light-theme #dual-city-intelligence-dock,
+body.light-theme #top-right-intel-modal .border-white\/10,
+body.light-theme #dual-city-intelligence-dock,
+body.light-theme #top-right-intel-modal .border-white\/15,
+body.light-theme #dual-city-intelligence-dock,
+body.light-theme #top-right-intel-modal .border-white\/\[0\.08\],
+body.light-theme #dual-city-intelligence-dock,
+body.light-theme #top-right-intel-modal .border-white\/\[0\.06\] {
+  border-color: #e2e8f0 !important;
+}
+
+body.light-theme #dual-city-intelligence-dock,
+body.light-theme #top-right-intel-modal .bg-white\/\[0\.04\],
+body.light-theme #dual-city-intelligence-dock,
+body.light-theme #top-right-intel-modal .bg-white\/\[0\.06\],
+body.light-theme #dual-city-intelligence-dock,
+body.light-theme #top-right-intel-modal .bg-white\/\[0\.08\] {
+  background-color: #f1f5f9 !important;
+  color: #0f172a !important;
+}
+
+body.light-theme #dual-city-intelligence-dock,
+body.light-theme #top-right-intel-modal .bg-red-950\/40 {
+  background-color: #fef2f2 !important;
+  border-color: #fecaca !important;
+}
+
+body.light-theme #dual-city-intelligence-dock,
+body.light-theme #top-right-intel-modal .text-red-300 {
+  color: #dc2626 !important;
+}
+
+body.light-theme #dual-city-intelligence-dock,
+body.light-theme #top-right-intel-modal .bg-emerald-950\/40 {
+  background-color: #f0fdf4 !important;
+  border-color: #bbf7d0 !important;
+}
+
+body.light-theme #dual-city-intelligence-dock,
+body.light-theme #top-right-intel-modal .text-emerald-300 {
+  color: #16a34a !important;
+}
+
+body.light-theme #dual-city-intelligence-dock,
+body.light-theme #top-right-intel-modal .route-filter-btn:not(.active-route-btn) {
+  background-color: #f1f5f9 !important;
+  border-color: #cbd5e1 !important;
+  color: #334155 !important;
+}
+
+/* Map Popups and Badges in Light Theme */
+body.light-theme .city-intel-popup .leaflet-popup-content-wrapper,
+body.light-theme .city-intel-popup .leaflet-popup-tip {
+  background: #ffffff !important;
+  background-color: #ffffff !important;
+  border: 1px solid #e2e8f0 !important;
+  box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.15) !important;
+  color: #0f172a !important;
+}
+
+body.light-theme .city-intel-popup .text-white {
+  color: #0f172a !important;
+}
+
+body.light-theme .city-intel-popup .text-zinc-200,
+body.light-theme .city-intel-popup .text-zinc-300 {
+  color: #334155 !important;
+}
+
+body.light-theme .city-intel-popup .text-zinc-400 {
+  color: #64748b !important;
+}
+
+body.light-theme .city-intel-popup .bg-red-950\/40 {
+  background-color: #fef2f2 !important;
+  border-color: #fecaca !important;
+}
+
+body.light-theme .city-intel-popup .bg-emerald-950\/40 {
+  background-color: #f0fdf4 !important;
+  border-color: #bbf7d0 !important;
+}
+
+body.light-theme .apple-glass-popup .leaflet-popup-content-wrapper,
+body.light-theme .apple-glass-popup .leaflet-popup-tip {
+  background: #ffffff !important;
+  background-color: #ffffff !important;
+  border: 1px solid #e2e8f0 !important;
+  box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.15) !important;
+  color: #0f172a !important;
+}
+
+body.light-theme .apple-glass-popup .text-white {
+  color: #0f172a !important;
+}
+
+body.light-theme .apple-glass-popup .text-slate-100,
+body.light-theme .apple-glass-popup .text-slate-300 {
+  color: #334155 !important;
+}
+
+body.light-theme .apple-glass-popup .text-slate-400 {
+  color: #64748b !important;
+}
+
+body.light-theme .apple-glass-popup .bg-emerald-950\/40 {
+  background-color: #f0fdf4 !important;
+  border-color: #bbf7d0 !important;
+}
+
+body.light-theme .apple-glass-popup .bg-red-950\/40 {
+  background-color: #fef2f2 !important;
+  border-color: #fecaca !important;
+}
+
+body.light-theme .evacuation-checkpoint-pin {
+  background: #ffffff !important;
+  color: #0f172a !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+}
+
+body.light-theme .corridor-dist-badge.green-badge {
+  background: #ecfdf5 !important;
+  color: #047857 !important;
+  border: 1px solid #10b981 !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+}
+
+body.light-theme .corridor-dist-badge.red-badge {
+  background: #fef2f2 !important;
+  color: #b91c1c !important;
+  border: 1px solid #ef4444 !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+}
+
+body.light-theme .corridor-dist-badge.primary-badge {
+  background: #ecfdf5 !important;
+  color: #065f46 !important;
+  border: 1px solid #10b981 !important;
+}
+
+body.light-theme .corridor-dist-badge.secondary-badge {
+  background: #fffbeb !important;
+  color: #b45309 !important;
+  border: 1px solid #f59e0b !important;
+}
+
+body.light-theme .corridor-dist-badge.tactical-badge {
+  background: #faf5ff !important;
+  color: #7e22ce !important;
+  border: 1px solid #a855f7 !important;
+}
+
+body.light-theme .custom-haven-marker .bg-slate-900\/95 {
+  background-color: #ffffff !important;
+  color: #047857 !important;
+  border-color: #a7f3d0 !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
+}

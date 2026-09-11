@@ -117,8 +117,24 @@ export function calculateVulnerability(habitation) {
   const rawV = (exposure * sensitivity) / adaptiveCapacity;
   const normalizedV = Number(Math.min(1.0, Math.max(0.05, rawV * 0.5)).toFixed(3));
 
+  let vulnerabilityClass = "Low Vulnerability (Adequate Adaptive Buffer)";
+  let badgeColor = "bg-emerald-500/20 text-emerald-300 border-emerald-500/30";
+
+  if (normalizedV >= 0.70) {
+    vulnerabilityClass = "Critical Vulnerability (High Exposure & Kutcha Housing)";
+    badgeColor = "bg-red-500/20 text-red-300 border-red-500/30";
+  } else if (normalizedV >= 0.50) {
+    vulnerabilityClass = "High Vulnerability (Elevated Socio-Economic Deficit)";
+    badgeColor = "bg-orange-500/20 text-orange-300 border-orange-500/30";
+  } else if (normalizedV >= 0.35) {
+    vulnerabilityClass = "Moderate Vulnerability (Limited Health Access)";
+    badgeColor = "bg-amber-500/20 text-amber-300 border-amber-500/30";
+  }
+
   return {
     vulnerabilityScore: normalizedV,
+    vulnerabilityClass,
+    badgeColor,
     exposure: Number(exposure.toFixed(2)),
     sensitivity: Number(sensitivity.toFixed(2)),
     adaptiveCapacity: Number(adaptiveCapacity.toFixed(2))
