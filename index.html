@@ -1,0 +1,2122 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RedZone Tracker - Intelligent Hazard Identification & Relocation Platform</title>
+  
+  <!-- Compiled Tailwind CSS Fallback (Protects against browser shields blocking cdn.tailwindcss.com) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" integrity="sha512-wnea99tKIC3TJF7P4eFFyDl+GO7f8a70C5eNffl2m3b1Z9/7z1q4x7Vq95bQj9hT62K5L1X8n4f4e24a51e6g==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+  <!-- Tailwind CSS Dynamic JIT (for extended palette) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    if (window.tailwind) {
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            colors: {
+              brand: {
+                red: '#FF3B30',
+                orange: '#FF9500',
+                yellow: '#FFCC00',
+                green: '#30D158',
+                blue: '#0A84FF',
+                cyan: '#64D2FF',
+                canvas: '#05070B',
+                surface: '#090C13',
+                card: 'rgba(15, 20, 32, 0.72)'
+              }
+            },
+            fontFamily: {
+              sans: ['"Inter"', '-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'Roboto', '"Helvetica Neue"', 'Arial', 'sans-serif'],
+              mono: ['ui-monospace', 'SFMono-Regular', '"SF Mono"', 'Menlo', 'Consolas', 'monospace']
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Leaflet Map CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+  
+    <!-- Premium Modern Interface Typography (Inter: Standard of Apple, Stripe, Linear, Vercel) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <!-- Custom Apple-Inspired Design System (Both root & css/ paths supported) -->
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="css/styles.css" />
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="bg-[#05070B] text-slate-100 min-h-screen flex flex-col antialiased selection:bg-red-500/25 selection:text-white bg-grid-pattern">
+
+  <!-- =========================================================================
+       PART 1: TOP HEADER & NAVIGATION
+       ========================================================================= -->
+  <header class="w-full header-ultra-black sticky top-0 z-40">
+    <!-- Main Header Row (Ultra-Black Dashboard Bar) -->
+    <div class="max-w-[1780px] mx-auto px-4 lg:px-6 py-2.5 flex items-center justify-between gap-4 h-16">
+      
+      <!-- Brand & Project Title (Raksha in Helvetica, scaled height-wise, no SIH badge) -->
+      <div class="flex items-center space-x-3.5 shrink-0 h-full">
+        <div class="relative flex items-center justify-center h-full">
+          <div class="w-12 h-12 rounded-lg overflow-hidden bg-black flex items-center justify-center border border-white/20 shadow-md">
+            <img src="assets/raksha_logo.jpg" alt="Raksha Logo" class="w-full h-full object-cover" />
+          </div>
+          <span class="absolute top-1 -right-1 flex h-2.5 w-2.5">
+            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+            <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-red-500"></span>
+          </span>
+        </div>
+
+        <div class="flex flex-col justify-center">
+          <div class="flex items-baseline">
+            <span class="text-2xl lg:text-3xl font-bold tracking-tight text-white leading-none">
+              Raksha
+            </span>
+          </div>
+          <p class="text-[10px] text-zinc-400 font-medium tracking-tight mt-0.5 hidden sm:block">
+            Intelligent Hazard Zonation & Relocation Intelligence
+          </p>
+        </div>
+      </div>
+
+      <!-- UN / UNESCO / WHO Global Search Bar (Minimalist White Box) -->
+      <div class="flex-1 max-w-xl relative">
+        <div class="relative flex items-center group">
+          <!-- Flag Badge -->
+          <div class="absolute left-3.5 flex items-center space-x-1.5 pointer-events-none text-slate-500 z-10">
+            <span class="text-xs">🌐</span>
+            <span class="text-[10px] font-bold tracking-wider uppercase text-slate-700 hidden sm:inline">UN-DMIS</span>
+            <span class="text-slate-400 text-xs">/</span>
+          </div>
+
+          <!-- Search Input: Clean Minimal White Box -->
+          <input 
+            type="text" 
+            id="city-search-input"
+            placeholder="Search vulnerable city, district, or habitation (e.g. Joshimath, Wayanad, Majuli)..."
+            class="w-full pl-28 pr-16 py-2.5 minimal-white-search rounded-md text-xs text-slate-900 placeholder-slate-500 focus:outline-none transition-all shadow-md"
+            autocomplete="off"
+          />
+
+          <!-- Shortcut Chip (⌘K / Ctrl K) -->
+          <div class="absolute right-9 hidden md:flex items-center pointer-events-none">
+            <kbd class="px-1.5 py-0.5 text-[9px] font-mono text-slate-500 bg-slate-100 border border-slate-300 rounded">
+              Ctrl K
+            </kbd>
+          </div>
+
+          <!-- Search Trigger Icon Button -->
+          <button id="search-trigger-btn" class="absolute right-2.5 p-1 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 hover:text-black transition-colors" title="Execute Search">
+            <i data-lucide="search" class="w-3.5 h-3.5"></i>
+          </button>
+        </div>
+
+        <!-- Autocomplete Suggestions Dropdown -->
+        <div id="search-suggestions" class="absolute left-0 right-0 top-full mt-2 bg-[#0d0d0d] border border-white/15 rounded-lg shadow-2xl overflow-hidden hidden z-50">
+          <div id="suggestions-list" class="max-h-64 overflow-y-auto divide-y divide-white/[0.06] text-xs">
+            <!-- Populated via app.js -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Header Action Controls (Top Right) -->
+      <div class="flex items-center space-x-2 shrink-0">
+        <!-- Theme Toggle Button (Dark / Light Mode) -->
+        <button id="theme-toggle-btn" class="capsule-btn w-9 h-9 flex items-center justify-center border border-white/20 transition-all shadow-sm group cursor-pointer" title="Toggle Dark / Light Theme">
+          <i id="theme-icon" data-lucide="sun" class="w-4 h-4 text-white group-hover:rotate-90 transition-transform duration-300"></i>
+        </button>
+
+        <!-- Single Settings Button (Icon-Only White Gear as requested) -->
+        <button id="settings-btn" onclick="window.openSettingsDrawer && window.openSettingsDrawer()" class="capsule-btn w-9 h-9 flex items-center justify-center border border-white/20 transition-all shadow-sm group cursor-pointer" title="System Settings & Preferences">
+          <i data-lucide="settings" class="w-4 h-4 text-white group-hover:rotate-45 transition-transform duration-300"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Secondary Nav Area (Dark Grey Subnav, Seamless Left-Aligned Items, Full-Height Partitions) -->
+    <div class="subnav-grey h-11 border-b border-[#222222]">
+      <div class="max-w-[1780px] mx-auto px-4 lg:px-6 h-full flex items-center justify-between">
+        <!-- Left-Aligned Items with Full-Height Top-to-Bottom Partitions (Equal size slots, centered text) -->
+        <div class="subnav-items-container flex items-stretch h-full overflow-x-auto">
+          <!-- Full-height start partition -->
+          <div class="subnav-full-partition"></div>
+
+          <!-- Home button (Equal slot width, centered) -->
+          <button id="nav-home" class="subnav-clean-item active cursor-pointer" title="Return to Overview">
+            <i data-lucide="home" class="w-4 h-4"></i>
+            <span>Home</span>
+          </button>
+          
+          <!-- Full-height partition touching top and bottom of the menu bar -->
+          <div class="subnav-full-partition"></div>
+
+          <!-- Side Menu Button (Equal slot width, centered) -->
+          <button id="nav-side-menu-btn" onclick="window.toggleSideMenu && window.toggleSideMenu()" class="subnav-clean-item cursor-pointer" title="Open Analytical Side Menu (Capacity, Vulnerability, Relocation)">
+            <i data-lucide="menu" class="w-4 h-4"></i>
+            <span>Side Menu</span>
+          </button>
+
+          <!-- Full-height partition touching top and bottom of the menu bar -->
+          <div class="subnav-full-partition"></div>
+
+          <!-- About / Methodology Button (Equal slot width, centered) -->
+          <button id="nav-about" class="subnav-clean-item cursor-pointer" title="Scientific Methodology & Algorithmic Foundation">
+            <i data-lucide="book-open" class="w-4 h-4"></i>
+            <span>About / Methodology</span>
+          </button>
+          
+          <!-- Full-height partition touching top and bottom of the menu bar -->
+          <div class="subnav-full-partition"></div>
+
+          <!-- Live Events (Equal slot width, centered, normal uniform color) -->
+          <button id="nav-live" class="subnav-clean-item cursor-pointer" title="Live Threat Telemetry">
+            <span class="w-2.5 h-2.5 rounded-full bg-red-500 threat-live-beacon shrink-0"></span>
+            <span>Live Events</span>
+          </button>
+          
+          <!-- Full-height partition touching top and bottom of the menu bar -->
+          <div class="subnav-full-partition"></div>
+
+          <!-- Simulation Engine (Equal slot width, centered, normal uniform color) -->
+          <button id="nav-simulation" class="subnav-clean-item cursor-pointer" title="Dynamic What-If Simulation Engine">
+            <i data-lucide="zap" class="w-4 h-4"></i>
+            <span>Simulation Engine</span>
+          </button>
+          
+          <!-- Full-height partition touching top and bottom of the menu bar -->
+          <div class="subnav-full-partition"></div>
+
+          <!-- History (Equal slot width, centered) -->
+          <button id="nav-history" class="subnav-clean-item cursor-pointer" title="Historical Disaster Precedents">
+            <i data-lucide="history" class="w-4 h-4"></i>
+            <span>History</span>
+          </button>
+
+          <!-- Full-height end partition -->
+          <div class="subnav-full-partition"></div>
+        </div>
+
+        <div class="hidden lg:flex items-center space-x-5 text-[11px] text-zinc-400">
+          <div class="flex items-center space-x-1.5">
+            <span class="text-zinc-500">Framework:</span>
+            <span class="text-zinc-300 font-semibold">Sendai 2015-2030 (Target G)</span>
+          </div>
+          <div class="flex items-center space-x-1.5">
+            <span class="text-zinc-500">Telemetry:</span>
+            <span class="text-emerald-400 font-semibold flex items-center gap-1.5">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-sm shadow-emerald-400"></span> Bhuvan / ISRO Active
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- =========================================================================
+       PART 2: LIVE EVENT ALERT WINDOW (RIGHT BELOW HEADER WITH RED MARK)
+       ========================================================================= -->
+  <div id="live-alert-bar" class="w-full bg-[#080B12]/90 border-b border-red-500/20 py-2 px-4 lg:px-6 flex items-center justify-between text-xs overflow-hidden z-30 shadow-md backdrop-blur-xl">
+    <div class="flex items-center space-x-2.5 shrink-0 pr-4 border-r border-red-500/20">
+      <span class="relative flex h-2.5 w-2.5">
+        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+        <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-red-500"></span>
+      </span>
+      <span class="font-bold uppercase tracking-wider text-red-400 text-[10px]">🔴 Live Threat Telemetry</span>
+    </div>
+
+    <!-- Ticker Stream with Left/Right Gradient Fade Masks -->
+    <div class="flex-1 overflow-hidden mx-4 relative ticker-container">
+      <div id="live-ticker-track" class="ticker-track space-x-8 text-slate-300 cursor-pointer">
+        <!-- Live stream populated dynamically via liveFeed.js -->
+        <span class="inline-flex items-center space-x-2 hover:text-white transition-colors py-1 cursor-pointer">
+          <span class="px-1.5 py-0.5 rounded-md bg-red-500/20 text-red-300 font-bold text-[9px] uppercase tracking-wider">LANDSLIDE</span>
+          <span class="font-medium">🔴 RED ALERT: Accelerated Subsidence Rate (1.4 mm/day) recorded at Joshimath Sunil Ward</span>
+        </span>
+        <span class="text-white/20 px-2">•</span>
+        <span class="inline-flex items-center space-x-2 hover:text-white transition-colors py-1 cursor-pointer">
+          <span class="px-1.5 py-0.5 rounded-md bg-orange-500/20 text-orange-300 font-bold text-[9px] uppercase tracking-wider">FLOOD</span>
+          <span class="font-medium">🟠 ORANGE ALERT: Brahmaputra River Water Level 1.2m above danger mark at Majuli Ghat</span>
+        </span>
+        <span class="text-white/20 px-2">•</span>
+        <span class="inline-flex items-center space-x-2 hover:text-white transition-colors py-1 cursor-pointer">
+          <span class="px-1.5 py-0.5 rounded-md bg-orange-500/20 text-orange-300 font-bold text-[9px] uppercase tracking-wider">CYCLONE</span>
+          <span class="font-medium">🟠 CYCLONIC DEPRESSION: Deep depression 320km SE of Paradip, tidal surge risk 3.8m</span>
+        </span>
+      </div>
+    </div>
+
+    <!-- Refresh Feed Button -->
+    <button id="refresh-feed-btn" class="shrink-0 text-[11px] px-3 py-1 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] text-slate-300 border border-white/[0.08] flex items-center space-x-1.5 transition-all shadow-xs" title="Refresh Live Feeds">
+      <i data-lucide="refresh-cw" class="w-3 h-3"></i>
+      <span class="hidden sm:inline font-medium">Sync Telemetry</span>
+    </button>
+  </div>
+
+  <!-- =========================================================================
+       MAIN BODY: MAP (MIDDLE) & SIDEBAR MENU (5 MODULES)
+       ========================================================================= -->
+  <div class="flex-1 flex flex-col lg:flex-row relative overflow-hidden">
+    
+    
+
+    <main class="flex-1 relative min-h-[520px] lg:min-h-0 bg-[#000000]">
+
+      <!-- Backdrop Overlay for Drawer -->
+    <div id="sidebar-backdrop" onclick="window.closeSideMenu && window.closeSideMenu()" class="absolute inset-0 bg-black/60 backdrop-blur-xs z-[1150] hidden transition-opacity duration-300 pointer-events-auto cursor-pointer"></div>
+
+    <!-- =======================================================================
+         PART 3: SLIDE-OUT ANALYTICS DRAWER (CAPACITY, VULNERABILITY, RELOCATION, ETC.)
+         ======================================================================= -->
+    <aside id="side-menu-drawer" class="absolute inset-y-0 left-0 z-[1200] w-full sm:w-[420px] lg:w-[450px] bg-[#080808] border-r border-[#202020] flex flex-col transform -translate-x-full transition-transform duration-300 ease-in-out shadow-2xl overflow-hidden pointer-events-auto">
+      
+      <!-- Drawer Top Header Bar with Close Button -->
+      <div class="px-4 py-3 bg-[#0d0d0d] border-b border-[#1c1c1c] flex items-center justify-between shrink-0">
+        <div class="flex items-center space-x-2.5">
+          <div class="w-6 h-6 rounded-lg bg-red-500/20 border border-red-500/30 flex items-center justify-center">
+            <i data-lucide="layers" class="w-3.5 h-3.5 text-red-400"></i>
+          </div>
+          <div>
+            <div class="text-xs font-bold text-white tracking-wide">Analysis & Planning Suite</div>
+            <div class="text-[10px] text-slate-400">Capacity • Vulnerability • Relocation</div>
+          </div>
+        </div>
+        <button id="close-side-menu-btn" onclick="window.closeSideMenu && window.closeSideMenu()" class="w-7 h-7 rounded-lg bg-[#181818] hover:bg-[#252525] border border-[#2a2a2a] text-slate-400 hover:text-white flex items-center justify-center transition-all cursor-pointer" title="Close Panel (Esc)">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <!-- Sidebar Tool Navigation Tabs (The 5 requested tools in Box Format with White Icons) -->
+      <div class="p-2 border-b border-white/[0.08] bg-[#000000]/90 backdrop-blur-md">
+        <div class="grid grid-cols-5 gap-1.5 text-[11px] font-medium">
+          <!-- 1. Carrying Capacity -->
+          <button class="sidebar-tab-btn active aesthetic-tab-btn p-2 rounded text-center flex flex-col items-center justify-center cursor-pointer" data-tab="carrying-capacity" onclick="window.switchSidebarTab && window.switchSidebarTab('carrying-capacity')" title="Carrying Capacity Assessment">
+            <i data-lucide="gauge" class="w-4 h-4 mb-1 text-white"></i>
+            <span class="truncate w-full font-semibold">Capacity</span>
+          </button>
+          <!-- 2. Vulnerability & Demographics -->
+          <button class="sidebar-tab-btn aesthetic-tab-btn p-2 rounded text-center flex flex-col items-center justify-center cursor-pointer" data-tab="vulnerability" onclick="window.switchSidebarTab && window.switchSidebarTab('vulnerability')" title="Vulnerability & Demographics">
+            <i data-lucide="users" class="w-4 h-4 mb-1 text-white"></i>
+            <span class="truncate w-full font-semibold">Vulnerability</span>
+          </button>
+          <!-- 3. Relocation Action Tool -->
+          <button class="sidebar-tab-btn aesthetic-tab-btn p-2 rounded text-center flex flex-col items-center justify-center cursor-pointer" data-tab="relocation" onclick="window.switchSidebarTab && window.switchSidebarTab('relocation')" title="Relocation Action Tool (MCDA Engine)">
+            <i data-lucide="move-right" class="w-4 h-4 mb-1 text-white"></i>
+            <span class="truncate w-full font-bold">Relocation</span>
+          </button>
+          <!-- 4. Hazard Layers -->
+          <button class="sidebar-tab-btn aesthetic-tab-btn p-2 rounded text-center flex flex-col items-center justify-center cursor-pointer" data-tab="hazard-layers" onclick="window.switchSidebarTab && window.switchSidebarTab('hazard-layers')" title="Hazard Overlays">
+            <i data-lucide="layers" class="w-4 h-4 mb-1 text-white"></i>
+            <span class="truncate w-full font-semibold">Layers</span>
+          </button>
+          <!-- 5. Export Report -->
+          <button class="sidebar-tab-btn aesthetic-tab-btn p-2 rounded text-center flex flex-col items-center justify-center cursor-pointer" data-tab="export-report" onclick="window.switchSidebarTab && window.switchSidebarTab('export-report')" title="Export District Collector Report">
+            <i data-lucide="file-text" class="w-4 h-4 mb-1 text-white"></i>
+            <span class="truncate w-full font-semibold">Export</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Active Habitation Spotlight Header & Citizen Danger Meter -->
+      <div id="selected-hab-banner" class="p-4 bg-[#0a0a0a] border-b border-[#1c1c1c] space-y-3">
+        <div class="flex items-start justify-between gap-2">
+          <div class="space-y-1">
+            <div class="flex items-center space-x-2">
+              <span id="spotlight-badge" class="px-2.5 py-0.5 rounded-full text-[10px] font-semibold uppercase tracking-wider bg-red-500/15 text-red-400 border border-red-500/30">
+                Critical Red Zone
+              </span>
+              <span id="spotlight-score" class="text-xs font-semibold text-zinc-300">94% Hazard Index</span>
+            </div>
+            <h3 id="spotlight-name" class="font-bold text-base text-white tracking-tight leading-tight">Sunil Ward (Joshimath)</h3>
+            <p id="spotlight-meta" class="text-[11px] text-zinc-400 font-normal">Chamoli District, Uttarakhand • Elev: 1890m • Slope: 38°</p>
+          </div>
+          <button id="inspect-full-details-btn" onclick="window.openMethodologyModal && window.openMethodologyModal()" class="px-2.5 py-1 rounded-lg bg-white/[0.06] hover:bg-white/[0.12] text-[11px] text-zinc-300 border border-white/10 transition-all font-medium shrink-0 cursor-pointer" title="Scientific Formulation & AHP">
+            View Math
+          </button>
+        </div>
+
+        <!-- Citizen Threat Level Speedometer (Visual Meter) -->
+        <div class="bg-[#121212] p-3 rounded-xl border border-[#222222] flex items-center justify-between gap-3">
+          <!-- Semi-circular SVG Gauge -->
+          <div class="relative w-28 h-16 flex items-center justify-center shrink-0">
+            <svg viewBox="0 0 100 55" class="w-full h-full">
+              <path d="M 10 50 A 40 40 0 0 1 90 50" fill="none" stroke="#222222" stroke-width="8" stroke-linecap="round" />
+              <defs>
+                <linearGradient id="gauge-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stop-color="#22c55e" />
+                  <stop offset="50%" stop-color="#f59e0b" />
+                  <stop offset="100%" stop-color="#ef4444" />
+                </linearGradient>
+              </defs>
+              <path id="spotlight-gauge-arc" d="M 10 50 A 40 40 0 0 1 90 50" fill="none" stroke="url(#gauge-grad)" stroke-width="8" stroke-linecap="round" stroke-dasharray="125.66" stroke-dashoffset="7.5" class="transition-all duration-700" />
+            </svg>
+            <div class="absolute bottom-0 text-center">
+              <span id="spotlight-gauge-val" class="text-base font-bold text-white leading-none">94%</span>
+              <span class="block text-[8px] uppercase tracking-wider text-zinc-400 font-medium">Risk Dial</span>
+            </div>
+          </div>
+
+          <!-- Citizen-Friendly Threat Description -->
+          <div class="flex-1 space-y-0.5">
+            <div class="text-[10px] uppercase font-bold tracking-wider text-zinc-400">Citizen Threat Status</div>
+            <div id="spotlight-citizen-status" class="text-xs font-bold text-red-400">🚨 Severe Danger: Relocate Immediately</div>
+            <p id="spotlight-citizen-desc" class="text-[10px] text-zinc-400 leading-tight">Slope shear strength degraded by excessive pore water pressure.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sidebar Tab Panes (Scrollable Area) -->
+      <div class="flex-1 overflow-y-auto p-4 lg:p-5 space-y-4">
+        
+        <!-- ===================================================================
+             TAB 1: CARRYING CAPACITY ASSESSMENT (WITH DONUT CHART & METERS)
+             =================================================================== -->
+        <div id="tab-carrying-capacity" class="tab-pane space-y-4">
+          <div class="flex items-center justify-between">
+            <h4 class="text-xs font-bold uppercase tracking-wider text-zinc-400">Carrying Capacity Balance</h4>
+            <span id="cci-status-badge" class="text-[10px] px-2.5 py-0.5 rounded-full font-bold bg-red-500/20 text-red-400 border border-red-500/30">
+              Critical Deficit
+            </span>
+          </div>
+
+          <!-- Visual Pie/Donut Chart: The 5 Life-Support Pillars -->
+          <div class="aesthetic-card p-4 space-y-3">
+            <div class="text-[11px] font-bold text-white uppercase tracking-wider">Life-Support Capacity Breakdown</div>
+            
+            <div class="flex items-center gap-4">
+              <!-- SVG Donut Chart -->
+              <div class="relative w-28 h-28 shrink-0 flex items-center justify-center">
+                <svg viewBox="0 0 80 80" class="w-full h-full transform -rotate-90">
+                  <!-- Base Track -->
+                  <circle cx="40" cy="40" r="28" fill="transparent" stroke="#222" stroke-width="12" />
+                  <!-- 1. Water: 25% (Cyan) -->
+                  <circle id="donut-slice-water" cx="40" cy="40" r="28" fill="transparent" stroke="#06b6d4" stroke-width="12" stroke-dasharray="43.98 131.95" stroke-dashoffset="0" class="transition-all duration-500" />
+                  <!-- 2. Land: 20% (Emerald) -->
+                  <circle id="donut-slice-land" cx="40" cy="40" r="28" fill="transparent" stroke="#10b981" stroke-width="12" stroke-dasharray="35.19 140.74" stroke-dashoffset="-43.98" class="transition-all duration-500" />
+                  <!-- 3. Infrastructure: 20% (Blue) -->
+                  <circle id="donut-slice-infra" cx="40" cy="40" r="28" fill="transparent" stroke="#3b82f6" stroke-width="12" stroke-dasharray="35.19 140.74" stroke-dashoffset="-79.17" class="transition-all duration-500" />
+                  <!-- 4. Ecological Buffer: 15% (Purple) -->
+                  <circle id="donut-slice-eco" cx="40" cy="40" r="28" fill="transparent" stroke="#a855f7" stroke-width="12" stroke-dasharray="26.39 149.54" stroke-dashoffset="-114.36" class="transition-all duration-500" />
+                  <!-- 5. Population Strain: 20% (Rose) -->
+                  <circle id="donut-slice-pop" cx="40" cy="40" r="28" fill="transparent" stroke="#f43f5e" stroke-width="12" stroke-dasharray="35.19 140.74" stroke-dashoffset="-140.75" class="transition-all duration-500" />
+                </svg>
+                <!-- Donut Center Label -->
+                <div class="absolute inset-0 flex flex-col items-center justify-center text-center">
+                  <span id="cci-score-display" class="text-base font-bold text-white leading-none">0.19</span>
+                  <span class="text-[8px] uppercase tracking-wider text-zinc-400 font-semibold mt-0.5">Capacity</span>
+                </div>
+              </div>
+
+              <!-- Color-Coded Visual Legend -->
+              <div class="flex-1 space-y-1.5 text-xs">
+                <div class="flex items-center justify-between">
+                  <span class="flex items-center gap-1.5 text-zinc-300">
+                    <span class="w-2.5 h-2.5 rounded-full bg-[#06b6d4]"></span> 💧 Water Supply:
+                  </span>
+                  <span class="font-bold text-white" id="param-water-val">22%</span>
+                </div>
+                <div class="flex items-center justify-between">
+                  <span class="flex items-center gap-1.5 text-zinc-300">
+                    <span class="w-2.5 h-2.5 rounded-full bg-[#10b981]"></span> 🏞️ Stable Ground:
+                  </span>
+                  <span class="font-bold text-white" id="param-land-val">18%</span>
+                </div>
+                <div class="flex items-center justify-between">
+                  <span class="flex items-center gap-1.5 text-zinc-300">
+                    <span class="w-2.5 h-2.5 rounded-full bg-[#3b82f6]"></span> 🛣️ Civic Roads:
+                  </span>
+                  <span class="font-bold text-white" id="param-infra-val">25%</span>
+                </div>
+                <div class="flex items-center justify-between">
+                  <span class="flex items-center gap-1.5 text-zinc-300">
+                    <span class="w-2.5 h-2.5 rounded-full bg-[#a855f7]"></span> 🌲 Forest Buffer:
+                  </span>
+                  <span class="font-bold text-white" id="param-eco-val">15%</span>
+                </div>
+                <div class="flex items-center justify-between">
+                  <span class="flex items-center gap-1.5 text-zinc-300">
+                    <span class="w-2.5 h-2.5 rounded-full bg-[#f43f5e]"></span> 👥 Density Strain:
+                  </span>
+                  <span class="font-bold text-rose-400" id="param-pop-val">18%</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Citizen Population Overload Meter -->
+          <div class="aesthetic-card p-4 space-y-3">
+            <div class="flex justify-between items-end">
+              <div>
+                <div class="text-[11px] text-zinc-400 uppercase font-semibold">Overload Meter</div>
+                <div class="text-xl font-bold text-red-400" id="cci-overload-display">+185.0% Overcrowded</div>
+              </div>
+              <div class="text-right">
+                <span class="text-[10px] text-zinc-400 block">Excess Citizens</span>
+                <span class="text-sm font-bold text-white" id="cc-overflow-pop">2,220 persons</span>
+              </div>
+            </div>
+
+            <!-- Overload Bar Gauge -->
+            <div class="w-full bg-[#161616] h-3 rounded-full overflow-hidden p-0.5 border border-white/10 relative">
+              <div id="cci-meter-bar" class="bg-gradient-to-r from-amber-500 to-red-500 h-full rounded-full transition-all duration-500 shadow-sm" style="width: 85%;"></div>
+            </div>
+
+            <div class="flex justify-between text-[11px] text-zinc-400 pt-0.5">
+              <span>Current Pop: <b class="text-white" id="cci-current-pop">3,420</b></span>
+              <span>Safe Nature Limit: <b class="text-emerald-400" id="cci-ceiling-pop">1,200</b></span>
+            </div>
+          </div>
+
+          <!-- Citizen Safety Advisory Directive -->
+          <div class="p-3.5 rounded-xl bg-red-950/25 border border-red-500/25 text-xs space-y-1 text-red-200">
+            <div class="font-bold flex items-center gap-2 text-red-300">
+              <i data-lucide="alert-octagon" class="w-4 h-4 text-red-400"></i>
+              <span>Carrying Capacity Breach Directive</span>
+            </div>
+            <p class="text-[11px] text-red-300/80 leading-relaxed">
+              Ground structure cannot support current population density. Decongestion to designated green sanctuaries required to prevent catastrophic collapse.
+            </p>
+          </div>
+        </div>
+
+        <!-- ===================================================================
+             TAB 2: VULNERABILITY & DEMOGRAPHICS (WITH PIE CHART & METERS)
+             =================================================================== -->
+        <div id="tab-vulnerability" class="tab-pane hidden space-y-4">
+          <div class="flex items-center justify-between">
+            <h4 class="text-xs font-bold uppercase tracking-wider text-zinc-400">Community Vulnerability Profile</h4>
+            <span id="vuln-class-badge" class="text-[10px] px-2.5 py-0.5 rounded-full font-bold bg-purple-500/20 text-purple-300 border border-purple-500/30">
+              High Fragility
+            </span>
+          </div>
+
+          <!-- Visual Pie Chart: Who is at Risk? -->
+          <div class="aesthetic-card p-4 space-y-3">
+            <div class="text-[11px] font-bold text-white uppercase tracking-wider">Human & Structural Risk Breakdown</div>
+            
+            <div class="flex items-center gap-4">
+              <!-- SVG Donut Chart -->
+              <div class="relative w-28 h-28 shrink-0 flex items-center justify-center">
+                <svg viewBox="0 0 80 80" class="w-full h-full transform -rotate-90">
+                  <circle cx="40" cy="40" r="28" fill="transparent" stroke="#222" stroke-width="12" />
+                  <!-- Kutcha Houses: 45% (Rose) -->
+                  <circle id="vuln-slice-kutcha" cx="40" cy="40" r="28" fill="transparent" stroke="#f43f5e" stroke-width="12" stroke-dasharray="79.17 96.76" stroke-dashoffset="0" class="transition-all duration-500" />
+                  <!-- Elderly & Kids: 28% (Amber) -->
+                  <circle id="vuln-slice-dep" cx="40" cy="40" r="28" fill="transparent" stroke="#f59e0b" stroke-width="12" stroke-dasharray="49.26 126.67" stroke-dashoffset="-79.17" class="transition-all duration-500" />
+                  <!-- BPL Families: 27% (Violet) -->
+                  <circle id="vuln-slice-bpl" cx="40" cy="40" r="28" fill="transparent" stroke="#8b5cf6" stroke-width="12" stroke-dasharray="47.50 128.43" stroke-dashoffset="-128.43" class="transition-all duration-500" />
+                </svg>
+                <div class="absolute inset-0 flex flex-col items-center justify-center text-center">
+                  <span id="vuln-score-display" class="text-base font-bold text-white leading-none">0.78</span>
+                  <span class="text-[8px] uppercase tracking-wider text-zinc-400 font-semibold mt-0.5">Vulnerability</span>
+                </div>
+              </div>
+
+              <!-- Legend -->
+              <div class="flex-1 space-y-2 text-xs">
+                <div class="space-y-0.5">
+                  <div class="flex justify-between font-semibold text-zinc-300">
+                    <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-[#f43f5e]"></span> 🏚️ Fragile Kutcha Houses:</span>
+                    <b class="text-white" id="demo-kutcha-pct">62%</b>
+                  </div>
+                  <p class="text-[10px] text-zinc-400 pl-4">High structural collapse risk</p>
+                </div>
+                <div class="space-y-0.5">
+                  <div class="flex justify-between font-semibold text-zinc-300">
+                    <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-[#f59e0b]"></span> 👶 Elderly & Children:</span>
+                    <b class="text-white" id="demo-age-dep-pct">34%</b>
+                  </div>
+                  <p class="text-[10px] text-zinc-400 pl-4">Require assisted evacuation</p>
+                </div>
+                <div class="space-y-0.5">
+                  <div class="flex justify-between font-semibold text-zinc-300">
+                    <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-[#8b5cf6]"></span> 💰 Below Poverty Line (BPL):</span>
+                    <b class="text-white" id="demo-bpl-pct">48%</b>
+                  </div>
+                  <p class="text-[10px] text-zinc-400 pl-4">Need immediate relief subsidies</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Emergency Healthcare Access Meter -->
+          <div class="aesthetic-card p-4 space-y-2.5">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-zinc-300 uppercase tracking-wider">Hospital Access Time</span>
+              <span class="text-xs font-bold text-amber-400" id="demo-hospital-dist">14.5 km away</span>
+            </div>
+            
+            <div class="w-full bg-[#161616] h-2.5 rounded-full overflow-hidden p-0.5 border border-white/10">
+              <div id="vuln-meter-bar" class="bg-gradient-to-r from-emerald-500 via-amber-500 to-red-500 h-full rounded-full transition-all duration-500" style="width: 78%;"></div>
+            </div>
+
+            <div class="flex justify-between text-[10px] text-zinc-400">
+              <span>Near (< 5 km)</span>
+              <span class="text-red-400 font-semibold">🚨 Critical Delay (> 45 min transit)</span>
+              <span>Isolated (> 20 km)</span>
+            </div>
+          </div>
+
+          <!-- Historical Disaster Precedents -->
+          <div class="aesthetic-card p-3.5 space-y-2">
+            <div class="text-xs font-bold text-zinc-300">Past Disaster Events at this Location</div>
+            <ul id="spotlight-history-list" class="space-y-1 text-xs text-zinc-400 list-disc list-inside">
+              <li>2023 Rapid Subsidence Crisis</li>
+              <li>2021 Rishiganga Glacial Flash Flood</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- ===================================================================
+             TAB 3: RELOCATION ACTION TOOL (WITH BUDGET PIE CHART & HAVEN METER)
+             =================================================================== -->
+        <div id="tab-relocation" class="tab-pane hidden space-y-4">
+          <div class="flex items-center justify-between">
+            <h4 class="text-xs font-bold uppercase tracking-wider text-zinc-400">Relocation Plan & Budget</h4>
+            <span id="reloc-tier-badge" class="text-[10px] px-3 py-1 rounded-full font-bold bg-red-500/20 text-red-400 border border-red-500/30 threat-live-beacon">
+              TIER 1 URGENT
+            </span>
+          </div>
+
+          <!-- Recommended Safe Haven Sanctuary Card with Capacity Meter -->
+          <div class="p-4 rounded-2xl bg-[#0a0a0a] border border-emerald-500/30 space-y-3 shadow-lg">
+            <div class="flex items-center justify-between">
+              <span class="text-[11px] uppercase font-bold text-emerald-400 flex items-center gap-1.5">
+                <i data-lucide="shield-check" class="w-4 h-4"></i> Recommended Safe Sanctuary
+              </span>
+              <span class="text-xs font-bold text-emerald-300" id="matched-haven-distance">28.4 km transit</span>
+            </div>
+
+            <div>
+              <h4 class="text-base font-bold text-white" id="matched-haven-name">Pipalkoti Resilient Township</h4>
+              <p class="text-xs text-zinc-400" id="matched-haven-meta">Chamoli, Uttarakhand • Stable Bedrock Formation</p>
+            </div>
+
+            <!-- Safe Haven Headroom Progress Meter -->
+            <div class="bg-[#121212] p-3 rounded-xl border border-white/10 space-y-2">
+              <div class="flex justify-between items-center text-xs">
+                <span class="text-zinc-400">Safe Capacity Ready:</span>
+                <span class="font-bold text-emerald-300" id="matched-haven-headroom">+4,200 Persons</span>
+              </div>
+              <div class="w-full bg-[#1c1c1c] h-2 rounded-full overflow-hidden">
+                <div class="bg-emerald-500 h-full rounded-full shadow-xs" style="width: 72%"></div>
+              </div>
+              <div class="flex justify-between text-[10px] text-zinc-400">
+                <span>Infrastructure: <b class="text-emerald-300" id="matched-haven-infra">88% (Adequate)</b></span>
+                <span>Evac Route: <b class="text-white">NH-7 Paved Highway</b></span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Visual Pie/Donut Chart: Resettlement Budget Allocation -->
+          <div class="aesthetic-card p-4 space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-xs font-bold text-white uppercase tracking-wider">Government Relief Fund Allocation</span>
+              <span class="text-sm font-bold text-emerald-400" id="reloc-total-budget">₹17.68 Cr</span>
+            </div>
+
+            <div class="flex items-center gap-4 pt-1">
+              <!-- SVG Donut Chart -->
+              <div class="relative w-24 h-24 shrink-0 flex items-center justify-center">
+                <svg viewBox="0 0 80 80" class="w-full h-full transform -rotate-90">
+                  <circle cx="40" cy="40" r="28" fill="transparent" stroke="#222" stroke-width="12" />
+                  <!-- PMAY-G Housing: 58% (Emerald) -->
+                  <circle id="budget-slice-pmay" cx="40" cy="40" r="28" fill="transparent" stroke="#10b981" stroke-width="12" stroke-dasharray="102.04 73.89" stroke-dashoffset="0" class="transition-all duration-500" />
+                  <!-- Civic Infrastructure: 23% (Cyan) -->
+                  <circle id="budget-slice-infra" cx="40" cy="40" r="28" fill="transparent" stroke="#06b6d4" stroke-width="12" stroke-dasharray="40.46 135.47" stroke-dashoffset="-102.04" class="transition-all duration-500" />
+                  <!-- SDRF Subsistence: 19% (Amber) -->
+                  <circle id="budget-slice-sdrf" cx="40" cy="40" r="28" fill="transparent" stroke="#f59e0b" stroke-width="12" stroke-dasharray="33.43 142.50" stroke-dashoffset="-142.50" class="transition-all duration-500" />
+                </svg>
+                <div class="absolute inset-0 flex flex-col items-center justify-center text-center">
+                  <span class="text-xs font-bold text-white leading-none">PMAY-G</span>
+                  <span class="text-[7px] uppercase tracking-wider text-zinc-400 font-semibold mt-0.5">Aligned</span>
+                </div>
+              </div>
+
+              <!-- Legend with Grants -->
+              <div class="flex-1 space-y-1.5 text-xs text-zinc-300">
+                <div class="flex justify-between items-center">
+                  <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-[#10b981]"></span> 🏡 PMAY-G Homes (58%):</span>
+                  <b class="text-white" id="budget-pmay-cr">₹10.20 Cr</b>
+                </div>
+                <div class="flex justify-between items-center">
+                  <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-[#06b6d4]"></span> 🚰 Water & Roads (23%):</span>
+                  <b class="text-white" id="budget-infra-cr">₹4.08 Cr</b>
+                </div>
+                <div class="flex justify-between items-center">
+                  <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-[#f59e0b]"></span> 📦 SDRF Shifting (19%):</span>
+                  <b class="text-white" id="budget-sdrf-cr">₹3.40 Cr</b>
+                </div>
+              </div>
+            </div>
+            
+            <p class="text-[10px] text-zinc-400 leading-relaxed pt-1 border-t border-white/5">
+              Grant covers 100% replacement pucca housing under PMAY-G norms + ₹50,000 direct benefit transfer (DBT) per displaced family.
+            </p>
+          </div>
+
+          <!-- Priority Ranked Villages Table -->
+          <div class="space-y-2">
+            <div class="flex justify-between items-center">
+              <span class="text-xs font-bold uppercase tracking-wider text-zinc-400">All Ranked Vulnerable Habitations</span>
+              <span class="text-[10px] text-zinc-500">Sorted by Relocation Urgency</span>
+            </div>
+
+            <div id="all-ranked-habitations-list" class="space-y-1.5 max-h-52 overflow-y-auto">
+              <!-- Dynamically populated via app.js -->
+            </div>
+          </div>
+        </div>
+
+        <!-- ===================================================================
+             TAB 4: HAZARD LAYERS & AUTHENTIC REAL-TIME DATA SOURCES
+             =================================================================== -->
+        <div id="tab-hazard-layers" class="tab-pane hidden space-y-4">
+          <div class="flex items-center justify-between">
+            <h4 class="text-xs font-bold uppercase tracking-wider text-zinc-400">Map Layers & Real-Time Feeds</h4>
+            <span class="text-[10px] text-emerald-400 flex items-center gap-1 font-semibold">
+              <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> 7 Feeds Active
+            </span>
+          </div>
+
+          <!-- Layer Toggles -->
+          <div class="space-y-2 text-xs">
+            <label class="aesthetic-card p-3 flex items-center justify-between cursor-pointer hover:border-red-500/30 transition-all">
+              <div class="flex items-center space-x-3">
+                <span class="w-3 h-3 rounded-full bg-red-500 shadow-sm shadow-red-500"></span>
+                <div>
+                  <div class="font-bold text-white">Hazard-Based Red Zones</div>
+                  <div class="text-[11px] text-zinc-400">AHP High-Risk Polygons (Joshimath, Wayanad, Majuli)</div>
+                </div>
+              </div>
+              <input type="checkbox" id="layer-toggle-redzones" checked class="w-4 h-4 accent-red-500 rounded" />
+            </label>
+
+            <label class="aesthetic-card p-3 flex items-center justify-between cursor-pointer hover:border-amber-500/30 transition-all">
+              <div class="flex items-center space-x-3">
+                <span class="w-3 h-3 rounded-full bg-amber-500 shadow-sm shadow-amber-500"></span>
+                <div>
+                  <div class="font-bold text-white">Habitation Settlement Pins</div>
+                  <div class="text-[11px] text-zinc-400">Demographic clusters with population & CC data</div>
+                </div>
+              </div>
+              <input type="checkbox" id="layer-toggle-habitations" checked class="w-4 h-4 accent-amber-500 rounded" />
+            </label>
+
+            <label class="aesthetic-card p-3 flex items-center justify-between cursor-pointer hover:border-emerald-500/30 transition-all">
+              <div class="flex items-center space-x-3">
+                <span class="w-3 h-3 rounded-full bg-emerald-500 shadow-sm shadow-emerald-500"></span>
+                <div>
+                  <div class="font-bold text-white">Safe Green Haven Destinations</div>
+                  <div class="text-[11px] text-zinc-400">Resettlement colonies with verified capacity headroom</div>
+                </div>
+              </div>
+              <input type="checkbox" id="layer-toggle-safehavens" checked class="w-4 h-4 accent-emerald-500 rounded" />
+            </label>
+
+            <label class="aesthetic-card p-3 flex items-center justify-between cursor-pointer hover:border-cyan-500/30 transition-all">
+              <div class="flex items-center space-x-3">
+                <span class="w-3 h-3 rounded-full bg-cyan-400 shadow-sm shadow-cyan-400"></span>
+                <div>
+                  <div class="font-bold text-white">Live Seismic & Weather Alerts</div>
+                  <div class="text-[11px] text-zinc-400">USGS earthquakes & Open-Meteo extreme precipitation</div>
+                </div>
+              </div>
+              <input type="checkbox" id="layer-toggle-livealerts" checked class="w-4 h-4 accent-blue-500 rounded" />
+            </label>
+          </div>
+
+          <!-- =================================================================
+               AUTHENTIC REAL-TIME SATELLITE & GOVERNMENT DATA SOURCES
+               ================================================================= -->
+          <div class="space-y-2.5 pt-2">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold uppercase tracking-wider text-zinc-300">Verified Live Data Portals</span>
+              <span class="text-[9px] font-semibold text-zinc-400 bg-white/5 px-2 py-0.5 rounded border border-white/10">38ms Latency</span>
+            </div>
+
+            <div class="space-y-2">
+              <!-- 1. ISRO / NRSC Bhuvan -->
+              <div class="aesthetic-card p-3 text-xs space-y-1.5 hover:border-emerald-500/30 transition-all">
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center space-x-2">
+                    <span class="text-sm">🛰️</span>
+                    <span class="font-bold text-white">ISRO / NRSC Bhuvan</span>
+                    <span class="text-[9px] font-semibold px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">Official</span>
+                  </div>
+                  <a href="https://bhuvan.nrsc.gov.in/disaster/" target="_blank" rel="noopener noreferrer" class="text-[11px] text-cyan-400 hover:text-cyan-300 font-semibold flex items-center gap-1 transition-colors">
+                    <span>Portal</span> <i data-lucide="external-link" class="w-3 h-3"></i>
+                  </a>
+                </div>
+                <p class="text-[11px] text-zinc-400">Cartosat-3 & RISAT-1 synthetic aperture radar monitoring flood water logging & steep slope displacement.</p>
+                <div class="flex items-center justify-between text-[10px] text-zinc-500 pt-0.5">
+                  <span class="flex items-center gap-1 text-emerald-400"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> Satellite Pass: 14m ago</span>
+                  <span class="text-zinc-400">bhuvan.nrsc.gov.in</span>
+                </div>
+              </div>
+
+              <!-- 2. IMD Mausam Portal -->
+              <div class="aesthetic-card p-3 text-xs space-y-1.5 hover:border-blue-500/30 transition-all">
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center space-x-2">
+                    <span class="text-sm">🌦️</span>
+                    <span class="font-bold text-white">IMD (India Meteorological Dept)</span>
+                    <span class="text-[9px] font-semibold px-1.5 py-0.5 rounded bg-blue-500/15 text-blue-300 border border-blue-500/30">MoES</span>
+                  </div>
+                  <a href="https://mausam.imd.gov.in/" target="_blank" rel="noopener noreferrer" class="text-[11px] text-cyan-400 hover:text-cyan-300 font-semibold flex items-center gap-1 transition-colors">
+                    <span>Portal</span> <i data-lucide="external-link" class="w-3 h-3"></i>
+                  </a>
+                </div>
+                <p class="text-[11px] text-zinc-400">Doppler Weather Radar (DWR) network & INSAT-3DR cloud-burst and cyclone warning system.</p>
+                <div class="flex items-center justify-between text-[10px] text-zinc-500 pt-0.5">
+                  <span class="flex items-center gap-1 text-blue-400"><span class="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse"></span> Radar Echo: 142mm/24h</span>
+                  <span class="text-zinc-400">mausam.imd.gov.in</span>
+                </div>
+              </div>
+
+              <!-- 3. CWC Flood Early Warning -->
+              <div class="aesthetic-card p-3 text-xs space-y-1.5 hover:border-amber-500/30 transition-all">
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center space-x-2">
+                    <span class="text-sm">🌊</span>
+                    <span class="font-bold text-white">CWC National Flood Forecast</span>
+                    <span class="text-[9px] font-semibold px-1.5 py-0.5 rounded bg-amber-500/15 text-amber-300 border border-amber-500/30">Jal Shakti</span>
+                  </div>
+                  <a href="https://ffs.india-water.gov.in/" target="_blank" rel="noopener noreferrer" class="text-[11px] text-cyan-400 hover:text-cyan-300 font-semibold flex items-center gap-1 transition-colors">
+                    <span>Portal</span> <i data-lucide="external-link" class="w-3 h-3"></i>
+                  </a>
+                </div>
+                <p class="text-[11px] text-zinc-400">Real-time river stage & discharge levels across 338 gauge stations in Ganga and Brahmaputra basins.</p>
+                <div class="flex items-center justify-between text-[10px] text-zinc-500 pt-0.5">
+                  <span class="flex items-center gap-1 text-amber-400"><span class="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse"></span> Neamati Ghat: +1.2m Danger</span>
+                  <span class="text-zinc-400">ffs.india-water.gov.in</span>
+                </div>
+              </div>
+
+              <!-- 4. NDMA SACHET Emergency Siren -->
+              <div class="aesthetic-card p-3 text-xs space-y-1.5 hover:border-rose-500/30 transition-all">
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center space-x-2">
+                    <span class="text-sm">🚨</span>
+                    <span class="font-bold text-white">NDMA SACHET Warning System</span>
+                    <span class="text-[9px] font-semibold px-1.5 py-0.5 rounded bg-rose-500/15 text-rose-300 border border-rose-500/30">NDMA</span>
+                  </div>
+                  <a href="https://sachet.ndma.gov.in/" target="_blank" rel="noopener noreferrer" class="text-[11px] text-cyan-400 hover:text-cyan-300 font-semibold flex items-center gap-1 transition-colors">
+                    <span>Portal</span> <i data-lucide="external-link" class="w-3 h-3"></i>
+                  </a>
+                </div>
+                <p class="text-[11px] text-zinc-400">ITU Common Alerting Protocol (CAP) national geo-targeted sirens and cell broadcast emergency alerts.</p>
+                <div class="flex items-center justify-between text-[10px] text-zinc-500 pt-0.5">
+                  <span class="flex items-center gap-1 text-rose-400"><span class="w-1.5 h-1.5 rounded-full bg-rose-400 animate-pulse"></span> CAP Sirens: Operational</span>
+                  <span class="text-zinc-400">sachet.ndma.gov.in</span>
+                </div>
+              </div>
+
+              <!-- 5. USGS Global Earthquake API -->
+              <div class="aesthetic-card p-3 text-xs space-y-1.5 hover:border-purple-500/30 transition-all">
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center space-x-2">
+                    <span class="text-sm">🌍</span>
+                    <span class="font-bold text-white">USGS Global Seismic Network</span>
+                    <span class="text-[9px] font-semibold px-1.5 py-0.5 rounded bg-purple-500/15 text-purple-300 border border-purple-500/30">USGS</span>
+                  </div>
+                  <a href="https://earthquake.usgs.gov/earthquakes/map/" target="_blank" rel="noopener noreferrer" class="text-[11px] text-cyan-400 hover:text-cyan-300 font-semibold flex items-center gap-1 transition-colors">
+                    <span>Portal</span> <i data-lucide="external-link" class="w-3 h-3"></i>
+                  </a>
+                </div>
+                <p class="text-[11px] text-zinc-400">Global seismographic network tracking fault slips and tectonic stress along Main Boundary Thrust (MBT).</p>
+                <div class="flex items-center justify-between text-[10px] text-zinc-500 pt-0.5">
+                  <span class="flex items-center gap-1 text-purple-400"><span class="w-1.5 h-1.5 rounded-full bg-purple-400 animate-pulse"></span> GeoJSON Polling Active</span>
+                  <span class="text-zinc-400">earthquake.usgs.gov</span>
+                </div>
+              </div>
+
+              <!-- 6. INCOIS Ocean State & Tsunami -->
+              <div class="aesthetic-card p-3 text-xs space-y-1.5 hover:border-cyan-500/30 transition-all">
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center space-x-2">
+                    <span class="text-sm">🌊</span>
+                    <span class="font-bold text-white">INCOIS Coastal Storm Surge</span>
+                    <span class="text-[9px] font-semibold px-1.5 py-0.5 rounded bg-cyan-500/15 text-cyan-300 border border-cyan-500/30">INCOIS</span>
+                  </div>
+                  <a href="https://incois.gov.in/portal/osf/" target="_blank" rel="noopener noreferrer" class="text-[11px] text-cyan-400 hover:text-cyan-300 font-semibold flex items-center gap-1 transition-colors">
+                    <span>Portal</span> <i data-lucide="external-link" class="w-3 h-3"></i>
+                  </a>
+                </div>
+                <p class="text-[11px] text-zinc-400">Deep ocean DART buoys and coastal tide gauges monitoring storm surge and tsunami risks.</p>
+                <div class="flex items-center justify-between text-[10px] text-zinc-500 pt-0.5">
+                  <span class="flex items-center gap-1 text-cyan-400"><span class="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse"></span> Surge Forecast: 3.8m Alert</span>
+                  <span class="text-zinc-400">incois.gov.in</span>
+                </div>
+              </div>
+
+              <!-- 7. Open-Meteo High-Resolution Ensemble API -->
+              <div class="aesthetic-card p-3 text-xs space-y-1.5 hover:border-emerald-500/30 transition-all">
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center space-x-2">
+                    <span class="text-sm">🌧️</span>
+                    <span class="font-bold text-white">Open-Meteo Numerical Models</span>
+                    <span class="text-[9px] font-semibold px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">ECMWF</span>
+                  </div>
+                  <a href="https://open-meteo.com/" target="_blank" rel="noopener noreferrer" class="text-[11px] text-cyan-400 hover:text-cyan-300 font-semibold flex items-center gap-1 transition-colors">
+                    <span>Portal</span> <i data-lucide="external-link" class="w-3 h-3"></i>
+                  </a>
+                </div>
+                <p class="text-[11px] text-zinc-400">1km spatial resolution numerical atmospheric reanalysis measuring soil pore water saturation.</p>
+                <div class="flex items-center justify-between text-[10px] text-zinc-500 pt-0.5">
+                  <span class="flex items-center gap-1 text-emerald-400"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> Soil Saturation: 94.2%</span>
+                  <span class="text-zinc-400">open-meteo.com</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ===================================================================
+             TAB 5: EXPORT REPORT (DISTRICT COLLECTOR EXECUTIVE BRIEF)
+             =================================================================== -->
+        <div id="tab-export-report" class="tab-pane hidden space-y-4">
+          <div class="flex items-center justify-between">
+            <h4 class="text-xs font-bold uppercase tracking-wider text-zinc-400">Official Operational Brief</h4>
+            <span class="text-[10px] px-2.5 py-0.5 rounded-full font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+              DDMA / NDMA Format
+            </span>
+          </div>
+
+          <div class="aesthetic-card p-4 space-y-3.5 text-xs">
+            <p class="text-zinc-300 leading-relaxed">
+              Generate an official, scientifically justified Executive Relocation Action Plan for the <b>District Magistrate & Collector</b>.
+            </p>
+
+            <div class="space-y-2 text-[11px] text-zinc-400">
+              <div class="flex items-center gap-2.5">
+                <i data-lucide="check" class="w-4 h-4 text-emerald-400"></i>
+                <span>Complete AHP multi-hazard weight proof</span>
+              </div>
+              <div class="flex items-center gap-2.5">
+                <i data-lucide="check" class="w-4 h-4 text-emerald-400"></i>
+                <span>Priority-ranked evacuation schedule</span>
+              </div>
+              <div class="flex items-center gap-2.5">
+                <i data-lucide="check" class="w-4 h-4 text-emerald-400"></i>
+                <span>Relocation budget under PMAY-G and SDRF</span>
+              </div>
+              <div class="flex items-center gap-2.5">
+                <i data-lucide="check" class="w-4 h-4 text-emerald-400"></i>
+                <span>Sendai Framework Target G alignment</span>
+              </div>
+            </div>
+
+            <div class="pt-2 flex flex-col sm:flex-row gap-2.5">
+              <button id="preview-report-btn" onclick="window.openReportModal && window.openReportModal()" class="flex-1 py-2.5 px-4 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-semibold flex items-center justify-center space-x-2 transition-all shadow-md shadow-blue-600/30 cursor-pointer">
+                <i data-lucide="eye" class="w-4 h-4"></i>
+                <span>Preview Document</span>
+              </button>
+              <button id="print-report-btn" onclick="window.printReport && window.printReport()" class="py-2.5 px-4 rounded-xl bg-white/[0.08] hover:bg-white/[0.14] text-white font-semibold flex items-center justify-center space-x-2 transition-all border border-white/10 cursor-pointer">
+                <i data-lucide="printer" class="w-4 h-4"></i>
+                <span>Print / PDF</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Report Quick Stats -->
+          <div class="grid grid-cols-2 gap-2 text-xs">
+            <div class="aesthetic-card p-3">
+              <span class="text-zinc-500 text-[10px] uppercase font-bold">Tier 1 Habitations:</span>
+              <div class="text-base font-bold text-red-400 mt-0.5">4 Urgent Habitations</div>
+            </div>
+            <div class="aesthetic-card p-3">
+              <span class="text-zinc-500 text-[10px] uppercase font-bold">Total Relocation Outlay:</span>
+              <div class="text-base font-bold text-emerald-400 mt-0.5">₹72.84 Cr</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+      <!-- Quick Action Footer -->
+      <div class="p-3.5 border-t border-[#181818] bg-[#080808] flex items-center justify-between text-xs">
+        <div class="flex items-center space-x-2">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 shadow-sm shadow-emerald-400"></span>
+          <span class="text-slate-400 text-[11px]">System Status: Armed & Ready</span>
+        </div>
+        <button id="launch-sim-trigger" onclick="window.openSimulationModal && window.openSimulationModal()" class="text-neutral-300 hover:text-white font-semibold flex items-center space-x-1.5 text-[11px] transition-colors cursor-pointer">
+          <span>Launch What-If Stress Test</span>
+          <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+        </button>
+      </div>
+    </aside>
+
+      <!-- Leaflet Map Canvas -->
+      <div id="map-container" class="absolute inset-0 w-full h-full"></div>
+
+      <!-- Floating Map Controls (Top Left HUD Dock) -->
+      <div class="absolute top-4 left-4 z-[1000] flex items-center space-x-2 pointer-events-auto">
+        <!-- Floating Button to Open Side Menu -->
+        <button id="map-floating-menu-btn" onclick="window.toggleSideMenu && window.toggleSideMenu()" class="aesthetic-glass-heavy px-3 py-2 rounded-2xl flex items-center space-x-2 text-xs font-semibold text-white hover:border-cyan-500/40 hover:text-cyan-300 transition-all shadow-2xl cursor-pointer" title="Open Analytical Side Menu (Capacity, Vulnerability, Relocation)">
+          <i data-lucide="menu" class="w-4 h-4 text-cyan-400"></i>
+          <span>Side Menu</span>
+        </button>
+
+        <div class="aesthetic-glass-heavy rounded-2xl p-1 flex items-center space-x-1 border border-white/10 shadow-2xl">
+          <!-- Zoom In Button -->
+          <button id="map-zoom-in" class="w-8 h-8 rounded-xl hover:bg-white/10 flex items-center justify-center text-slate-200 hover:text-white transition-all" title="Zoom In (+)">
+            <i data-lucide="plus" class="w-4 h-4"></i>
+          </button>
+          <!-- Zoom Out Button -->
+          <button id="map-zoom-out" class="w-8 h-8 rounded-xl hover:bg-white/10 flex items-center justify-center text-slate-200 hover:text-white transition-all" title="Zoom Out (-)">
+            <i data-lucide="minus" class="w-4 h-4"></i>
+          </button>
+          <div class="w-px h-4 bg-white/10 mx-0.5"></div>
+          <!-- Reset View to Pan-India -->
+          <button id="map-reset-view" class="w-8 h-8 rounded-xl hover:bg-white/10 flex items-center justify-center text-slate-200 hover:text-white transition-all" title="Reset View to India">
+            <i data-lucide="maximize-2" class="w-3.5 h-3.5"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Floating Map Layer Switcher (Top Right HUD - 100% Free Keyless Maps) -->
+      <div class="absolute top-4 right-4 z-[1000] pointer-events-auto">
+        <div class="aesthetic-glass-heavy rounded-2xl p-1 flex items-center space-x-1 border border-white/10 shadow-2xl text-[11px]">
+          <button class="map-layer-btn active px-3 py-1 rounded-xl capsule-btn text-xs font-semibold" data-layer="dark" title="Tactical Dark Mode (Default)">
+            🌙 Dark
+          </button>
+          <button class="map-layer-btn px-3 py-1 rounded-xl capsule-btn text-xs font-semibold" data-layer="satellite" title="High-Res Terrain Satellite">
+            🛰️ Satellite
+          </button>
+          <button class="map-layer-btn px-3 py-1 rounded-xl capsule-btn text-xs font-semibold" data-layer="street" title="Open Street View">
+            🗺️ Street
+          </button>
+        </div>
+      </div>
+
+      <!-- Floating Active Region Badge (Top Center HUD) -->
+      <div class="absolute top-4 left-1/2 -translate-x-1/2 z-[1000] pointer-events-none">
+        <div id="active-region-pill" class="aesthetic-glass px-4 py-1.5 rounded-full text-xs font-medium text-slate-200 flex items-center space-x-2.5 shadow-2xl border border-white/15">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 shadow-sm shadow-emerald-400"></span>
+          <span class="tracking-tight">Pan-India Multi-Hazard Surveillance Active</span>
+        </div>
+      </div>
+
+      <!-- Quick Hotspot Quick-Jump Toolbar (Bottom Left HUD) -->
+      <div class="absolute bottom-6 left-4 z-[1000] hidden md:flex items-center space-x-2 pointer-events-auto">
+        <div class="aesthetic-glass px-3.5 py-2 rounded-2xl flex items-center space-x-2 text-xs border border-white/10 shadow-2xl">
+          <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider flex items-center gap-1">
+            <i data-lucide="crosshair" class="w-3 h-3 text-red-400"></i> Hotspot:
+          </span>
+          <button class="hotspot-jump-btn px-2.5 py-1 rounded-lg bg-white/[0.04] hover:bg-white/[0.10] text-slate-200 transition-colors font-medium text-[11px]" data-lat="30.5574" data-lng="79.5658" data-name="Joshimath (Subsidence)">
+            Joshimath
+          </button>
+          <button class="hotspot-jump-btn px-2.5 py-1 rounded-lg bg-white/[0.04] hover:bg-white/[0.10] text-slate-200 transition-colors font-medium text-[11px]" data-lat="11.5284" data-lng="76.1685" data-name="Wayanad (Debris Flow)">
+            Wayanad
+          </button>
+          <button class="hotspot-jump-btn px-2.5 py-1 rounded-lg bg-white/[0.04] hover:bg-white/[0.10] text-slate-200 transition-colors font-medium text-[11px]" data-lat="26.9534" data-lng="94.2045" data-name="Majuli (Floods)">
+            Majuli
+          </button>
+          <button class="hotspot-jump-btn px-2.5 py-1 rounded-lg bg-white/[0.04] hover:bg-white/[0.10] text-slate-200 transition-colors font-medium text-[11px]" data-lat="20.6288" data-lng="86.9281" data-name="Kendrapara (Cyclone)">
+            Kendrapara
+          </button>
+        </div>
+      </div>
+
+      <!-- =====================================================================
+           BOTTOM RIGHT: [INDICATORS] BUTTON ONLY WHEN POPPED UP (AS REQUESTED)
+           ===================================================================== -->
+      <div class="absolute bottom-6 right-6 z-[1000] flex flex-col items-end space-y-2 pointer-events-auto">
+        <!-- Pop-up Indicator Drawer / Legend Box (Toggled) -->
+        <div id="indicators-drawer" class="aesthetic-glass-heavy p-4 rounded-2xl w-80 shadow-2xl border border-white/15 hidden transition-all duration-300">
+          <div class="flex items-center justify-between pb-2.5 mb-3 border-b border-white/10">
+            <h4 class="text-xs font-bold uppercase tracking-wider text-white flex items-center gap-2">
+              <i data-lucide="layers" class="w-3.5 h-3.5 text-blue-400"></i>
+              <span>Hazard Scale & Legend</span>
+            </h4>
+            <button id="close-indicators-btn" class="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-white/10">
+              <i data-lucide="x" class="w-3.5 h-3.5"></i>
+            </button>
+          </div>
+
+          <div class="space-y-2.5 text-xs">
+            <!-- Red Zone -->
+            <div class="flex items-center justify-between p-1.5 rounded-lg bg-red-500/10 border border-red-500/20">
+              <div class="flex items-center space-x-2">
+                <span class="w-3 h-3 rounded-full bg-red-500 shadow-sm shadow-red-500/80"></span>
+                <span class="font-bold text-red-200">Critical Red Zone</span>
+              </div>
+              <span class="text-[11px] font-mono text-red-400 font-bold">Score &ge; 0.75</span>
+            </div>
+            <!-- Orange Zone -->
+            <div class="flex items-center justify-between p-1.5 rounded-lg bg-orange-500/10 border border-orange-500/20">
+              <div class="flex items-center space-x-2">
+                <span class="w-3 h-3 rounded-full bg-orange-500 shadow-sm shadow-orange-500/80"></span>
+                <span class="font-bold text-orange-200">High Risk Zone</span>
+              </div>
+              <span class="text-[11px] font-mono text-orange-400 font-bold">0.55 - 0.74</span>
+            </div>
+            <!-- Yellow Zone -->
+            <div class="flex items-center justify-between p-1.5 rounded-lg bg-amber-500/10 border border-amber-500/20">
+              <div class="flex items-center space-x-2">
+                <span class="w-3 h-3 rounded-full bg-amber-400 shadow-sm shadow-amber-400/80"></span>
+                <span class="font-bold text-amber-200">Moderate Warning</span>
+              </div>
+              <span class="text-[11px] font-mono text-amber-300 font-bold">0.35 - 0.54</span>
+            </div>
+            <!-- Green Zone Haven -->
+            <div class="flex items-center justify-between p-1.5 rounded-lg bg-emerald-500/10 border border-emerald-500/20">
+              <div class="flex items-center space-x-2">
+                <span class="w-3 h-3 rounded-full bg-emerald-500 shadow-sm shadow-emerald-500/80"></span>
+                <span class="font-bold text-emerald-200">Safe Green Haven</span>
+              </div>
+              <span class="text-[11px] font-mono text-emerald-400 font-bold">Score &lt; 0.35</span>
+            </div>
+
+            <!-- Live Pins Legend -->
+            <div class="pt-2 border-t border-white/10 space-y-1.5 text-[11px] text-slate-400">
+              <div class="flex items-center space-x-2">
+                <span class="w-2.5 h-2.5 rounded-full bg-red-500 threat-live-beacon inline-block"></span>
+                <span>Real-time Seismic / Weather Surge Pin</span>
+              </div>
+              <div class="flex items-center space-x-2">
+                <span class="text-emerald-400 font-bold text-xs">🛡️</span>
+                <span>Validated Resettlement Sanctuary</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- The Trigger Button for Indicators (Bottom Right) -->
+        <button id="toggle-indicators-btn" class="aesthetic-glass-heavy px-4 py-2 rounded-2xl flex items-center space-x-2.5 text-xs font-semibold text-white hover:bg-white/15 transition-all shadow-2xl border border-white/15" title="View Map Indicators & Legend">
+          <div class="flex items-center space-x-1">
+            <span class="w-2 h-2 rounded-full bg-red-500"></span>
+            <span class="w-2 h-2 rounded-full bg-orange-500"></span>
+            <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+          </div>
+          <span>Indicators</span>
+        </button>
+      </div>
+    </main>
+
+  </div>
+
+  <!-- =========================================================================
+       PART 5: MODALS & ADVANCED PANELS
+       ========================================================================= -->
+
+  <!-- 1. SIMULATION ENGINE MODAL ("WHAT-IF") -->
+  <div id="simulation-modal" class="app-modal-layer modal-backdrop-translucent hidden">
+    <div class="modal-dialog-window w-full max-w-3xl p-6 lg:p-8 space-y-6 max-h-[90vh] overflow-y-auto">
+      
+      <div class="flex items-center justify-between pb-3.5 border-b border-white/10">
+        <div class="flex items-center space-x-3">
+          <div class="w-10 h-10 rounded-2xl bg-amber-500/20 text-amber-400 flex items-center justify-center border border-amber-500/30">
+            <i data-lucide="zap" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <h3 class="font-bold text-lg text-white">Dynamic What-If Simulation Engine</h3>
+            <p class="text-xs text-slate-400">Stress-test carrying capacities, extreme climate surges, and relocation spikes.</p>
+          </div>
+        </div>
+        <button id="close-sim-modal" class="text-slate-400 hover:text-white p-1.5 rounded-xl hover:bg-white/10">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <!-- Preset Scenarios Buttons -->
+      <div>
+        <label class="text-xs font-bold uppercase tracking-wider text-slate-400 block mb-2.5">Preset Disaster Scenarios</label>
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-xs">
+          <button class="sim-preset-btn p-3 rounded-2xl aesthetic-card text-left transition-all font-semibold text-white" data-preset="CYCLONE_CAT5">
+            🌪️ Category 5 Cyclone
+          </button>
+          <button class="sim-preset-btn p-3 rounded-2xl aesthetic-card text-left transition-all font-semibold text-white" data-preset="HIMALAYAN_CLOUDBURST">
+            🌧️ Cloudburst (+80% Rain)
+          </button>
+          <button class="sim-preset-btn p-3 rounded-2xl aesthetic-card text-left transition-all font-semibold text-white" data-preset="SEISMIC_ZONE_V">
+            ⚡ Great Seismic Rupture
+          </button>
+          <button class="sim-preset-btn p-3 rounded-2xl aesthetic-card text-left transition-all font-semibold text-white" data-preset="CAPACITY_COLLAPSE">
+            📉 Carrying Cap -50%
+          </button>
+        </div>
+      </div>
+
+      <!-- Interactive Custom Stress Sliders -->
+      <div class="space-y-4 bg-slate-950/70 p-4 lg:p-5 rounded-2xl border border-white/[0.08] text-xs">
+        <!-- Rainfall Surge Slider -->
+        <div>
+          <div class="flex justify-between mb-1.5">
+            <span class="text-slate-300 font-medium">Monsoon Rainfall Intensity Surge:</span>
+            <span class="font-mono font-bold text-cyan-400 text-sm" id="slider-rain-val">+0%</span>
+          </div>
+          <input type="range" id="sim-slider-rain" min="0" max="100" value="0" class="w-full" />
+        </div>
+
+        <!-- Carrying Capacity Depletion -->
+        <div>
+          <div class="flex justify-between mb-1.5">
+            <span class="text-slate-300 font-medium">Carrying Capacity Degradation (Land/Water loss):</span>
+            <span class="font-mono font-bold text-red-400 text-sm" id="slider-cc-val">-0%</span>
+          </div>
+          <input type="range" id="sim-slider-cc" min="0" max="50" value="0" class="w-full" />
+        </div>
+
+        <!-- Cyclone Category -->
+        <div>
+          <div class="flex justify-between mb-1.5">
+            <span class="text-slate-300 font-medium">Tropical Cyclone Category:</span>
+            <span class="font-mono font-bold text-amber-400 text-sm" id="slider-cyclone-val">Category 0 (None)</span>
+          </div>
+          <input type="range" id="sim-slider-cyclone" min="0" max="5" value="0" class="w-full" />
+        </div>
+      </div>
+
+      <!-- Live Impact Summary Dashboard -->
+      <div class="grid grid-cols-3 gap-3 text-center">
+        <div class="aesthetic-card p-3.5">
+          <div class="text-[11px] text-slate-400 uppercase font-semibold">Total Red Zones</div>
+          <div class="text-2xl lg:text-3xl font-bold text-red-400 mt-1" id="sim-metric-redzones">4 Zones</div>
+          <div class="text-[10px] text-slate-500 font-medium mt-0.5" id="sim-metric-flipped">+0 newly flipped</div>
+        </div>
+        <div class="aesthetic-card p-3.5">
+          <div class="text-[11px] text-slate-400 uppercase font-semibold">Urgent Relocation Pop</div>
+          <div class="text-2xl lg:text-3xl font-bold text-amber-400 mt-1" id="sim-metric-pop">16,570</div>
+          <div class="text-[10px] text-slate-500 font-medium mt-0.5">Tier 1 & Tier 2</div>
+        </div>
+        <div class="aesthetic-card p-3.5">
+          <div class="text-[11px] text-slate-400 uppercase font-semibold">Relocation Budget Surge</div>
+          <div class="text-2xl lg:text-3xl font-bold text-emerald-400 mt-1" id="sim-metric-budget">₹44.8 Cr</div>
+          <div class="text-[10px] text-slate-500 font-medium mt-0.5">Government Outlay</div>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="flex justify-end space-x-2.5 pt-2">
+        <button id="reset-sim-btn" class="px-4 py-2.5 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] text-xs font-semibold text-slate-300 border border-white/[0.08] transition-colors">
+          Reset to Baseline
+        </button>
+        <button id="apply-sim-btn" class="px-6 py-2.5 rounded-xl bg-red-600 hover:bg-red-500 text-xs font-semibold text-white shadow-lg shadow-red-600/30 transition-all">
+          Apply Stress Test to Map
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- 2. ABOUT & METHODOLOGY MODAL (THE BRAIN) -->
+  <div id="methodology-modal" class="app-modal-layer modal-backdrop-translucent hidden">
+    <div class="modal-dialog-window w-full max-w-4xl p-6 lg:p-8 space-y-5 max-h-[90vh] overflow-y-auto text-xs">
+      
+      <div class="flex items-center justify-between pb-3.5 border-b border-white/10">
+        <div class="flex items-center space-x-3">
+          <div class="w-10 h-10 rounded-2xl bg-blue-500/20 text-blue-400 flex items-center justify-center border border-blue-500/30">
+            <i data-lucide="book-open" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <h3 class="font-bold text-lg text-white">Scientific Methodology & Algorithmic Foundation</h3>
+            <p class="text-slate-400">Formulated for SIH Evaluators, Disaster Managers & Academic Juries.</p>
+          </div>
+        </div>
+        <button id="close-methodology-modal" class="text-slate-400 hover:text-white p-1.5 rounded-xl hover:bg-white/10">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <div class="space-y-4 leading-relaxed text-slate-300">
+        <!-- 1. AHP -->
+        <div class="aesthetic-card p-4 space-y-2">
+          <h4 class="font-bold text-sm text-white flex items-center gap-2">
+            <span class="w-5 h-5 rounded-full bg-blue-600 text-white flex items-center justify-center text-[10px]">1</span>
+            Analytical Hierarchy Process (AHP) Multi-Hazard Zonation
+          </h4>
+          <p>
+            Multi-hazard zonation is determined via a multi-criteria pairwise comparison matrix following Saaty’s AHP framework. Normalized principal eigenvector weights:
+          </p>
+          <div class="grid grid-cols-5 gap-2 text-center font-mono py-1">
+            <div class="bg-slate-950 p-2.5 rounded-xl border border-white/[0.04]">Slope: <b>28%</b></div>
+            <div class="bg-slate-950 p-2.5 rounded-xl border border-white/[0.04]">Rainfall: <b>24%</b></div>
+            <div class="bg-slate-950 p-2.5 rounded-xl border border-white/[0.04]">Elevation: <b>20%</b></div>
+            <div class="bg-slate-950 p-2.5 rounded-xl border border-white/[0.04]">Seismic: <b>16%</b></div>
+            <div class="bg-slate-950 p-2.5 rounded-xl border border-white/[0.04]">Soil/LULC: <b>12%</b></div>
+          </div>
+          <p class="text-slate-400 text-[11px]">Consistency Ratio (CR) = 0.042 &lt; 0.10, verifying strict mathematical consistency.</p>
+        </div>
+
+        <!-- 2. Carrying Capacity -->
+        <div class="aesthetic-card p-4 space-y-2">
+          <h4 class="font-bold text-sm text-white flex items-center gap-2">
+            <span class="w-5 h-5 rounded-full bg-cyan-600 text-white flex items-center justify-center text-[10px]">2</span>
+            Composite Carrying Capacity Index (CCI)
+          </h4>
+          <p>
+            An area’s safe threshold is computed as a composite function of essential resources:
+          </p>
+          <div class="bg-slate-950 p-3 rounded-xl font-mono text-center text-cyan-300 border border-white/[0.04]">
+            CCI = 0.25·Water + 0.20·Land + 0.20·Infrastructure + 0.15·EcoSensitivity + 0.20·PopPressure
+          </div>
+          <p class="text-slate-400 text-[11px]">
+            Zones with CCI &lt; 0.30 are designated as Critically Deficient, where current population exceeds environmental resilience.
+          </p>
+        </div>
+
+        <!-- 3. Relocation Priority Engine -->
+        <div class="aesthetic-card p-4 space-y-2">
+          <h4 class="font-bold text-sm text-white flex items-center gap-2">
+            <span class="w-5 h-5 rounded-full bg-red-600 text-white flex items-center justify-center text-[10px]">3</span>
+            MCDA Relocation Priority Engine
+          </h4>
+          <div class="bg-slate-950 p-3 rounded-xl font-mono text-center text-red-300 border border-white/[0.04]">
+            Priority Score = 0.30·Hazard + 0.25·CC_Overflow + 0.25·Vulnerability + 0.20·PopAtRisk_norm
+          </div>
+          <p>
+            Habitations scoring &ge; 0.75 are flagged for Immediate Tier 1 Relocation and matched to verified Safe Green Havens using Weighted Euclidean Spatial Distance minimizing transit hazard.
+          </p>
+        </div>
+
+        <!-- 4. Policy Alignment -->
+        <div class="aesthetic-card p-4 space-y-2">
+          <h4 class="font-bold text-sm text-white flex items-center gap-2">
+            <span class="w-5 h-5 rounded-full bg-emerald-600 text-white flex items-center justify-center text-[10px]">4</span>
+            Government Policy Alignment
+          </h4>
+          <p>
+            Fully integrated with <b>PMAY-G</b> (rural housing grants), <b>NDRF/SDRF</b> (state and national disaster relief norms), and the <b>Sendai Framework for Disaster Risk Reduction (Target G: Multi-hazard early warning and risk assessment)</b>.
+          </p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- 3. HISTORY DISASTER CASE STUDIES MODAL -->
+  <div id="history-modal" class="app-modal-layer modal-backdrop-translucent hidden">
+    <div class="modal-dialog-window w-full max-w-3xl p-6 lg:p-8 space-y-5 max-h-[90vh] overflow-y-auto text-xs">
+      
+      <div class="flex items-center justify-between pb-3.5 border-b border-white/10">
+        <div class="flex items-center space-x-3">
+          <div class="w-10 h-10 rounded-2xl bg-purple-500/20 text-purple-400 flex items-center justify-center border border-purple-500/30">
+            <i data-lucide="history" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <h3 class="font-bold text-lg text-white">Historical Disaster Precedents (India)</h3>
+            <p class="text-slate-400">Case studies demonstrating why predictive carrying capacity and early relocation are vital.</p>
+          </div>
+        </div>
+        <button id="close-history-modal" class="text-slate-400 hover:text-white p-1.5 rounded-xl hover:bg-white/10 cursor-pointer">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <div id="history-cards-container" class="space-y-3">
+        <!-- Pre-populated Historical Disasters -->
+        <div class="aesthetic-card p-4 space-y-2 hover:border-white/20 transition-all">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center space-x-2.5">
+              <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-purple-500/20 text-purple-300 border border-purple-500/30">July 2024</span>
+              <h4 class="font-bold text-sm text-white tracking-tight">Wayanad Debris Avalanche</h4>
+            </div>
+            <button class="text-xs text-blue-400 hover:text-blue-300 font-semibold transition-colors cursor-pointer" onclick="window.panToHistorySite && window.panToHistorySite(11.5284, 76.1685)">
+              Fly to Site &rarr;
+            </button>
+          </div>
+          <p class="text-[11px] text-slate-300 leading-relaxed">Cloudburst-triggered multiple massive debris flows at Chooralmala and Mundakkai, resulting in over 400 casualties. Highlighted catastrophic collapse of steep-slope carrying capacity during extreme rainfall.</p>
+          <div class="flex items-center space-x-1.5 pt-1 text-[10px]">
+            <span class="px-2 py-0.5 rounded-md bg-white/[0.04] border border-white/[0.06] text-slate-400 font-medium">Landslide</span>
+            <span class="px-2 py-0.5 rounded-md bg-white/[0.04] border border-white/[0.06] text-slate-400 font-medium">Slope Failure</span>
+            <span class="px-2 py-0.5 rounded-md bg-white/[0.04] border border-white/[0.06] text-slate-400 font-medium">Monsoon Surge</span>
+          </div>
+        </div>
+
+        <div class="aesthetic-card p-4 space-y-2 hover:border-white/20 transition-all">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center space-x-2.5">
+              <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-purple-500/20 text-purple-300 border border-purple-500/30">January 2023</span>
+              <h4 class="font-bold text-sm text-white tracking-tight">Joshimath Land Subsidence Crisis</h4>
+            </div>
+            <button class="text-xs text-blue-400 hover:text-blue-300 font-semibold transition-colors cursor-pointer" onclick="window.panToHistorySite && window.panToHistorySite(30.5574, 79.5658)">
+              Fly to Site &rarr;
+            </button>
+          </div>
+          <p class="text-[11px] text-slate-300 leading-relaxed">Hundreds of residential and commercial structures developed severe structural cracks due to overloaded slopes and seismic activity in Zone V, forcing evacuation of Sunil and Manohar Bagh wards.</p>
+          <div class="flex items-center space-x-1.5 pt-1 text-[10px]">
+            <span class="px-2 py-0.5 rounded-md bg-white/[0.04] border border-white/[0.06] text-slate-400 font-medium">Subsidence</span>
+            <span class="px-2 py-0.5 rounded-md bg-white/[0.04] border border-white/[0.06] text-slate-400 font-medium">Carrying Capacity</span>
+            <span class="px-2 py-0.5 rounded-md bg-white/[0.04] border border-white/[0.06] text-slate-400 font-medium">Seismic Zone V</span>
+          </div>
+        </div>
+
+        <div class="aesthetic-card p-4 space-y-2 hover:border-white/20 transition-all">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center space-x-2.5">
+              <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-purple-500/20 text-purple-300 border border-purple-500/30">June 2022</span>
+              <h4 class="font-bold text-sm text-white tracking-tight">Assam & Majuli Super Inundation</h4>
+            </div>
+            <button class="text-xs text-blue-400 hover:text-blue-300 font-semibold transition-colors cursor-pointer" onclick="window.panToHistorySite && window.panToHistorySite(26.9534, 94.2045)">
+              Fly to Site &rarr;
+            </button>
+          </div>
+          <p class="text-[11px] text-slate-300 leading-relaxed">Repeated embankment collapses and severe soil liquefaction submerged 32 districts, stranding over 5 million people and eroding entire riverine habitations in Majuli island.</p>
+          <div class="flex items-center space-x-1.5 pt-1 text-[10px]">
+            <span class="px-2 py-0.5 rounded-md bg-white/[0.04] border border-white/[0.06] text-slate-400 font-medium">Flood</span>
+            <span class="px-2 py-0.5 rounded-md bg-white/[0.04] border border-white/[0.06] text-slate-400 font-medium">Riverbank Erosion</span>
+            <span class="px-2 py-0.5 rounded-md bg-white/[0.04] border border-white/[0.06] text-slate-400 font-medium">Vulnerability</span>
+          </div>
+        </div>
+
+        <div class="aesthetic-card p-4 space-y-2 hover:border-white/20 transition-all">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center space-x-2.5">
+              <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-purple-500/20 text-purple-300 border border-purple-500/30">May 2021</span>
+              <h4 class="font-bold text-sm text-white tracking-tight">Cyclone Yaas Storm Surge</h4>
+            </div>
+            <button class="text-xs text-blue-400 hover:text-blue-300 font-semibold transition-colors cursor-pointer" onclick="window.panToHistorySite && window.panToHistorySite(20.6288, 86.9281)">
+              Fly to Site &rarr;
+            </button>
+          </div>
+          <p class="text-[11px] text-slate-300 leading-relaxed">A 4.5-meter storm surge breached coastal embankments at Satabhaya and Rajnagar, salinizing thousands of hectares of arable land and isolating coastal hamlets.</p>
+          <div class="flex items-center space-x-1.5 pt-1 text-[10px]">
+            <span class="px-2 py-0.5 rounded-md bg-white/[0.04] border border-white/[0.06] text-slate-400 font-medium">Cyclone</span>
+            <span class="px-2 py-0.5 rounded-md bg-white/[0.04] border border-white/[0.06] text-slate-400 font-medium">Storm Surge</span>
+            <span class="px-2 py-0.5 rounded-md bg-white/[0.04] border border-white/[0.06] text-slate-400 font-medium">Sea Level Rise</span>
+          </div>
+        </div>
+
+        <div class="aesthetic-card p-4 space-y-2 hover:border-white/20 transition-all">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center space-x-2.5">
+              <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-purple-500/20 text-purple-300 border border-purple-500/30">February 2021</span>
+              <h4 class="font-bold text-sm text-white tracking-tight">Chamoli Glacial Lake Outburst / Flash Flood</h4>
+            </div>
+            <button class="text-xs text-blue-400 hover:text-blue-300 font-semibold transition-colors cursor-pointer" onclick="window.panToHistorySite && window.panToHistorySite(30.4850, 79.7120)">
+              Fly to Site &rarr;
+            </button>
+          </div>
+          <p class="text-[11px] text-slate-300 leading-relaxed">Rock and ice avalanche from Ronti Peak triggered a devastating flash flood down Rishiganga and Dhauliganga rivers, destroying Tapovan Vishnugad Hydel Project.</p>
+          <div class="flex items-center space-x-1.5 pt-1 text-[10px]">
+            <span class="px-2 py-0.5 rounded-md bg-white/[0.04] border border-white/[0.06] text-slate-400 font-medium">GLOF</span>
+            <span class="px-2 py-0.5 rounded-md bg-white/[0.04] border border-white/[0.06] text-slate-400 font-medium">Flash Flood</span>
+            <span class="px-2 py-0.5 rounded-md bg-white/[0.04] border border-white/[0.06] text-slate-400 font-medium">High Altitude</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- 4. DISTRICT COLLECTOR REPORT PREVIEW MODAL -->
+  <div id="report-modal" class="app-modal-layer modal-backdrop-translucent hidden">
+    <div class="modal-dialog-window w-full max-w-4xl max-h-[90vh] flex flex-col overflow-hidden">
+      <div class="p-4 lg:p-5 bg-slate-950 border-b border-white/10 flex items-center justify-between">
+        <div class="flex items-center space-x-2.5">
+          <span class="text-xl">📄</span>
+          <h3 class="font-bold text-sm lg:text-base text-white">District Collector Executive Relocation Brief (Preview)</h3>
+        </div>
+        <div class="flex items-center space-x-2">
+          <button id="modal-print-btn" class="px-3.5 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-xs font-semibold text-white flex items-center space-x-1.5 transition-all shadow-md shadow-blue-600/30">
+            <i data-lucide="printer" class="w-3.5 h-3.5"></i>
+            <span>Print / Save PDF</span>
+          </button>
+          <button id="close-report-modal" class="text-slate-400 hover:text-white p-1 rounded-xl hover:bg-white/10">
+            <i data-lucide="x" class="w-5 h-5"></i>
+          </button>
+        </div>
+      </div>
+
+      <div id="report-modal-body" class="flex-1 overflow-y-auto p-4 lg:p-6 bg-slate-800">
+        <!-- Rendered via exportReport.js -->
+      </div>
+    </div>
+  </div>
+
+  <!-- 5. SETTINGS & PREFERENCES THIN SLIDE-OUT DRAWER -->
+  <div id="settings-popup-overlay" class="fixed inset-0 bg-black/60 backdrop-blur-xs hidden z-[2100] transition-opacity duration-300"></div>
+
+  <aside id="settings-thin-panel" class="fixed top-0 bottom-0 right-0 z-[2200] w-full sm:w-[380px] md:w-[420px] bg-[#0A0D14]/95 border-l border-white/15 backdrop-blur-2xl flex flex-col transform translate-x-full transition-transform duration-300 ease-in-out shadow-2xl overflow-hidden">
+    
+    <!-- Drawer Top Header with Back / Close Button -->
+    <div class="px-4 py-3.5 bg-[#0e121b] border-b border-white/10 flex items-center justify-between shrink-0">
+      <div class="flex items-center space-x-2.5">
+        <!-- Top Left Back Button (hidden on main menu, visible on sub-panels) -->
+        <button id="settings-back-btn" class="w-8 h-8 rounded-xl bg-white/[0.06] hover:bg-white/[0.12] border border-white/10 flex items-center justify-center text-slate-300 hover:text-white transition-all hidden" title="Go Back to Settings Menu">
+          <i data-lucide="arrow-left" class="w-4 h-4 text-cyan-400"></i>
+        </button>
+        <div class="w-7 h-7 rounded-xl bg-cyan-500/20 border border-cyan-500/30 flex items-center justify-center text-cyan-400">
+          <i data-lucide="settings" class="w-4 h-4"></i>
+        </div>
+        <div>
+          <h3 id="settings-panel-title" class="font-bold text-sm text-white tracking-wide">Settings</h3>
+          <p id="settings-panel-subtitle" class="text-[10px] text-slate-400">System Preferences & Tools</p>
+        </div>
+      </div>
+      <!-- Close Button -->
+      <button id="close-settings-panel-btn" class="w-8 h-8 rounded-xl bg-white/[0.04] hover:bg-white/[0.10] border border-white/10 text-slate-400 hover:text-white flex items-center justify-center transition-all" title="Close (Esc)">
+        <i data-lucide="x" class="w-4 h-4"></i>
+      </button>
+    </div>
+
+    <!-- Panel Body: One Screen at a Time -->
+    <div class="flex-1 overflow-y-auto p-4 space-y-4 text-xs">
+
+      <!-- ==================== VIEW 1: MAIN MENU ==================== -->
+      <div id="settings-view-main" class="space-y-2.5 settings-view-screen">
+        
+        <!-- 1. Accessibility (Top item as requested) -->
+        <button class="settings-nav-item w-full p-3.5 rounded-2xl bg-white/[0.03] hover:bg-white/[0.08] border border-white/[0.08] hover:border-cyan-500/40 flex items-center justify-between transition-all group text-left" data-target="view-accessibility">
+          <div class="flex items-center space-x-3">
+            <div class="w-9 h-9 rounded-xl bg-blue-500/15 border border-blue-500/30 flex items-center justify-center text-blue-400 group-hover:scale-105 transition-transform">
+              <i data-lucide="eye" class="w-4 h-4"></i>
+            </div>
+            <div>
+              <div class="font-bold text-white text-xs">Accessibility</div>
+              <div class="text-[10px] text-slate-400">Font size, lens magnifier, color-blind mode</div>
+            </div>
+          </div>
+          <i data-lucide="chevron-right" class="w-4 h-4 text-slate-500 group-hover:text-cyan-400 group-hover:translate-x-0.5 transition-all"></i>
+        </button>
+
+        <!-- 2. Language Mode (Top 10 Indian Regional Languages) -->
+        <button class="settings-nav-item w-full p-3.5 rounded-2xl bg-white/[0.03] hover:bg-white/[0.08] border border-white/[0.08] hover:border-cyan-500/40 flex items-center justify-between transition-all group text-left" data-target="view-language">
+          <div class="flex items-center space-x-3">
+            <div class="w-9 h-9 rounded-xl bg-purple-500/15 border border-purple-500/30 flex items-center justify-center text-purple-400 group-hover:scale-105 transition-transform">
+              <i data-lucide="languages" class="w-4 h-4"></i>
+            </div>
+            <div>
+              <div class="font-bold text-white text-xs">Language / भाषा / زبان</div>
+              <div class="text-[10px] text-slate-400" id="current-language-chip">English (Default)</div>
+            </div>
+          </div>
+          <i data-lucide="chevron-right" class="w-4 h-4 text-slate-500 group-hover:text-cyan-400 group-hover:translate-x-0.5 transition-all"></i>
+        </button>
+
+        <!-- 3. Notification Preferences -->
+        <button class="settings-nav-item w-full p-3.5 rounded-2xl bg-white/[0.03] hover:bg-white/[0.08] border border-white/[0.08] hover:border-cyan-500/40 flex items-center justify-between transition-all group text-left" data-target="view-notifications">
+          <div class="flex items-center space-x-3">
+            <div class="w-9 h-9 rounded-xl bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-amber-400 group-hover:scale-105 transition-transform">
+              <i data-lucide="bell" class="w-4 h-4"></i>
+            </div>
+            <div>
+              <div class="font-bold text-white text-xs">Notification Preferences</div>
+              <div class="text-[10px] text-slate-400">Email, SMS, Push, Policy updates</div>
+            </div>
+          </div>
+          <i data-lucide="chevron-right" class="w-4 h-4 text-slate-500 group-hover:text-cyan-400 group-hover:translate-x-0.5 transition-all"></i>
+        </button>
+
+        <!-- 4. Bookmarks -->
+        <button class="settings-nav-item w-full p-3.5 rounded-2xl bg-white/[0.03] hover:bg-white/[0.08] border border-white/[0.08] hover:border-cyan-500/40 flex items-center justify-between transition-all group text-left" data-target="view-bookmarks">
+          <div class="flex items-center space-x-3">
+            <div class="w-9 h-9 rounded-xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-400 group-hover:scale-105 transition-transform">
+              <i data-lucide="bookmark" class="w-4 h-4"></i>
+            </div>
+            <div>
+              <div class="font-bold text-white text-xs">Saved Bookmarks</div>
+              <div class="text-[10px] text-slate-400" id="bookmarks-count-chip">Saved locations & hotspots</div>
+            </div>
+          </div>
+          <i data-lucide="chevron-right" class="w-4 h-4 text-slate-500 group-hover:text-cyan-400 group-hover:translate-x-0.5 transition-all"></i>
+        </button>
+
+        <!-- 5. Feedback -->
+        <button class="settings-nav-item w-full p-3.5 rounded-2xl bg-white/[0.03] hover:bg-white/[0.08] border border-white/[0.08] hover:border-cyan-500/40 flex items-center justify-between transition-all group text-left" data-target="view-feedback">
+          <div class="flex items-center space-x-3">
+            <div class="w-9 h-9 rounded-xl bg-rose-500/15 border border-rose-500/30 flex items-center justify-center text-rose-400 group-hover:scale-105 transition-transform">
+              <i data-lucide="message-square" class="w-4 h-4"></i>
+            </div>
+            <div>
+              <div class="font-bold text-white text-xs">Feedback & Issue Reporting</div>
+              <div class="text-[10px] text-slate-400">Share suggestions with DDMA engineers</div>
+            </div>
+          </div>
+          <i data-lucide="chevron-right" class="w-4 h-4 text-slate-500 group-hover:text-cyan-400 group-hover:translate-x-0.5 transition-all"></i>
+        </button>
+
+      </div>
+
+      <!-- ==================== VIEW 2: ACCESSIBILITY SUB-PANEL ==================== -->
+      <div id="settings-view-accessibility" class="space-y-4 settings-view-screen hidden">
+        
+        <!-- Feature 1: Font Size Adjustment (Small / Medium / Large) -->
+        <div class="p-3.5 rounded-2xl bg-white/[0.03] border border-white/[0.08] space-y-2.5">
+          <div class="flex items-center justify-between">
+            <label class="font-bold text-white flex items-center gap-2">
+              <i data-lucide="type" class="w-3.5 h-3.5 text-cyan-400"></i>
+              <span>Font Size Adjustment</span>
+            </label>
+            <span id="font-size-indicator" class="text-[10px] text-cyan-300 font-semibold px-2 py-0.5 rounded-md bg-cyan-500/15">Medium</span>
+          </div>
+          <p class="text-[11px] text-slate-400">Adjust the entire interface reading scale across dashboards, labels, and analytical tables.</p>
+          <div class="grid grid-cols-3 gap-2 pt-1">
+            <button class="font-size-btn px-3 py-2 rounded-xl text-center font-medium border border-white/10 hover:border-white/20 transition-all text-xs" data-size="small">
+              Aa Small
+            </button>
+            <button class="font-size-btn active px-3 py-2 rounded-xl text-center font-medium border border-cyan-500/50 bg-cyan-500/20 text-white transition-all text-xs" data-size="medium">
+              Aa Medium
+            </button>
+            <button class="font-size-btn px-3 py-2 rounded-xl text-center font-medium border border-white/10 hover:border-white/20 transition-all text-sm font-semibold" data-size="large">
+              Aa Large
+            </button>
+          </div>
+        </div>
+
+        <!-- Feature 2: Magnifying Glass Lens Mode -->
+        <div class="p-3.5 rounded-2xl bg-white/[0.03] border border-white/[0.08] space-y-2.5">
+          <div class="flex items-center justify-between">
+            <label class="font-bold text-white flex items-center gap-2">
+              <i data-lucide="search" class="w-3.5 h-3.5 text-blue-400"></i>
+              <span>Magnifying Glass Lens Mode</span>
+            </label>
+            <label class="relative inline-flex items-center cursor-pointer">
+              <input type="checkbox" id="toggle-magnifier-lens" class="sr-only peer">
+              <div class="w-9 h-5 bg-slate-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-cyan-500"></div>
+            </label>
+          </div>
+          <p class="text-[11px] text-slate-400">Activates an interactive floating high-precision magnifier lens cursor for inspecting fine text and sensor telemetry.</p>
+        </div>
+
+        <!-- Feature 3: Color Blind Mode -->
+        <div class="p-3.5 rounded-2xl bg-white/[0.03] border border-white/[0.08] space-y-2.5">
+          <div class="flex items-center justify-between">
+            <label class="font-bold text-white flex items-center gap-2">
+              <i data-lucide="palette" class="w-3.5 h-3.5 text-purple-400"></i>
+              <span>Color Blind Assistance Mode</span>
+            </label>
+            <span id="colorblind-indicator" class="text-[10px] text-slate-400">Standard</span>
+          </div>
+          <p class="text-[11px] text-slate-400">Adapts danger/warning gradients and status pins for distinct perception.</p>
+          <select id="colorblind-select" class="w-full bg-slate-900 border border-white/15 rounded-xl p-2.5 text-xs text-white focus:outline-none focus:border-cyan-400">
+            <option value="none" selected>Standard (Default Colors)</option>
+            <option value="protanopia">Protanopia (Red-Green Deficient)</option>
+            <option value="deuteranopia">Deuteranopia (Red-Green Mild)</option>
+            <option value="highcontrast">High Contrast Monochrome</option>
+          </select>
+        </div>
+
+      </div>
+
+      <!-- ==================== VIEW 3: LANGUAGE SUB-PANEL ==================== -->
+      <div id="settings-view-language" class="space-y-3 settings-view-screen hidden">
+        <p class="text-[11px] text-slate-400">Select any of the top 10 regional Indian languages. Translates the full UI, headers, and analytics suite instantly while preserving geospatial coordinates on the map.</p>
+
+        <div class="space-y-1.5 max-h-[60vh] overflow-y-auto pr-1" id="language-options-container">
+          <!-- Populated dynamically via app.js -->
+        </div>
+      </div>
+
+      <!-- ==================== VIEW 4: NOTIFICATIONS SUB-PANEL ==================== -->
+      <div id="settings-view-notifications" class="space-y-3 settings-view-screen hidden">
+        <p class="text-[11px] text-slate-400">Configure multi-channel emergency broadcast and administrative alert channels for this workstation.</p>
+
+        <div class="space-y-2">
+          <!-- 1. Email notifications -->
+          <div class="p-3 rounded-2xl bg-white/[0.03] border border-white/[0.08] flex items-center justify-between">
+            <div class="pr-2">
+              <div class="font-semibold text-white">Email Notifications</div>
+              <div class="text-[10px] text-slate-400">Daily summaries & EOC evacuation bulletins</div>
+            </div>
+            <input type="checkbox" id="notif-email" checked class="w-4 h-4 rounded text-cyan-500 bg-slate-800 border-white/20 focus:ring-0">
+          </div>
+
+          <!-- 2. SMS alerts -->
+          <div class="p-3 rounded-2xl bg-white/[0.03] border border-white/[0.08] flex items-center justify-between">
+            <div class="pr-2">
+              <div class="font-semibold text-white">SMS Alerts</div>
+              <div class="text-[10px] text-slate-400">Instant high-priority threshold breach sirens</div>
+            </div>
+            <input type="checkbox" id="notif-sms" checked class="w-4 h-4 rounded text-cyan-500 bg-slate-800 border-white/20 focus:ring-0">
+          </div>
+
+          <!-- 3. Push notifications -->
+          <div class="p-3 rounded-2xl bg-white/[0.03] border border-white/[0.08] flex items-center justify-between">
+            <div class="pr-2">
+              <div class="font-semibold text-white">Push Notifications</div>
+              <div class="text-[10px] text-slate-400">Browser toast triggers on seismic updates</div>
+            </div>
+            <input type="checkbox" id="notif-push" checked class="w-4 h-4 rounded text-cyan-500 bg-slate-800 border-white/20 focus:ring-0">
+          </div>
+
+          <!-- 4. Application status updates -->
+          <div class="p-3 rounded-2xl bg-white/[0.03] border border-white/[0.08] flex items-center justify-between">
+            <div class="pr-2">
+              <div class="font-semibold text-white">Application Status Updates</div>
+              <div class="text-[10px] text-slate-400">Relocation dossier approvals & NDRF syncs</div>
+            </div>
+            <input type="checkbox" id="notif-app" checked class="w-4 h-4 rounded text-cyan-500 bg-slate-800 border-white/20 focus:ring-0">
+          </div>
+
+          <!-- 5. Policy/scheme updates -->
+          <div class="p-3 rounded-2xl bg-white/[0.03] border border-white/[0.08] flex items-center justify-between">
+            <div class="pr-2">
+              <div class="font-semibold text-white">Policy / Scheme Updates</div>
+              <div class="text-[10px] text-slate-400">SDRF / PMAY-G compensation revisions</div>
+            </div>
+            <input type="checkbox" id="notif-policy" checked class="w-4 h-4 rounded text-cyan-500 bg-slate-800 border-white/20 focus:ring-0">
+          </div>
+        </div>
+
+        <button id="save-notifs-btn" class="w-full py-2.5 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white font-semibold transition-colors mt-2 shadow-lg shadow-cyan-600/30">
+          Update Notification Settings
+        </button>
+      </div>
+
+      <!-- ==================== VIEW 5: BOOKMARKS SUB-PANEL ==================== -->
+      <div id="settings-view-bookmarks" class="space-y-3 settings-view-screen hidden">
+        <div class="flex items-center justify-between">
+          <span class="text-slate-400 text-[11px]">Pinned Habitations & Red Zones</span>
+          <button id="bookmark-current-btn" class="px-2.5 py-1 rounded-lg bg-cyan-500/20 text-cyan-300 hover:bg-cyan-500/30 border border-cyan-500/40 text-[11px] font-semibold flex items-center gap-1.5 transition-all">
+            <i data-lucide="plus" class="w-3 h-3"></i>
+            <span>Bookmark Current</span>
+          </button>
+        </div>
+
+        <div id="bookmarks-list-container" class="space-y-2 max-h-[60vh] overflow-y-auto">
+          <!-- Populated dynamically via app.js -->
+        </div>
+      </div>
+
+      <!-- ==================== VIEW 6: FEEDBACK SUB-PANEL ==================== -->
+      <div id="settings-view-feedback" class="space-y-3.5 settings-view-screen hidden">
+        <p class="text-[11px] text-slate-400">Submit operational feedback, data inaccuracies, or technical defect tickets directly to the District Collectorate & Tech Directorate.</p>
+
+        <div>
+          <label class="font-medium text-slate-300 block mb-1 text-[11px]">Feedback Category</label>
+          <select id="feedback-category" class="w-full bg-slate-900 border border-white/15 rounded-xl p-2 text-xs text-white focus:outline-none focus:border-cyan-400">
+            <option value="Disaster Data Discrepancy">Disaster / Sensor Data Discrepancy</option>
+            <option value="Relocation Model Suggestion">Relocation Model Suggestion</option>
+            <option value="UI & Performance Improvement">UI & Performance Improvement</option>
+            <option value="Feature Request">New Feature Request</option>
+            <option value="Other">Other Query</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="font-medium text-slate-300 block mb-1 text-[11px]">Your Note / Description</label>
+          <textarea id="feedback-message" rows="4" placeholder="Enter detailed feedback or observed ground telemetry difference..." class="w-full bg-slate-900 border border-white/15 rounded-xl p-2.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-cyan-400"></textarea>
+        </div>
+
+        <button id="submit-feedback-btn" class="w-full py-2.5 rounded-xl bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-semibold transition-all shadow-lg shadow-cyan-600/25 flex items-center justify-center space-x-2">
+          <i data-lucide="send" class="w-3.5 h-3.5"></i>
+          <span>Submit Feedback</span>
+        </button>
+
+        <div id="feedback-status-msg" class="hidden p-3 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 text-[11px] text-center">
+          Feedback submitted and logged to DDMA incident registry!
+        </div>
+      </div>
+
+    </div>
+
+  </aside>
+
+  <!-- Magnifier Lens Element for Accessibility Mode -->
+  <div id="magnifier-lens"></div>
+
+  <!-- Leaflet JS CDN -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  
+  <!-- Main Application Script (ES6 Modules) -->
+  <script type="module" src="js/app.js"></script>
+
+  <!-- Standalone Settings Drawer & Quick Control Handler (Guarantees instant popup & navigation across all environments) -->
+  <script>
+    (function() {
+      const panel = document.getElementById('settings-thin-panel');
+      const overlay = document.getElementById('settings-popup-overlay');
+      const settingsBtn = document.getElementById('settings-btn');
+      const closeBtn = document.getElementById('close-settings-panel-btn');
+      const backBtn = document.getElementById('settings-back-btn');
+      const titleEl = document.getElementById('settings-panel-title');
+      const subtitleEl = document.getElementById('settings-panel-subtitle');
+
+      const screenTitles = {
+        'view-main': { title: 'Settings', subtitle: 'System Preferences & Tools' },
+        'view-accessibility': { title: 'Accessibility', subtitle: 'Visual comfort & assistance tools' },
+        'view-language': { title: 'Language', subtitle: 'Select Indian regional language' },
+        'view-notifications': { title: 'Notifications', subtitle: 'Manage siren & dispatch preferences' },
+        'view-bookmarks': { title: 'Saved Bookmarks', subtitle: 'Pinned habitations and red zones' },
+        'view-feedback': { title: 'Feedback', subtitle: 'Direct feedback to DDMA team' }
+      };
+
+      function showScreen(viewId) {
+        document.querySelectorAll('.settings-view-screen').forEach(function(s) {
+          s.classList.add('hidden');
+        });
+        const targetScreen = document.getElementById('settings-' + viewId);
+        if (targetScreen) targetScreen.classList.remove('hidden');
+
+        if (viewId === 'view-main') {
+          if (backBtn) backBtn.classList.add('hidden');
+        } else {
+          if (backBtn) backBtn.classList.remove('hidden');
+        }
+
+        const meta = screenTitles[viewId] || screenTitles['view-main'];
+        if (titleEl) titleEl.textContent = meta.title;
+        if (subtitleEl) subtitleEl.textContent = meta.subtitle;
+
+        // Render languages if opening language screen and empty
+        if (viewId === 'view-language') {
+          renderLanguageListFallback();
+        }
+      }
+
+      function openSettings() {
+        if (!panel) return;
+        panel.classList.remove('translate-x-full');
+        panel.classList.add('translate-x-0', 'panel-open');
+        if (overlay) overlay.classList.remove('hidden');
+        showScreen('view-main');
+      }
+
+      function closeSettings() {
+        if (!panel) return;
+        panel.classList.remove('translate-x-0', 'panel-open');
+        panel.classList.add('translate-x-full');
+        if (overlay) overlay.classList.add('hidden');
+      }
+
+      // Expose globally
+      window.openSettingsDrawer = openSettings;
+      window.closeSettingsDrawer = closeSettings;
+      window.showSettingsScreen = showScreen;
+
+      if (settingsBtn) {
+        settingsBtn.addEventListener('click', openSettings);
+      }
+      if (closeBtn) {
+        closeBtn.addEventListener('click', closeSettings);
+      }
+      if (overlay) {
+        overlay.addEventListener('click', closeSettings);
+      }
+      if (backBtn) {
+        backBtn.addEventListener('click', function() {
+          showScreen('view-main');
+        });
+      }
+
+      document.querySelectorAll('.settings-nav-item').forEach(function(item) {
+        item.addEventListener('click', function() {
+          const target = item.getAttribute('data-target');
+          if (target) showScreen(target);
+        });
+      });
+
+      window.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+          if (panel && panel.classList.contains('translate-x-0')) {
+            closeSettings();
+          }
+          if (sideDrawer && (sideDrawer.classList.contains('drawer-open') || sideDrawer.classList.contains('translate-x-0'))) {
+            closeSideMenu();
+          }
+          // Close all open modals on Escape
+          closeAllModals();
+        }
+      });
+
+      // Side Menu Drawer & Tab Controller (Guarantees instant slide-in & tab navigation in all environments)
+      const sideDrawer = document.getElementById('side-menu-drawer');
+      const sideBackdrop = document.getElementById('sidebar-backdrop');
+      const mapFloatingBtn = document.getElementById('map-floating-menu-btn');
+      const navSideMenuBtn = document.getElementById('nav-side-menu-btn');
+      const closeSideBtn = document.getElementById('close-side-menu-btn');
+
+      function openSideMenu() {
+        if (!sideDrawer) return;
+        sideDrawer.classList.remove('-translate-x-full');
+        sideDrawer.classList.add('translate-x-0', 'drawer-open');
+        if (sideBackdrop) sideBackdrop.classList.remove('hidden');
+        if (navSideMenuBtn) navSideMenuBtn.classList.add('active');
+        if (mapFloatingBtn) {
+          mapFloatingBtn.classList.add('border-cyan-400', 'text-cyan-300', 'bg-cyan-950/40');
+        }
+        if (window.lucide) window.lucide.createIcons();
+        if (window.app && window.app.mapController) {
+          setTimeout(function() { window.app.mapController.invalidateSize(); }, 100);
+          setTimeout(function() { window.app.mapController.invalidateSize(); }, 350);
+        }
+      }
+
+      function closeSideMenu() {
+        if (!sideDrawer) return;
+        sideDrawer.classList.remove('translate-x-0', 'drawer-open');
+        sideDrawer.classList.add('-translate-x-full');
+        if (sideBackdrop) sideBackdrop.classList.add('hidden');
+        if (navSideMenuBtn) navSideMenuBtn.classList.remove('active');
+        if (mapFloatingBtn) {
+          mapFloatingBtn.classList.remove('border-cyan-400', 'text-cyan-300', 'bg-cyan-950/40');
+        }
+        if (window.app && window.app.mapController) {
+          setTimeout(function() { window.app.mapController.invalidateSize(); }, 100);
+          setTimeout(function() { window.app.mapController.invalidateSize(); }, 350);
+        }
+      }
+
+      function toggleSideMenu(e) {
+        if (e) {
+          e.preventDefault();
+          e.stopPropagation();
+        }
+        if (sideDrawer && (sideDrawer.classList.contains('drawer-open') || sideDrawer.classList.contains('translate-x-0'))) {
+          closeSideMenu();
+        } else {
+          openSideMenu();
+        }
+      }
+
+      function switchSidebarTab(tabName) {
+        document.querySelectorAll('.sidebar-tab-btn').forEach(function(btn) {
+          if (btn.getAttribute('data-tab') === tabName) {
+            btn.classList.add('active');
+          } else {
+            btn.classList.remove('active');
+          }
+        });
+
+        document.querySelectorAll('.tab-pane').forEach(function(pane) {
+          pane.classList.add('hidden');
+        });
+        const activePane = document.getElementById('tab-' + tabName);
+        if (activePane) {
+          activePane.classList.remove('hidden');
+        }
+        if (window.lucide) window.lucide.createIcons();
+      }
+
+      window.openSideMenu = openSideMenu;
+      window.closeSideMenu = closeSideMenu;
+      window.toggleSideMenu = toggleSideMenu;
+      window.switchSidebarTab = switchSidebarTab;
+
+      if (mapFloatingBtn) mapFloatingBtn.addEventListener('click', toggleSideMenu);
+      if (navSideMenuBtn) navSideMenuBtn.addEventListener('click', toggleSideMenu);
+      if (closeSideBtn) closeSideBtn.addEventListener('click', closeSideMenu);
+      if (sideBackdrop) sideBackdrop.addEventListener('click', closeSideMenu);
+
+      document.querySelectorAll('.sidebar-tab-btn').forEach(function(btn) {
+        btn.addEventListener('click', function(e) {
+          e.preventDefault();
+          const tabName = btn.getAttribute('data-tab');
+          if (tabName) switchSidebarTab(tabName);
+        });
+      });
+
+      // Navigation & Modal Controller (Guarantees instant response in both HTTP and file:// environments)
+      const simModal = document.getElementById('simulation-modal');
+      const methModal = document.getElementById('methodology-modal');
+      const histModal = document.getElementById('history-modal');
+      const repModal = document.getElementById('report-modal');
+
+      function closeAllModals() {
+        [simModal, methModal, histModal, repModal].forEach(function(m) {
+          if (m) m.classList.add('hidden');
+        });
+      }
+
+      function openModal(m) {
+        closeAllModals();
+        if (m) {
+          m.classList.remove('hidden');
+          if (window.lucide) window.lucide.createIcons();
+        }
+      }
+
+      function setSubnavActive(btnId) {
+        document.querySelectorAll('.subnav-clean-item').forEach(function(b) {
+          b.classList.remove('active');
+        });
+        const target = document.getElementById(btnId);
+        if (target) target.classList.add('active');
+      }
+
+      // Home Button
+      const navHome = document.getElementById('nav-home');
+      if (navHome) {
+        navHome.addEventListener('click', function() {
+          setSubnavActive('nav-home');
+          closeAllModals();
+          if (window.app && window.app.mapController) {
+            window.app.mapController.resetView();
+          }
+        });
+      }
+
+      // About / Methodology Button
+      const navAbout = document.getElementById('nav-about');
+      if (navAbout) {
+        navAbout.addEventListener('click', function() {
+          setSubnavActive('nav-about');
+          openModal(methModal);
+        });
+      }
+
+      // Live Events Button
+      const navLive = document.getElementById('nav-live');
+      if (navLive) {
+        navLive.addEventListener('click', function() {
+          setSubnavActive('nav-live');
+          closeAllModals();
+          if (window.app && window.app.mapController) {
+            window.app.mapController.flyToLocation(30.5564, 79.5647, 10);
+          }
+          const bar = document.getElementById('live-alert-bar');
+          if (bar) {
+            bar.classList.add('ring-2', 'ring-red-500');
+            setTimeout(function() { bar.classList.remove('ring-2', 'ring-red-500'); }, 1200);
+          }
+        });
+      }
+
+      // Simulation Engine Button
+      const navSim = document.getElementById('nav-simulation');
+      if (navSim) {
+        navSim.addEventListener('click', function() {
+          setSubnavActive('nav-simulation');
+          openModal(simModal);
+        });
+      }
+
+      // History Button
+      const navHist = document.getElementById('nav-history');
+      if (navHist) {
+        navHist.addEventListener('click', function() {
+          setSubnavActive('nav-history');
+          openModal(histModal);
+        });
+      }
+
+      // Modal Close Buttons
+      const closeSim = document.getElementById('close-sim-modal');
+      if (closeSim) closeSim.addEventListener('click', function() { if (simModal) simModal.classList.add('hidden'); });
+
+      const closeMeth = document.getElementById('close-methodology-modal');
+      if (closeMeth) closeMeth.addEventListener('click', function() { if (methModal) methModal.classList.add('hidden'); });
+
+      const closeHist = document.getElementById('close-history-modal');
+      if (closeHist) closeHist.addEventListener('click', function() { if (histModal) histModal.classList.add('hidden'); });
+
+      const closeRep = document.getElementById('close-report-modal');
+      if (closeRep) closeRep.addEventListener('click', function() { if (repModal) repModal.classList.add('hidden'); });
+
+      window.openSimulationModal = function() { setSubnavActive('nav-simulation'); openModal(simModal); };
+      window.openMethodologyModal = function() { setSubnavActive('nav-about'); openModal(methModal); };
+      window.openHistoryModal = function() { setSubnavActive('nav-history'); openModal(histModal); };
+      window.openReportModal = function() { openModal(repModal); };
+      window.printReport = function() { openModal(repModal); setTimeout(function() { window.print(); }, 400); };
+
+      // Click outside dialog on backdrop to dismiss modal
+      [simModal, methModal, histModal, repModal].forEach(function(m) {
+        if (!m) return;
+        m.addEventListener('click', function(e) {
+          if (e.target === m) {
+            m.classList.add('hidden');
+          }
+        });
+      });
+
+      // Quick links from analytics drawer
+      const launchSim = document.getElementById('launch-sim-trigger');
+      if (launchSim) {
+        launchSim.addEventListener('click', function() {
+          setSubnavActive('nav-simulation');
+          openModal(simModal);
+        });
+      }
+
+      const inspectDetails = document.getElementById('inspect-full-details-btn');
+      if (inspectDetails) {
+        inspectDetails.addEventListener('click', function() {
+          setSubnavActive('nav-about');
+          openModal(methModal);
+        });
+      }
+
+      // Global helper to fly to historical site
+      window.panToHistorySite = function(lat, lng) {
+        closeAllModals();
+        if (window.app && window.app.mapController) {
+          window.app.mapController.flyToLocation(lat, lng, 11);
+        }
+      };
+
+      // Quick fallback renderer for language list if app.js module wasn't loaded
+      function renderLanguageListFallback() {
+        const container = document.getElementById('language-options-container');
+        if (!container || container.children.length > 0) return;
+
+        const languages = [
+          { code: 'en', name: 'English', native: 'English' },
+          { code: 'hi', name: 'Hindi', native: 'हिन्दी' },
+          { code: 'ur', name: 'Urdu', native: 'اردو' },
+          { code: 'bn', name: 'Bengali', native: 'বাংলা' },
+          { code: 'te', name: 'Telugu', native: 'తెలుగు' },
+          { code: 'mr', name: 'Marathi', native: 'मराठी' },
+          { code: 'ta', name: 'Tamil', native: 'தமிழ்' },
+          { code: 'gu', name: 'Gujarati', native: 'ગુજરાતી' },
+          { code: 'kn', name: 'Kannada', native: 'ಕನ್ನಡ' },
+          { code: 'ml', name: 'Malayalam', native: 'മലയാളം' },
+          { code: 'or', name: 'Odia', native: 'ଓଡ଼ିଆ' }
+        ];
+
+        const currentLang = localStorage.getItem('redzone_lang') || 'en';
+        container.innerHTML = languages.map(function(lang) {
+          const isCur = lang.code === currentLang;
+          return '<button class="lang-select-btn w-full p-2.5 rounded-xl border flex items-center justify-between transition-all ' +
+            (isCur ? 'bg-cyan-500/20 border-cyan-500/50 text-white font-bold shadow-sm' : 'bg-white/[0.02] border-white/10 hover:bg-white/[0.06] text-slate-300') +
+            '" data-lang="' + lang.code + '">' +
+            '<div class="flex items-center space-x-2.5 text-xs">' +
+            '<span class="font-mono text-cyan-400 uppercase text-[10px] w-6">' + lang.code + '</span>' +
+            '<span class="text-white">' + lang.native + '</span>' +
+            '<span class="text-slate-400 text-[11px]">(' + lang.name + ')</span>' +
+            '</div>' +
+            (isCur ? '<i data-lucide="check" class="w-4 h-4 text-cyan-400"></i>' : '') +
+            '</button>';
+        }).join('');
+
+        if (window.lucide) window.lucide.createIcons();
+      }
+
+      // Theme Toggle Support (Ultra-Dark vs. Clean Minimal Light)
+      const themeToggleBtn = document.getElementById('theme-toggle-btn');
+      const themeIcon = document.getElementById('theme-icon');
+
+      function applyTheme(theme) {
+        if (theme === 'light') {
+          document.body.classList.add('light-theme');
+          document.documentElement.classList.remove('dark');
+          if (themeIcon) themeIcon.setAttribute('data-lucide', 'moon');
+        } else {
+          document.body.classList.remove('light-theme');
+          document.documentElement.classList.add('dark');
+          if (themeIcon) themeIcon.setAttribute('data-lucide', 'sun');
+        }
+        localStorage.setItem('raksha_theme', theme);
+        if (window.lucide) window.lucide.createIcons();
+      }
+
+      const savedTheme = localStorage.getItem('raksha_theme') || 'dark';
+      applyTheme(savedTheme);
+
+      if (themeToggleBtn) {
+        themeToggleBtn.addEventListener('click', function() {
+          const isLight = document.body.classList.contains('light-theme');
+          const newTheme = isLight ? 'dark' : 'light';
+          applyTheme(newTheme);
+          if (window.app && window.app.mapController) {
+            window.app.mapController.setBaseLayer(newTheme === 'light' ? 'street' : 'dark');
+          }
+        });
+      }
+
+      // Initial Lucide call safety
+      if (window.lucide) {
+        window.lucide.createIcons();
+      }
+    })();
+  </script>
+</body>
+</html>
