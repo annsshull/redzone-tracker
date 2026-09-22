@@ -205,6 +205,37 @@ export const HABITATIONS_DATA = [
       popPressure: 0.24,
       sustainableCeiling: 3100
     },
+  {
+    id: "HAB-BR-08",
+    name: "Danapur & Digha Diara Island Habitations",
+    district: "Patna",
+    state: "Bihar",
+    lat: 25.6420,
+    lng: 85.0920,
+    hazardType: "Severe Ganga River Inundation",
+    hazardScore: 0.95,
+    primaryHazard: "Ganga Extreme Flood Level (50.44m / +1.84m Above Danger Level)",
+    elevation: "49m",
+    slopeAngle: "0.5°",
+    population: 38500,
+    households: 7200,
+    kutchaHousesPct: 82,
+    bplPopulationPct: 71,
+    ageDependencyPct: 36,
+    distanceToHospitalKm: 8.5,
+    distanceToShelterKm: 18.5,
+    carryingCapacity: {
+      water: 0.18,
+      land: 0.12,
+      infra: 0.15,
+      eco: 0.10,
+      popPressure: 0.14,
+      sustainableCeiling: 6500
+    },
+    historicalDisasters: ["2026 Confluent Ganga-Kosi Flood Surge", "2024 Late-Sept Barrage Release Crisis", "2019 Patna Urban Inundation", "2016 Ganga Spate", "1975 Historic Patna Inundation"],
+    status: "RED_ZONE"
+  },
+
     historicalDisasters: ["2008 Kosi Mega Disaster", "2019 North Bihar Flood"],
     status: "ORANGE_ZONE"
   },
@@ -272,6 +303,23 @@ export const HABITATIONS_DATA = [
 
 // Resettlement Destinations (Candidate Safe Green Havens)
 export const SAFE_HAVEN_DESTINATIONS = [
+  {
+    id: "SAFE-BR-06",
+    name: "AIIMS Patna & Bihta High-Ground Logistics Base",
+    district: "Patna",
+    state: "Bihar",
+    lat: 25.5640,
+    lng: 84.8620,
+    elevation: "62m",
+    slopeAngle: "1°",
+    geology: "High Alluvial Terrace (Zero Historical Inundation)",
+    carryingCapacityScore: 0.89,
+    availableCapacityHeadroom: 14500,
+    infrastructureRating: 0.94,
+    amenities: ["AIIMS Super-Specialty Medical Trauma Wing", "SDRF 9th Battalion Regional Headquarters", "24/7 Silent Generator Microgrid", "Central Food Grain Depots", "Helipad"],
+    targetRedZoneMatch: "HAB-BR-08"
+  },
+
   {
     id: "SAFE-UK-01",
     name: "Pipalkoti Resilient Township",
@@ -342,6 +390,35 @@ export const SAFE_HAVEN_DESTINATIONS = [
 export const HAZARD_ZONES_GEOJSON = {
   type: "FeatureCollection",
   features: [
+    {
+      type: "Feature",
+      id: "ZONE-PATNA",
+      properties: {
+        name: "Patna Ganga Diara & Confluence Inundation Belt",
+        district: "Patna / Saran / Vaishali",
+        state: "Bihar",
+        zoneType: "RED_ZONE",
+        hazardType: "Active Fluvial Inundation & Embankment Overtopping",
+        riskScore: 0.95,
+        cci: 0.16,
+        habitationsCount: 14,
+        vulnerablePop: 78500
+      },
+      geometry: {
+        type: "Polygon",
+        coordinates: [[
+          [84.980, 25.660],
+          [85.080, 25.680],
+          [85.180, 25.660],
+          [85.240, 25.620],
+          [85.190, 25.590],
+          [85.090, 25.600],
+          [85.000, 25.630],
+          [84.980, 25.660]
+        ]]
+      }
+    },
+
     {
       type: "Feature",
       id: "ZONE-JOSHIMATH",
@@ -504,6 +581,16 @@ export const HAZARD_ZONES_GEOJSON = {
 // Historical Disaster Case Studies
 export const HISTORICAL_DISASTERS = [
   {
+    year: "September 2026 (Live)",
+    title: "Ganga-Kosi Severe Inundation Surge",
+    region: "Patna & North Bihar Basin, Bihar",
+    description: "Confluent high discharges from Nepal catchments and Ganga-Sone spate pushed water levels at Patna Gandhi Ghat to 50.44m (+1.84m over danger mark), inundating over 1.4 million residents across 16 districts.",
+    tags: ["Fluvial Inundation", "Embankment Surge", "Active Crisis"],
+    lat: 25.6139,
+    lng: 85.1376
+  },
+
+  {
     year: "July 2024",
     title: "Wayanad Debris Avalanche",
     region: "Wayanad, Kerala",
@@ -555,6 +642,187 @@ export const HISTORICAL_DISASTERS = [
 // CITY INTELLIGENCE DATA (STUDY CITIES, CLOSEST RED/GREEN ZONES, HAZARDS & CONTACTS)
 // =========================================================================
 export const CITY_INTELLIGENCE_DATA = [
+  {
+    id: "CITY-PATNA",
+    name: "Patna (Bihar - Ganga Flood Basin)",
+    district: "Patna",
+    state: "Bihar",
+    lat: 25.6139,
+    lng: 85.1376,
+    elevation: "53m",
+    hazardContext: "Active confluence of Ganga, Sone, Punpun, and Gandak river systems. Heavy monsoon discharges from upstream barrages causing acute riverbank overtopping, with Gandhi Ghat recording 50.44m (+1.84m above danger level as of 20 September 2026).",
+    closestRedZone: {
+      id: "HAB-BR-08",
+      name: "Danapur & Digha Diara Flood Red Zone",
+      distanceKm: 1.8,
+      bearing: "North-West",
+      lat: 25.6385,
+      lng: 85.0880,
+      hazardType: "Extreme Fluvial Inundation & Embankment Overtopping",
+      hazardScore: 0.95,
+      slope: "<1° Flat Alluvial Floodplain",
+      elevation: "49m",
+      populationAtRisk: 38500,
+      pastHazards: [
+        {
+          date: "20 September 2026 (Active)",
+          event: "Ganga & Kosi Confluent Extreme Flood Surge",
+          affected: "Ganga flowing at 50.44m (+1.84m above danger level at Gandhi Ghat); 1.4M people affected across 16 districts; 12 NDRF/SDRF rescue columns deployed"
+        },
+        {
+          date: "Late September 2024",
+          event: "Birpur Barrage Record Discharge Crisis",
+          affected: "6.61 lakh cusecs released from Kosi; 29 districts affected; 1.2M+ displaced across North Bihar"
+        },
+        {
+          date: "October 2019",
+          event: "Patna Catastrophic Urban Inundation",
+          affected: "320mm rainfall in 72 hours; Rajendra Nagar and Kankarbagh submerged under 6-8ft water for 10 days; 2.2M impacted"
+        },
+        {
+          date: "August 2016",
+          event: "Ganga High Flood Level Spillover",
+          affected: "2.1 million people displaced across 12 riverine districts; 52 fatalities"
+        },
+        {
+          date: "August 1975",
+          event: "Historic Patna Sone Embankment Collapse",
+          affected: "75% of Patna inundated in minutes; catastrophic infrastructural destruction"
+        }
+      ]
+    },
+    closestGreenZone: {
+      id: "SAFE-BR-06",
+      name: "AIIMS Patna & Bihta High-Ground Logistics Base",
+      distanceKm: 18.5,
+      transitRoute: "NH-922 Elevated Highway Corridor (All-Weather Flood Resilient)",
+      lat: 25.5640,
+      lng: 84.8620,
+      geology: "High Alluvial Terrace (Elev: 62m, Zero Inundation History)",
+      carryingCapacityScore: 0.89,
+      availableCapacityHeadroom: 14500,
+      infrastructureRating: "94% Verified",
+      safeHouses: [
+        {
+          name: "AIIMS Patna Emergency Disaster Wing",
+          capacity: "3,500 Beds",
+          availableBeds: 2400,
+          amenities: "Tertiary Trauma ICU, 24/7 Power, Liquid O2 Plant, 50k L/day Potable Water, Blood Bank",
+          contact: "+91 612 245 1070"
+        },
+        {
+          name: "Bihta Resilient High-Ground Shelter Complex",
+          capacity: "8,000 Beds",
+          availableBeds: 5800,
+          amenities: "SDRF 9th Battalion Regional Hub, Helipad, Central Community Kitchen (30k meals/day), Solar Microgrid",
+          contact: "+91 94318 20042"
+        },
+        {
+          name: "Phulwari Sharif Multi-Purpose Relief Centre",
+          capacity: "3,000 Beds",
+          availableBeds: 2200,
+          amenities: "Elevated Logistics Warehouse, Dry Ration Storage, Water Purification Units, Pediatric Care",
+          contact: "+91 612 221 5400"
+        }
+      ],
+      emergencyContacts: [
+        { role: "State Emergency Operations Centre (SEOC) Patna", contact: "1070 / 0612-2217300", tel: "06122217300" },
+        { role: "Addl. Relief Commissioner (Disaster Mgmt Dept)", name: "Dr. Manoj Kumar, IAS", contact: "+91 612 221 5400", tel: "+916122215400" },
+        { role: "Patna District Control Room (Disaster Cell)", contact: "0612-2219810 / 112", tel: "06122219810" },
+        { role: "NDRF 9th Battalion Command (Bihta Base)", contact: "+91 94318 20042", tel: "+919431820042" }
+      ]
+    },
+    evacuationPaths: [
+      {
+        id: "PATH-PATNA-01",
+        name: "Primary Highway: NH-922 Elevated Expressway Corridor",
+        type: "PRIMARY_HIGHWAY",
+        tierLabel: "Primary Elevated Corridor",
+        badge: "Elevated Expressway",
+        color: "#10b981",
+        dashArray: null,
+        weight: 4,
+        distanceKm: 18.5,
+        estimatedMinutes: 28,
+        throughputPerHour: 2200,
+        transitMode: "State Transport Fleet, Evacuation Buses, NDRF Heavy Trucks, Ambulances",
+        status: "Open - Elevated 4-Lane",
+        statusBadge: "bg-emerald-500/20 text-emerald-300 border-emerald-500/30",
+        elevationProfile: "Ascent from 49m Floodplain -> 62m High Alluvial Shelf",
+        description: "Four-lane elevated highway constructed above the 100-year High Flood Level (HFL). Bypasses riverbank inundation directly to Bihta Logistics Hub.",
+        chokePoints: [
+          { name: "Digha Embankment Junction Checkpoint", km: 2.1, lat: 25.6280, lng: 85.0750, icon: "🚧", desc: "Traffic regulation checkpoint; SDRF marshals directing civilian convoys." },
+          { name: "Danapur Cantonment Staging Depot", km: 7.4, lat: 25.6020, lng: 85.0120, icon: "🏥", desc: "Emergency medical triage, bottled drinking water distribution, and fuel replenishment." }
+        ],
+        waypoints: [
+          [25.6385, 85.0880],
+          [25.6280, 85.0750],
+          [25.6020, 85.0120],
+          [25.5810, 84.9350],
+          [25.5640, 84.8620]
+        ]
+      },
+      {
+        id: "PATH-PATNA-02",
+        name: "Secondary Bypass: Danapur Station High-Embankment Bypass",
+        type: "SECONDARY_BYPASS",
+        tierLabel: "Embankment Bypass",
+        badge: "Paved Embankment",
+        color: "#f59e0b",
+        dashArray: "8, 6",
+        weight: 3.5,
+        distanceKm: 21.8,
+        estimatedMinutes: 42,
+        throughputPerHour: 950,
+        transitMode: "Light Commercial Vehicles, Auto-Rickshaws, Private Cars, Mini-Buses",
+        status: "Active Caution",
+        statusBadge: "bg-amber-500/20 text-amber-300 border-amber-500/30",
+        elevationProfile: "Protected Rail & Canal Bund Corridor",
+        description: "Runs along the reinforced railway embankment and high canal ridge. Free from backwater seepage.",
+        chokePoints: [
+          { name: "Khagaul Rail Overbridge Flyover", km: 6.2, lat: 25.5850, lng: 85.0420, icon: "🌉", desc: "Narrow bridge approach; police convoy control in effect." },
+          { name: "Naubatpur High Road Interlink", km: 15.0, lat: 25.5720, lng: 84.9520, icon: "⚠️", desc: "Secondary staging camp with dry food rations and mobile ambulances." }
+        ],
+        waypoints: [
+          [25.6385, 85.0880],
+          [25.6150, 85.0600],
+          [25.5850, 85.0420],
+          [25.5720, 84.9520],
+          [25.5640, 84.8620]
+        ]
+      },
+      {
+        id: "PATH-PATNA-03",
+        name: "Tactical Emergency Corridor: NDRF Motorboat & Air-Bridge Link",
+        type: "TACTICAL_EMERGENCY",
+        tierLabel: "Amphibious Air-Bridge",
+        badge: "Boat & Helipad",
+        color: "#a855f7",
+        dashArray: "4, 6",
+        weight: 3,
+        distanceKm: 14.5,
+        estimatedMinutes: 65,
+        throughputPerHour: 450,
+        transitMode: "NDRF Inflatable Motorboats (BAP), Air Force Mi-17 V5 Helicopters, SDRF Rescue Launches",
+        status: "Active Flood Rescue",
+        statusBadge: "bg-purple-500/20 text-purple-300 border-purple-500/30",
+        elevationProfile: "Riverine Diara Navigation & Air Evacuation",
+        description: "Specialized amphibious and aviation rescue corridor extracting marooned villagers from submerged Diara islands.",
+        chokePoints: [
+          { name: "Digha Ghat Rescue Boat Jetty", km: 1.5, lat: 25.6420, lng: 85.1050, icon: "🚤", desc: "18 motorized boats operating shuttle runs to marooned island hamlets." },
+          { name: "Bihta Air Force Base Tactical Helipad", km: 14.2, lat: 25.5710, lng: 84.8720, icon: "🚁", desc: "IAF rescue helicopter staging zone with medical airlift facilities." }
+        ],
+        waypoints: [
+          [25.6385, 85.0880],
+          [25.6420, 85.1050],
+          [25.6120, 85.0250],
+          [25.5710, 84.8720],
+          [25.5640, 84.8620]
+        ]
+      }
+    ]
+  },
+
   {
     id: "CITY-JOSHIMATH",
     name: "Joshimath",

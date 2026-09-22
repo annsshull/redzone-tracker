@@ -230,11 +230,23 @@
         <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-red-500"></span>
       </span>
       <span class="font-bold uppercase tracking-wider text-red-400 text-[10px]">🔴 Live Threat Telemetry</span>
+      <span id="auto-sync-badge" class="hidden sm:inline-flex items-center space-x-1.5 text-[9px] text-emerald-400 bg-emerald-950/60 border border-emerald-500/30 px-2 py-0.5 rounded-full font-mono">
+        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+        <span id="auto-sync-label">AUTO-STREAMING (30s)</span>
+      </span>
     </div>
 
     <!-- Ticker Stream with Left/Right Gradient Fade Masks -->
     <div class="flex-1 overflow-hidden mx-4 relative ticker-container">
       <div id="live-ticker-track" class="ticker-track space-x-8 text-slate-300 cursor-pointer">
+
+        <span class="inline-flex items-center space-x-2 hover:text-white transition-colors py-1 cursor-pointer" onclick="window.selectCityFilter && window.selectCityFilter('CITY-PATNA', { openModal: true })">
+          <span class="px-1.5 py-0.5 rounded-md bg-red-500/30 text-red-200 border border-red-500/40 font-bold text-[9px] uppercase tracking-wider flex items-center gap-1">
+            <span class="w-1.5 h-1.5 rounded-full bg-red-400 animate-ping"></span> 🔴 FLOOD RED ALERT (20 SEP 2026)
+          </span>
+          <span class="font-bold text-white">Ganga &amp; Kosi Severe Inundation in Bihar | Patna Gandhi Ghat 50.44m (+1.84m &gt; Danger Level) | 1.4M Affected | Immediate Evacuation Mandated</span>
+        </span>
+        <span class="text-white/20 px-2">•</span>
         <!-- Live stream populated dynamically via liveFeed.js -->
         <span class="inline-flex items-center space-x-2 hover:text-white transition-colors py-1 cursor-pointer">
           <span class="px-1.5 py-0.5 rounded-md bg-red-500/20 text-red-300 font-bold text-[9px] uppercase tracking-wider">LANDSLIDE</span>
@@ -810,7 +822,7 @@
                 </div>
                 <p class="text-[11px] text-zinc-400">Real-time river stage & discharge levels across 338 gauge stations in Ganga and Brahmaputra basins.</p>
                 <div class="flex items-center justify-between text-[10px] text-zinc-500 pt-0.5">
-                  <span class="flex items-center gap-1 text-amber-400"><span class="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse"></span> Neamati Ghat: +1.2m Danger</span>
+                  <span class="flex items-center gap-1 text-red-400 font-bold"><span class="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse"></span> Ganga (Patna): +1.84m | Kosi: 4.85L Cusecs</span>
                   <span class="text-zinc-400">ffs.india-water.gov.in</span>
                 </div>
               </div>
@@ -1133,6 +1145,21 @@
               <span class="text-amber-400 text-[9px] font-mono">5 High-Risk</span>
             </div>
             <div class="py-1">
+              <!-- 0. Patna (Active Bihar Flood Zone) -->
+              <button class="city-filter-option w-full px-3.5 py-2 text-left hover:bg-white/[0.08] flex items-center justify-between transition-colors text-white bg-red-950/20 border-b border-red-500/20" onclick="window.selectCityFilter && window.selectCityFilter('CITY-PATNA', { openModal: true })">
+                <div>
+                  <div class="font-bold flex items-center gap-1.5">
+                    <span class="relative flex h-2 w-2">
+                      <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                      <span class="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
+                    </span>
+                    🌊 Patna (Bihar) <span class="text-[9px] px-1.5 py-0.2 rounded bg-red-500/25 text-red-300 border border-red-500/40 font-bold">🔴 Live Flood (20 Sep)</span>
+                  </div>
+                  <div class="text-[10px] text-zinc-400">Patna, Bihar • Ganga-Kosi Confluent Basin (+1.84m Danger)</div>
+                </div>
+                <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-red-400"></i>
+              </button>
+
               <button class="city-filter-option w-full px-3.5 py-2 text-left hover:bg-white/[0.08] flex items-center justify-between transition-colors text-white" onclick="window.selectCityFilter && window.selectCityFilter('CITY-JOSHIMATH')">
                 <div>
                   <div class="font-bold flex items-center gap-1.5">🏔️ Joshimath <span class="text-[9px] px-1.5 py-0.2 rounded bg-red-500/20 text-red-300 border border-red-500/30">MCT Subsidence</span></div>
@@ -1237,6 +1264,29 @@
         </div>
       </div>
 
+      <!-- Live Automated Hazard Toast (Slides down dynamically when live events occur) -->
+      <div id="live-hazard-toast" class="hidden absolute top-14 left-1/2 -translate-x-1/2 z-[1300] pointer-events-auto transition-all duration-300 transform translate-y-0 opacity-100">
+        <div class="aesthetic-glass-heavy px-4 py-2.5 rounded-2xl flex items-center space-x-3 text-xs border border-red-500/50 bg-red-950/90 shadow-2xl text-white">
+          <span class="relative flex h-3 w-3 shrink-0">
+            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+            <span class="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
+          </span>
+          <div class="flex-1">
+            <div class="flex items-center space-x-2">
+              <span class="text-[9px] font-bold px-1.5 py-0.5 rounded bg-red-500 text-white uppercase tracking-wider">LIVE TELEMETRY ALERT</span>
+              <span id="toast-hazard-time" class="text-[10px] text-zinc-400 font-mono">20 Sep 2026</span>
+            </div>
+            <div id="toast-hazard-title" class="font-bold text-xs text-white tracking-tight mt-0.5">Ganga &amp; Kosi River Flood Surge in Bihar (+1.84m Above Danger Level)</div>
+          </div>
+          <button id="toast-zoom-btn" onclick="window.selectCityFilter && window.selectCityFilter('CITY-PATNA', { openModal: true })" class="px-2.5 py-1 rounded-xl bg-red-600 hover:bg-red-500 text-white font-bold text-[11px] transition-all shadow-md shrink-0 cursor-pointer flex items-center gap-1">
+            <span>Zoom To Threat</span> <i data-lucide="arrow-right" class="w-3 h-3"></i>
+          </button>
+          <button id="toast-dismiss-btn" onclick="document.getElementById('live-hazard-toast').classList.add('hidden')" class="text-zinc-400 hover:text-white p-1 rounded-lg hover:bg-white/10 transition-colors cursor-pointer" title="Dismiss">
+            <i data-lucide="x" class="w-3.5 h-3.5"></i>
+          </button>
+        </div>
+      </div>
+
       <!-- Floating Active Region Badge (Top Center HUD) -->
       <div class="absolute top-4 left-1/2 -translate-x-1/2 z-[1000] pointer-events-none">
         <div id="active-region-pill" class="aesthetic-glass px-4 py-1.5 rounded-full text-xs font-medium text-slate-200 flex items-center space-x-2.5 shadow-2xl border border-white/15">
@@ -1251,6 +1301,9 @@
           <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider flex items-center gap-1">
             <i data-lucide="crosshair" class="w-3 h-3 text-red-400"></i> Hotspot:
           </span>
+          <button class="hotspot-jump-btn px-2.5 py-1 rounded-lg bg-red-500/20 hover:bg-red-500/30 text-red-200 border border-red-500/30 transition-colors font-bold text-[11px] flex items-center gap-1" data-lat="25.6139" data-lng="85.1376" data-name="Patna (Bihar Flood)" onclick="window.selectCityFilter && window.selectCityFilter('CITY-PATNA', { openModal: true })">
+            <span class="w-1.5 h-1.5 rounded-full bg-red-400 animate-pulse"></span> Patna (Bihar Flood)
+          </button>
           <button class="hotspot-jump-btn px-2.5 py-1 rounded-lg bg-white/[0.04] hover:bg-white/[0.10] text-slate-200 transition-colors font-medium text-[11px]" data-lat="30.5574" data-lng="79.5658" data-name="Joshimath (Subsidence)" onclick="window.selectCityFilter && window.selectCityFilter('CITY-JOSHIMATH')">
             Joshimath
           </button>
@@ -2012,7 +2065,7 @@
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
   
   <!-- Main Application Script (ES6 Modules) -->
-  <script type="module" src="js/app.js?v=2.2"></script>
+  <script type="module" src="js/app.js?v=3.0"></script>
 
   
   <!-- =========================================================================
@@ -2366,20 +2419,25 @@
       window.recenterUserGPS = recenterUserGPS;
 
       // Side Menu Drawer & Tab Controller (Guarantees instant slide-in & tab navigation in all environments)
-      const sideDrawer = document.getElementById('side-menu-drawer');
-      const sideBackdrop = document.getElementById('sidebar-backdrop');
-      const mapFloatingBtn = document.getElementById('map-floating-menu-btn');
-      const navSideMenuBtn = document.getElementById('nav-side-menu-btn');
-      const closeSideBtn = document.getElementById('close-side-menu-btn');
+      function getDrawerElements() {
+        return {
+          drawer: document.getElementById('side-menu-drawer'),
+          backdrop: document.getElementById('sidebar-backdrop'),
+          mapFloatingBtn: document.getElementById('map-floating-menu-btn'),
+          navSideMenuBtn: document.getElementById('nav-side-menu-btn'),
+          closeSideBtn: document.getElementById('close-side-menu-btn')
+        };
+      }
 
       function openSideMenu() {
-        if (!sideDrawer) return;
-        sideDrawer.classList.remove('-translate-x-full');
-        sideDrawer.classList.add('translate-x-0', 'drawer-open');
-        if (sideBackdrop) sideBackdrop.classList.remove('hidden');
-        if (navSideMenuBtn) navSideMenuBtn.classList.add('active');
-        if (mapFloatingBtn) {
-          mapFloatingBtn.classList.add('border-cyan-400', 'text-cyan-300', 'bg-cyan-950/40');
+        const els = getDrawerElements();
+        if (!els.drawer) return;
+        els.drawer.classList.remove('-translate-x-full');
+        els.drawer.classList.add('translate-x-0', 'drawer-open');
+        if (els.backdrop) els.backdrop.classList.remove('hidden');
+        if (els.navSideMenuBtn) els.navSideMenuBtn.classList.add('active');
+        if (els.mapFloatingBtn) {
+          els.mapFloatingBtn.classList.add('border-cyan-400', 'text-cyan-300', 'bg-cyan-950/40');
         }
         if (window.lucide) window.lucide.createIcons();
         if (window.app && window.app.mapController) {
@@ -2389,13 +2447,14 @@
       }
 
       function closeSideMenu() {
-        if (!sideDrawer) return;
-        sideDrawer.classList.remove('translate-x-0', 'drawer-open');
-        sideDrawer.classList.add('-translate-x-full');
-        if (sideBackdrop) sideBackdrop.classList.add('hidden');
-        if (navSideMenuBtn) navSideMenuBtn.classList.remove('active');
-        if (mapFloatingBtn) {
-          mapFloatingBtn.classList.remove('border-cyan-400', 'text-cyan-300', 'bg-cyan-950/40');
+        const els = getDrawerElements();
+        if (!els.drawer) return;
+        els.drawer.classList.remove('translate-x-0', 'drawer-open');
+        els.drawer.classList.add('-translate-x-full');
+        if (els.backdrop) els.backdrop.classList.add('hidden');
+        if (els.navSideMenuBtn) els.navSideMenuBtn.classList.remove('active');
+        if (els.mapFloatingBtn) {
+          els.mapFloatingBtn.classList.remove('border-cyan-400', 'text-cyan-300', 'bg-cyan-950/40');
         }
         if (window.app && window.app.mapController) {
           setTimeout(function() { window.app.mapController.invalidateSize(); }, 100);
@@ -2403,13 +2462,21 @@
         }
       }
 
+      let lastSideMenuToggle = 0;
       function toggleSideMenu(e) {
-        if (e) {
+        if (e && e.preventDefault) {
           e.preventDefault();
           e.stopPropagation();
         }
-        if (gpsModal && !gpsModal.classList.contains('hidden')) { closeGPSPermissionModal(); }
-          if (sideDrawer && (sideDrawer.classList.contains('drawer-open') || sideDrawer.classList.contains('translate-x-0'))) {
+        const now = Date.now();
+        if (now - lastSideMenuToggle < 280) {
+          return; // Debounce rapid triggers to prevent opening and immediately closing
+        }
+        lastSideMenuToggle = now;
+
+        if (window.closeGPSPermissionModal) { window.closeGPSPermissionModal(); }
+        const els = getDrawerElements();
+        if (els.drawer && (els.drawer.classList.contains('drawer-open') || els.drawer.classList.contains('translate-x-0'))) {
           closeSideMenu();
         } else {
           openSideMenu();
@@ -2435,15 +2502,47 @@
         if (window.lucide) window.lucide.createIcons();
       }
 
+      
+      // Global Live Hazard Alert HUD Toast Listener (Guaranteed in both HTTP and file://)
+      window.addEventListener('new-hazard-alert', function(e) {
+        var threat = e.detail;
+        var toast = document.getElementById('live-hazard-toast');
+        var toastTitle = document.getElementById('toast-hazard-title');
+        var toastTime = document.getElementById('toast-hazard-time');
+        var toastZoomBtn = document.getElementById('toast-zoom-btn');
+
+        if (toast && threat) {
+          if (toastTitle) toastTitle.textContent = (threat.title || '').replace(/^[🔴🟠🟡]\s*/, '');
+          if (toastTime) toastTime.textContent = threat.time || 'Just Now';
+          if (toastZoomBtn) {
+            toastZoomBtn.onclick = function() {
+              if (threat.lat && threat.lng) {
+                if (window.app && window.app.mapController) {
+                  window.app.mapController.flyToLocation(threat.lat, threat.lng, 12);
+                } else if (window.map) {
+                  window.map.flyTo([threat.lat, threat.lng], 12);
+                }
+              }
+            };
+          }
+          toast.classList.remove('hidden');
+          if (window.lucide) window.lucide.createIcons();
+
+          clearTimeout(window.__hazardToastTimeout);
+          window.__hazardToastTimeout = setTimeout(function() {
+            if (toast) toast.classList.add('hidden');
+          }, 8000);
+        }
+      });
+
       window.openSideMenu = openSideMenu;
       window.closeSideMenu = closeSideMenu;
       window.toggleSideMenu = toggleSideMenu;
       window.switchSidebarTab = switchSidebarTab;
 
-      if (mapFloatingBtn) mapFloatingBtn.addEventListener('click', toggleSideMenu);
-      if (navSideMenuBtn) navSideMenuBtn.addEventListener('click', toggleSideMenu);
-      if (closeSideBtn) closeSideBtn.addEventListener('click', closeSideMenu);
-      if (sideBackdrop) sideBackdrop.addEventListener('click', closeSideMenu);
+      const elsInit = getDrawerElements();
+      if (elsInit.closeSideBtn) elsInit.closeSideBtn.addEventListener('click', closeSideMenu);
+      if (elsInit.backdrop) elsInit.backdrop.addEventListener('click', closeSideMenu);
 
       document.querySelectorAll('.sidebar-tab-btn').forEach(function(btn) {
         btn.addEventListener('click', function(e) {
@@ -3119,6 +3218,187 @@
       // EMBEDDED CITY INTELLIGENCE DATA (Available in file:// and http://)
       // =======================================================================
       window.CITY_INTELLIGENCE_DATA = [
+  {
+    id: "CITY-PATNA",
+    name: "Patna (Bihar - Ganga Flood Basin)",
+    district: "Patna",
+    state: "Bihar",
+    lat: 25.6139,
+    lng: 85.1376,
+    elevation: "53m",
+    hazardContext: "Active confluence of Ganga, Sone, Punpun, and Gandak river systems. Heavy monsoon discharges from upstream barrages causing acute riverbank overtopping, with Gandhi Ghat recording 50.44m (+1.84m above danger level as of 20 September 2026).",
+    closestRedZone: {
+      id: "HAB-BR-08",
+      name: "Danapur & Digha Diara Flood Red Zone",
+      distanceKm: 1.8,
+      bearing: "North-West",
+      lat: 25.6385,
+      lng: 85.0880,
+      hazardType: "Extreme Fluvial Inundation & Embankment Overtopping",
+      hazardScore: 0.95,
+      slope: "<1° Flat Alluvial Floodplain",
+      elevation: "49m",
+      populationAtRisk: 38500,
+      pastHazards: [
+        {
+          date: "20 September 2026 (Active)",
+          event: "Ganga & Kosi Confluent Extreme Flood Surge",
+          affected: "Ganga flowing at 50.44m (+1.84m above danger level at Gandhi Ghat); 1.4M people affected across 16 districts; 12 NDRF/SDRF rescue columns deployed"
+        },
+        {
+          date: "Late September 2024",
+          event: "Birpur Barrage Record Discharge Crisis",
+          affected: "6.61 lakh cusecs released from Kosi; 29 districts affected; 1.2M+ displaced across North Bihar"
+        },
+        {
+          date: "October 2019",
+          event: "Patna Catastrophic Urban Inundation",
+          affected: "320mm rainfall in 72 hours; Rajendra Nagar and Kankarbagh submerged under 6-8ft water for 10 days; 2.2M impacted"
+        },
+        {
+          date: "August 2016",
+          event: "Ganga High Flood Level Spillover",
+          affected: "2.1 million people displaced across 12 riverine districts; 52 fatalities"
+        },
+        {
+          date: "August 1975",
+          event: "Historic Patna Sone Embankment Collapse",
+          affected: "75% of Patna inundated in minutes; catastrophic infrastructural destruction"
+        }
+      ]
+    },
+    closestGreenZone: {
+      id: "SAFE-BR-06",
+      name: "AIIMS Patna & Bihta High-Ground Logistics Base",
+      distanceKm: 18.5,
+      transitRoute: "NH-922 Elevated Highway Corridor (All-Weather Flood Resilient)",
+      lat: 25.5640,
+      lng: 84.8620,
+      geology: "High Alluvial Terrace (Elev: 62m, Zero Inundation History)",
+      carryingCapacityScore: 0.89,
+      availableCapacityHeadroom: 14500,
+      infrastructureRating: "94% Verified",
+      safeHouses: [
+        {
+          name: "AIIMS Patna Emergency Disaster Wing",
+          capacity: "3,500 Beds",
+          availableBeds: 2400,
+          amenities: "Tertiary Trauma ICU, 24/7 Power, Liquid O2 Plant, 50k L/day Potable Water, Blood Bank",
+          contact: "+91 612 245 1070"
+        },
+        {
+          name: "Bihta Resilient High-Ground Shelter Complex",
+          capacity: "8,000 Beds",
+          availableBeds: 5800,
+          amenities: "SDRF 9th Battalion Regional Hub, Helipad, Central Community Kitchen (30k meals/day), Solar Microgrid",
+          contact: "+91 94318 20042"
+        },
+        {
+          name: "Phulwari Sharif Multi-Purpose Relief Centre",
+          capacity: "3,000 Beds",
+          availableBeds: 2200,
+          amenities: "Elevated Logistics Warehouse, Dry Ration Storage, Water Purification Units, Pediatric Care",
+          contact: "+91 612 221 5400"
+        }
+      ],
+      emergencyContacts: [
+        { role: "State Emergency Operations Centre (SEOC) Patna", contact: "1070 / 0612-2217300", tel: "06122217300" },
+        { role: "Addl. Relief Commissioner (Disaster Mgmt Dept)", name: "Dr. Manoj Kumar, IAS", contact: "+91 612 221 5400", tel: "+916122215400" },
+        { role: "Patna District Control Room (Disaster Cell)", contact: "0612-2219810 / 112", tel: "06122219810" },
+        { role: "NDRF 9th Battalion Command (Bihta Base)", contact: "+91 94318 20042", tel: "+919431820042" }
+      ]
+    },
+    evacuationPaths: [
+      {
+        id: "PATH-PATNA-01",
+        name: "Primary Highway: NH-922 Elevated Expressway Corridor",
+        type: "PRIMARY_HIGHWAY",
+        tierLabel: "Primary Elevated Corridor",
+        badge: "Elevated Expressway",
+        color: "#10b981",
+        dashArray: null,
+        weight: 4,
+        distanceKm: 18.5,
+        estimatedMinutes: 28,
+        throughputPerHour: 2200,
+        transitMode: "State Transport Fleet, Evacuation Buses, NDRF Heavy Trucks, Ambulances",
+        status: "Open - Elevated 4-Lane",
+        statusBadge: "bg-emerald-500/20 text-emerald-300 border-emerald-500/30",
+        elevationProfile: "Ascent from 49m Floodplain -> 62m High Alluvial Shelf",
+        description: "Four-lane elevated highway constructed above the 100-year High Flood Level (HFL). Bypasses riverbank inundation directly to Bihta Logistics Hub.",
+        chokePoints: [
+          { name: "Digha Embankment Junction Checkpoint", km: 2.1, lat: 25.6280, lng: 85.0750, icon: "🚧", desc: "Traffic regulation checkpoint; SDRF marshals directing civilian convoys." },
+          { name: "Danapur Cantonment Staging Depot", km: 7.4, lat: 25.6020, lng: 85.0120, icon: "🏥", desc: "Emergency medical triage, bottled drinking water distribution, and fuel replenishment." }
+        ],
+        waypoints: [
+          [25.6385, 85.0880],
+          [25.6280, 85.0750],
+          [25.6020, 85.0120],
+          [25.5810, 84.9350],
+          [25.5640, 84.8620]
+        ]
+      },
+      {
+        id: "PATH-PATNA-02",
+        name: "Secondary Bypass: Danapur Station High-Embankment Bypass",
+        type: "SECONDARY_BYPASS",
+        tierLabel: "Embankment Bypass",
+        badge: "Paved Embankment",
+        color: "#f59e0b",
+        dashArray: "8, 6",
+        weight: 3.5,
+        distanceKm: 21.8,
+        estimatedMinutes: 42,
+        throughputPerHour: 950,
+        transitMode: "Light Commercial Vehicles, Auto-Rickshaws, Private Cars, Mini-Buses",
+        status: "Active Caution",
+        statusBadge: "bg-amber-500/20 text-amber-300 border-amber-500/30",
+        elevationProfile: "Protected Rail & Canal Bund Corridor",
+        description: "Runs along the reinforced railway embankment and high canal ridge. Free from backwater seepage.",
+        chokePoints: [
+          { name: "Khagaul Rail Overbridge Flyover", km: 6.2, lat: 25.5850, lng: 85.0420, icon: "🌉", desc: "Narrow bridge approach; police convoy control in effect." },
+          { name: "Naubatpur High Road Interlink", km: 15.0, lat: 25.5720, lng: 84.9520, icon: "⚠️", desc: "Secondary staging camp with dry food rations and mobile ambulances." }
+        ],
+        waypoints: [
+          [25.6385, 85.0880],
+          [25.6150, 85.0600],
+          [25.5850, 85.0420],
+          [25.5720, 84.9520],
+          [25.5640, 84.8620]
+        ]
+      },
+      {
+        id: "PATH-PATNA-03",
+        name: "Tactical Emergency Corridor: NDRF Motorboat & Air-Bridge Link",
+        type: "TACTICAL_EMERGENCY",
+        tierLabel: "Amphibious Air-Bridge",
+        badge: "Boat & Helipad",
+        color: "#a855f7",
+        dashArray: "4, 6",
+        weight: 3,
+        distanceKm: 14.5,
+        estimatedMinutes: 65,
+        throughputPerHour: 450,
+        transitMode: "NDRF Inflatable Motorboats (BAP), Air Force Mi-17 V5 Helicopters, SDRF Rescue Launches",
+        status: "Active Flood Rescue",
+        statusBadge: "bg-purple-500/20 text-purple-300 border-purple-500/30",
+        elevationProfile: "Riverine Diara Navigation & Air Evacuation",
+        description: "Specialized amphibious and aviation rescue corridor extracting marooned villagers from submerged Diara islands.",
+        chokePoints: [
+          { name: "Digha Ghat Rescue Boat Jetty", km: 1.5, lat: 25.6420, lng: 85.1050, icon: "🚤", desc: "18 motorized boats operating shuttle runs to marooned island hamlets." },
+          { name: "Bihta Air Force Base Tactical Helipad", km: 14.2, lat: 25.5710, lng: 84.8720, icon: "🚁", desc: "IAF rescue helicopter staging zone with medical airlift facilities." }
+        ],
+        waypoints: [
+          [25.6385, 85.0880],
+          [25.6420, 85.1050],
+          [25.6120, 85.0250],
+          [25.5710, 84.8720],
+          [25.5640, 84.8620]
+        ]
+      }
+    ]
+  },
+
   {
     id: "CITY-JOSHIMATH",
     name: "Joshimath",
@@ -4015,36 +4295,121 @@
         const userLocationGroup = L.layerGroup().addTo(map);
         const markersGroup = L.layerGroup().addTo(map);
 
-        // Initial default high-risk pin markers on map
+        // Initial default high-risk pin markers on map (Including Active 20 September Bihar Flood Red Alert)
         const defaultPins = [
-          { name: "Sunil Ward (Joshimath)", lat: 30.5574, lng: 79.5658, state: "Uttarakhand", type: "MCT Subsidence", score: "94%" },
-          { name: "Chooralmala (Wayanad)", lat: 11.5284, lng: 76.1685, state: "Kerala", type: "Debris Flow", score: "92%" },
-          { name: "Salmora (Majuli Island)", lat: 26.9380, lng: 94.1820, state: "Assam", type: "Riverbank Erosion", score: "81%" },
-          { name: "Satabhaya Cluster", lat: 20.6250, lng: 86.9320, state: "Odisha", type: "Cyclone Ingress", score: "87%" },
-          { name: "Kotropi Slide Zone", lat: 31.8890, lng: 76.9460, state: "Himachal Pradesh", type: "Slope Failure", score: "78%" }
+          { 
+            name: "Danapur & Digha Diara (Patna)", 
+            lat: 25.6385, 
+            lng: 85.0880, 
+            state: "Bihar", 
+            type: "🔴 ACTIVE CRITICAL FLOOD RED ALERT (20 Sep 2026) • Ganga Water Level 50.44m (+1.84m > Danger Level) | 1.4M Population at Risk", 
+            score: "96%",
+            cityId: "CITY-PATNA",
+            isLiveFlood: true,
+            badge: "LIVE 20 SEP"
+          },
+          { 
+            name: "Birpur Barrage & Kosi Basin (Supaul)", 
+            lat: 26.3500, 
+            lng: 86.8740, 
+            state: "Bihar", 
+            type: "🔴 ACTIVE KOSI SURGE (20 Sep 2026) • 4.85 Lakh Cusecs Discharge Inundating North Bihar", 
+            score: "98%",
+            cityId: "CITY-PATNA",
+            isLiveFlood: true,
+            badge: "KOSI SURGE"
+          },
+          { name: "Sunil Ward (Joshimath)", lat: 30.5574, lng: 79.5658, state: "Uttarakhand", type: "MCT Subsidence", score: "94%", cityId: "CITY-JOSHIMATH" },
+          { name: "Chooralmala (Wayanad)", lat: 11.5284, lng: 76.1685, state: "Kerala", type: "Debris Flow", score: "92%", cityId: "CITY-WAYANAD" },
+          { name: "Salmora (Majuli Island)", lat: 26.9380, lng: 94.1820, state: "Assam", type: "Riverbank Erosion", score: "81%", cityId: "CITY-MAJULI" },
+          { name: "Satabhaya Cluster", lat: 20.6250, lng: 86.9320, state: "Odisha", type: "Cyclone Ingress", score: "87%", cityId: "CITY-KENDRAPARA" },
+          { name: "Kotropi Slide Zone", lat: 31.8890, lng: 76.9460, state: "Himachal Pradesh", type: "Slope Failure", score: "78%", cityId: "CITY-MANDI" }
         ];
 
         defaultPins.forEach(function(pin) {
+          const isFlood = pin.isLiveFlood;
+          const pinHtml = isFlood ?
+            '<div class="live-flood-beacon">' +
+              '<div class="live-flood-wave"></div>' +
+              '<div class="live-flood-wave wave-2"></div>' +
+              '<div class="live-flood-center">🌊</div>' +
+              '<div class="live-flood-tag">' + (pin.badge || 'LIVE FLOOD') + '</div>' +
+            '</div>' :
+            '<div class="red-radar-beacon"><div class="red-radar-wave"></div><div class="red-radar-wave wave-2"></div><div class="red-radar-center">⚠️</div></div>';
+
           const pinIcon = L.divIcon({
-            className: 'red-danger-marker',
-            html: '<div class="red-radar-beacon"><div class="red-radar-wave"></div><div class="red-radar-center">⚠️</div></div>',
-            iconSize: [36, 36],
-            iconAnchor: [18, 18],
-            popupAnchor: [0, -18]
+            className: isFlood ? 'live-flood-marker-container' : 'red-danger-marker',
+            html: pinHtml,
+            iconSize: isFlood ? [44, 44] : [36, 36],
+            iconAnchor: isFlood ? [22, 22] : [18, 18],
+            popupAnchor: [0, -20]
           });
 
-          L.marker([pin.lat, pin.lng], { icon: pinIcon })
-            .bindPopup(
-              '<div class="p-3 text-xs font-sans text-slate-100">' +
-                '<span class="px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider bg-red-500/20 text-red-300 border border-red-500/30">🔴 High-Risk Habitation</span>' +
-                '<div class="text-sm font-bold text-white mt-1.5">' + pin.name + '</div>' +
-                '<div class="text-[11px] text-zinc-400 mb-2">' + pin.state + ' • Hazard Index: <b class="text-red-400">' + pin.score + '</b></div>' +
-                '<div class="text-[10px] text-zinc-300 bg-white/[0.04] p-2 rounded-lg border border-white/10 mb-2">' + pin.type + '</div>' +
-                '<button class="w-full text-xs bg-red-600 hover:bg-red-500 text-white font-semibold py-1.5 px-2 rounded-xl transition-all" onclick="window.selectCityFilter && window.selectCityFilter(\'' + (pin.name.includes('Joshimath') ? 'CITY-JOSHIMATH' : (pin.name.includes('Wayanad') ? 'CITY-WAYANAD' : (pin.name.includes('Majuli') ? 'CITY-MAJULI' : (pin.name.includes('Satabhaya') ? 'CITY-KENDRAPARA' : 'CITY-MANDI')))) + '\')">View Full Intelligence</button>' +
-              '</div>',
-              { className: 'city-intel-popup red-theme' }
-            )
+          const cityKey = pin.cityId || 
+            (pin.name.includes('Joshimath') ? 'CITY-JOSHIMATH' : 
+             pin.name.includes('Wayanad') ? 'CITY-WAYANAD' : 
+             pin.name.includes('Majuli') ? 'CITY-MAJULI' : 
+             pin.name.includes('Satabhaya') ? 'CITY-KENDRAPARA' : 
+             pin.name.includes('Patna') || pin.name.includes('Supaul') || pin.name.includes('Birpur') ? 'CITY-PATNA' : 'CITY-MANDI');
+
+          const popupContent = 
+            '<div class="p-3 text-xs font-sans text-slate-100 min-w-[250px]">' +
+              '<div class="flex items-center justify-between gap-1 mb-1.5">' +
+                '<span class="px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider ' + 
+                  (isFlood ? 'bg-red-500/30 text-red-200 border border-red-500/50 flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-red-400 animate-ping"></span> 🔴 ACTIVE FLOOD RED ALERT' : 'bg-red-500/20 text-red-300 border border-red-500/30">🔴 High-Risk Habitation') + 
+                '</span>' +
+                (isFlood ? '<span class="text-[9px] font-bold text-red-400 font-mono">20 SEP 2026</span>' : '') +
+              '</div>' +
+              '<div class="text-sm font-bold text-white mt-1.5">' + pin.name + '</div>' +
+              '<div class="text-[11px] text-zinc-400 mb-2">' + pin.state + ' • Hazard Index: <b class="text-red-400">' + pin.score + '</b></div>' +
+              '<div class="text-[10px] text-zinc-300 bg-white/[0.04] p-2 rounded-lg border border-white/10 mb-2.5 leading-snug">' + pin.type + '</div>' +
+              '<button class="w-full text-xs font-bold py-2 px-2.5 rounded-xl transition-all cursor-pointer shadow-lg ' +
+                (isFlood ? 'bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 text-white shadow-red-600/40' : 'bg-red-600 hover:bg-red-500 text-white') +
+                '" onclick="window.selectCityFilter && window.selectCityFilter(\'' + cityKey + '\', { openModal: true })">' +
+                (isFlood ? '🚨 Inspect Bihar Flood & Safe Havens' : 'View Full Intelligence') +
+              '</button>' +
+            '</div>';
+
+          L.marker([pin.lat, pin.lng], { icon: pinIcon, zIndexOffset: isFlood ? 1000 : 100 })
+            .bindPopup(popupContent, { className: 'city-intel-popup red-theme' })
             .addTo(markersGroup);
+        });
+
+        // Active Bihar Flood Hazard Red Zones (Rendered on Pan-India Map on Startup)
+        const biharFloodPatnaCircle = L.circle([25.6385, 85.0880], {
+          radius: 35000,
+          color: '#ef4444',
+          weight: 2,
+          opacity: 0.95,
+          fillColor: '#dc2626',
+          fillOpacity: 0.28,
+          dashArray: '6, 5'
+        }).addTo(markersGroup);
+
+        biharFloodPatnaCircle.bindTooltip(
+          '<div class="p-1 font-sans text-xs text-white"><b>🔴 BIHAR FLOOD RED ZONE</b><br><span class="text-[10px] text-red-200">Ganga Basin • Patna Gandhi Ghat 50.44m (+1.84m &gt; Danger)</span><br><span class="text-[9px] text-amber-300">👉 Click to inspect Safe Havens &amp; Evacuation</span></div>',
+          { sticky: true, className: 'city-intel-popup red-theme' }
+        );
+        biharFloodPatnaCircle.on('click', function() {
+          if (window.selectCityFilter) window.selectCityFilter('CITY-PATNA', { openModal: true });
+        });
+
+        const biharFloodKosiCircle = L.circle([26.3500, 86.8740], {
+          radius: 42000,
+          color: '#dc2626',
+          weight: 2,
+          opacity: 0.95,
+          fillColor: '#b91c1c',
+          fillOpacity: 0.25,
+          dashArray: '6, 5'
+        }).addTo(markersGroup);
+
+        biharFloodKosiCircle.bindTooltip(
+          '<div class="p-1 font-sans text-xs text-white"><b>🔴 BIHAR FLOOD RED ZONE</b><br><span class="text-[10px] text-red-200">Kosi Birpur Surge • 4.85L Cusecs Discharge</span><br><span class="text-[9px] text-amber-300">👉 Click to inspect Safe Havens &amp; Evacuation</span></div>',
+          { sticky: true, className: 'city-intel-popup red-theme' }
+        );
+        biharFloodKosiCircle.on('click', function() {
+          if (window.selectCityFilter) window.selectCityFilter('CITY-PATNA', { openModal: true });
         });
 
         window.map = map;

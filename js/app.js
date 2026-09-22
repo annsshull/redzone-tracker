@@ -24,6 +24,8 @@ class RedZoneApp {
     this.currentColorBlind = localStorage.getItem('redzone_colorblind') || 'none';
     this.magnifierActive = false;
     this.bookmarks = JSON.parse(localStorage.getItem('redzone_bookmarks') || '[]');
+    this.liveFeedService = liveFeedService;
+    window.liveFeedService = liveFeedService;
   }
 
   init() {
@@ -82,8 +84,8 @@ class RedZoneApp {
     // Apply translations on load
     this.applyLanguage(this.currentLanguage);
 
-    // Start Live Polling
-    liveFeedService.startLivePolling(60000);
+    // Start Live Polling & Automated Telemetry Streaming (30s interval)
+    liveFeedService.startLivePolling(30000);
 
     // Custom Map Event Listener
     window.addEventListener('select-habitation', (e) => {
@@ -800,15 +802,18 @@ class RedZoneApp {
     const drawer = document.getElementById('side-menu-drawer');
     const backdrop = document.getElementById('sidebar-backdrop');
     const closeBtn = document.getElementById('close-side-menu-btn');
-    const floatingBtn = document.getElementById('map-floating-menu-btn');
-    const navSideMenuBtn = document.getElementById('nav-side-menu-btn');
 
     const openDrawer = () => {
+      if (window.openSideMenu && window.openSideMenu !== openDrawer) {
+        window.openSideMenu();
+        return;
+      }
       if (!drawer) return;
       drawer.classList.remove('-translate-x-full');
       drawer.classList.add('translate-x-0', 'drawer-open');
       if (backdrop) backdrop.classList.remove('hidden');
-      if (navSideMenuBtn) navSideMenuBtn.classList.add('active', 'bg-cyan-500/30', 'text-white');
+      const navBtn = document.getElementById('nav-side-menu-btn');
+      if (navBtn) navBtn.classList.add('active', 'bg-cyan-500/30', 'text-white');
       setTimeout(() => {
         if (this.mapController) this.mapController.invalidateSize();
       }, 100);
@@ -818,11 +823,16 @@ class RedZoneApp {
     };
 
     const closeDrawer = () => {
+      if (window.closeSideMenu && window.closeSideMenu !== closeDrawer) {
+        window.closeSideMenu();
+        return;
+      }
       if (!drawer) return;
       drawer.classList.remove('translate-x-0', 'drawer-open');
       drawer.classList.add('-translate-x-full');
       if (backdrop) backdrop.classList.add('hidden');
-      if (navSideMenuBtn) navSideMenuBtn.classList.remove('active', 'bg-cyan-500/30', 'text-white');
+      const navBtn = document.getElementById('nav-side-menu-btn');
+      if (navBtn) navBtn.classList.remove('active', 'bg-cyan-500/30', 'text-white');
       setTimeout(() => {
         if (this.mapController) this.mapController.invalidateSize();
       }, 100);
@@ -831,32 +841,39 @@ class RedZoneApp {
       }, 350);
     };
 
+    let lastAppToggle = 0;
     const toggleDrawer = (e) => {
-      if (e) {
+      if (e && e.preventDefault) {
         e.preventDefault();
         e.stopPropagation();
       }
-      if (drawer && drawer.classList.contains('translate-x-0')) {
+      const now = Date.now();
+      if (now - lastAppToggle < 280) return;
+      lastAppToggle = now;
+
+      if (window.toggleSideMenu && window.toggleSideMenu !== toggleDrawer) {
+        window.toggleSideMenu(e);
+        return;
+      }
+      if (drawer && (drawer.classList.contains('translate-x-0') || drawer.classList.contains('drawer-open'))) {
         closeDrawer();
       } else {
         openDrawer();
       }
     };
 
-    if (floatingBtn) floatingBtn.addEventListener('click', toggleDrawer);
-    if (navSideMenuBtn) navSideMenuBtn.addEventListener('click', toggleDrawer);
     if (closeBtn) closeBtn.addEventListener('click', closeDrawer);
     if (backdrop) backdrop.addEventListener('click', closeDrawer);
 
     window.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && drawer && drawer.classList.contains('translate-x-0')) {
+      if (e.key === 'Escape' && drawer && (drawer.classList.contains('translate-x-0') || drawer.classList.contains('drawer-open'))) {
         closeDrawer();
       }
     });
 
-    window.openSideMenu = openDrawer;
-    window.closeSideMenu = closeDrawer;
-    window.toggleSideMenu = toggleDrawer;
+    if (!window.openSideMenu) window.openSideMenu = openDrawer;
+    if (!window.closeSideMenu) window.closeSideMenu = closeDrawer;
+    if (!window.toggleSideMenu) window.toggleSideMenu = toggleDrawer;
   }
 
   // =========================================================================
@@ -1260,7 +1277,7 @@ class RedZoneApp {
         tickerTrack.innerHTML = events.map(e => `
           <span class="inline-flex items-center space-x-2 hover:text-white transition-colors py-1 cursor-pointer" onclick="window.dispatchEvent(new CustomEvent('pan-to-live', { detail: { lat: ${e.lat}, lng: ${e.lng} } }))">
             <span class="px-1.5 py-0.5 rounded-md ${
-              e.severity === 'CRITICAL' ? 'bg-red-500/20 text-red-300' : 'bg-orange-500/20 text-orange-300'
+              e.severity === 'CRITICAL' ? 'bg-red-500/20 text-red-300 border border-red-500/30' : 'bg-orange-500/20 text-orange-300'
             } font-bold text-[9px] uppercase tracking-wider">
               ${e.type}
             </span>
@@ -1268,11 +1285,50 @@ class RedZoneApp {
           </span>
         `).join('<span class="text-white/20 px-2">•</span>');
       }
+
+      // Update auto-sync status badge
+      const autoSyncLabel = document.getElementById('auto-sync-label');
+      if (autoSyncLabel) {
+        const d = new Date();
+        const tStr = d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        autoSyncLabel.textContent = `AUTO-STREAMED (${tStr})`;
+      }
+    });
+
+    // Listen for new live hazard alerts to display animated HUD toast
+    window.addEventListener('new-hazard-alert', (e) => {
+      const threat = e.detail;
+      const toast = document.getElementById('live-hazard-toast');
+      const toastTitle = document.getElementById('toast-hazard-title');
+      const toastTime = document.getElementById('toast-hazard-time');
+      const toastZoomBtn = document.getElementById('toast-zoom-btn');
+
+      if (toast && threat) {
+        if (toastTitle) toastTitle.textContent = threat.title.replace(/^[🔴🟠🟡]\s*/, '');
+        if (toastTime) toastTime.textContent = threat.time || 'Just Now';
+        if (toastZoomBtn) {
+          toastZoomBtn.onclick = () => {
+            if (threat.lat && threat.lng && this.mapController) {
+              this.mapController.flyToLocation(threat.lat, threat.lng, 12);
+            }
+          };
+        }
+        toast.classList.remove('hidden');
+        if (window.lucide) window.lucide.createIcons();
+
+        // Auto-dismiss after 8 seconds
+        clearTimeout(this.toastTimeout);
+        this.toastTimeout = setTimeout(() => {
+          if (toast) toast.classList.add('hidden');
+        }, 8000);
+      }
     });
 
     window.addEventListener('pan-to-live', (e) => {
       const { lat, lng } = e.detail;
-      this.mapController.flyToLocation(lat, lng, 11);
+      if (this.mapController) {
+        this.mapController.flyToLocation(lat, lng, 12);
+      }
     });
   }
 
